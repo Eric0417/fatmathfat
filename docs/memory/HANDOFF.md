@@ -26,9 +26,9 @@ updated: 2026-09-02
 - 通過 `npm run typecheck`、`npm test`、`npm run build`、Playwright 桌面/手機瀏覽器驗證。
 - 已將台灣教材用語稽核結果整合到說明文字；CBM 已重新索引至 249 nodes / 530 edges。
 - 新增獨立 Git workspace、`render.yaml` 與 pointer-based 元素拖放。
-- 已建立 GitHub repo `Eric0417/math-website`。
-- 已建立 Render static site `math-website`，首次 deploy 狀態為 `live`。
-- 部署網址：`https://math-website-zswg.onrender.com/`。
+- 已建立 GitHub repo `Eric0417/fatmathfat`。
+- 已建立 Render static site `fatmathfat`，部署狀態為 `live`。
+- 部署網址：`https://fatmathfat.onrender.com/`。
 
 ## 進行中
 
@@ -47,4 +47,4 @@ updated: 2026-09-02
 - 首版刻意不加入帳號、排行、教師後台、多人連線與複雜動畫。
 - 主要入口在 `src/`：路由、資料、集合運算、儲存與頁面各自分離。
 - 重大決策已記進 `DECISIONS.md`，也要同步 CBM ADR。
-- 部署使用 `render.yaml` 的 static site 設定：`npm install && npm run build`，發布目錄為 `./dist`；Render service ID 為 `srv-dac3ilgn74is7391im7g`。
+- 部署使用 `render.yaml` 的 static site 設定：`npm install && npm run build`，發布目錄為 `./dist`；Render service ID 為 `srv-dac3ilgn74is7391im7g`，專案名稱已改為 `fatmathfat`。

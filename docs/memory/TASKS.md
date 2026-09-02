@@ -25,5 +25,5 @@ updated: 2026-09-02
 | 教學用語對照 | done | 已加入宇集／餘集與教材同義記號 |
 | 建立獨立部署 workspace | done | 已複製至 `math_website_render` 並建立部署設定 |
 | Venn 元素拖放 | done | pointer capture + drop zones，已透過 Playwright 驗證 |
-| Render 部署 | done | GitHub repo 已建立，Render static site 已 live |
+| Render 部署 | done | 已改名為 `fatmathfat` 並重新部署，新網域 live |
 | 描述法論域資料模型 | pending | 若要支援描述法轉列舉法，需另存 `domain` |

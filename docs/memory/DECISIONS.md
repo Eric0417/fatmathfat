@@ -61,4 +61,4 @@ updated: 2026-09-02
 
 **影響：** 後續部署與 drag-and-drop 的修改以 `math_website_render` 為準；Render CLI 會從 GitHub repo 建立 service。
 
-**實現結果：** GitHub repo 為 `https://github.com/Eric0417/math-website`，Render 部署 URL 為 `https://math-website-zswg.onrender.com/`，service ID 為 `srv-dac3ilgn74is7391im7g`。
+**實現結果：** GitHub repo 為 `https://github.com/Eric0417/fatmathfat`，Render 部署 URL 為 `https://fatmathfat.onrender.com/`，service ID 為 `srv-dac3ilgn74is7391im7g`。舊名稱 `math-website` 與舊網域已由新名稱取代。
