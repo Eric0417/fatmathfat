@@ -47,4 +47,4 @@ updated: 2026-09-02
 - 首版刻意不加入帳號、排行、教師後台、多人連線與複雜動畫。
 - 主要入口在 `src/`：路由、資料、集合運算、儲存與頁面各自分離。
 - 重大決策已記進 `DECISIONS.md`，也要同步 CBM ADR。
-- 部署使用 `render.yaml` 的 static site 設定：`npm install && npm run build`，發布目錄為 `./dist`；Render service ID 為 `srv-dac3ilgn74is7391im7g`，專案名稱已改為 `fatmathfat`。
+- 部署使用 `render.yaml` 的 static site 設定：`npm install && npm run build`，發布目錄為 `./dist`；Render service ID 為 `srv-dac3n73m8hqs73ed7gi0`，專案名稱已改為 `fatmathfat`。
