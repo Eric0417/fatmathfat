@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: math-website
+    runtime: static
+    repo: https://github.com/Eric0417/math-website
+    branch: main
+    buildCommand: "npm install && npm run build"
+    staticPublishPath: ./dist
+    envVars:
+      - key: NODE_VERSION
+        value: "20.18.0"
+    headers:
+      - path: /sw.js
+        name: Cache-Control
+        value: no-cache
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html

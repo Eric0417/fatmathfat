@@ -1,0 +1,36 @@
+# OS / editor artifacts
+.DS_Store
+Thumbs.db
+.git/
+.gitignore
+.cbmignore
+
+# Python
+__pycache__/
+.pytest_cache/
+*.py[cod]
+*.pyo
+
+# Node / frontend artifacts
+node_modules/
+dist/
+build/
+.next/
+.vite/
+
+# Virtual envs
+.venv/
+venv/
+
+# Generated data / large binaries
+*.pt
+*.pth
+*.onnx
+*.zip
+*.pdf
+*.tar.gz
+*.log
+
+# Runtime / cache dirs
+.cache/
+logs/
