@@ -60,3 +60,5 @@ updated: 2026-09-02
 **替代方案：** 直接在原目錄建立 `.git` 並部署 —— 會改變原本 workspace 的版本控制狀態，且不具備獨立性。
 
 **影響：** 後續部署與 drag-and-drop 的修改以 `math_website_render` 為準；Render CLI 會從 GitHub repo 建立 service。
+
+**實現結果：** GitHub repo 為 `https://github.com/Eric0417/math-website`，Render 部署 URL 為 `https://math-website-zswg.onrender.com/`，service ID 為 `srv-dac3ilgn74is7391im7g`。
