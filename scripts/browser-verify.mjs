@@ -1,6 +1,6 @@
 import { chromium } from 'playwright-core';
 
-const baseUrl = process.env.BASE_URL ?? 'http://127.0.0.1:5174';
+const baseUrl = process.env.BASE_URL ?? 'http://127.0.0.1:5173';
 const outputDir =
   process.env.SCREENSHOT_DIR ??
   '/Users/eric/.codex/visualizations/2026/09/02/01a0627b-cfa6-77a0-8ea4-4c11561abead';
@@ -11,7 +11,7 @@ function assert(condition, message) {
 
 async function load(page, route) {
   await page.goto(`${baseUrl}#${route}`, { waitUntil: 'networkidle' });
-  await page.waitForTimeout(120);
+  await page.waitForTimeout(500);
 }
 
 async function overflow(page) {
@@ -49,6 +49,14 @@ try {
   desktopPage.on('pageerror', (error) => consoleErrors.push(`pageerror: ${error.message}`));
 
   await load(desktopPage, '/');
+  assert(
+    (await desktopPage.getByText('developed by Eric Wong', { exact: true }).count()) === 1,
+    'footer credit is missing'
+  );
+  assert(
+    (await desktopPage.getByRole('link', { name: /學習結果/ }).count()) >= 1,
+    'home results entry is missing'
+  );
   await desktopPage.screenshot({
     path: `${outputDir}/home-desktop.png`,
     fullPage: true
@@ -57,6 +65,10 @@ try {
 
   await load(desktopPage, '/lessons/membership');
   await desktopPage.getByRole('heading', { name: '元素與集合的關係' }).waitFor();
+  assert(
+    (await desktopPage.getByRole('link', { name: '開始練習' }).count()) === 1,
+    'lesson practice entry is missing'
+  );
   await desktopPage.getByRole('button', { name: '標記完成' }).click();
   assert(
     await desktopPage.evaluate(() =>
@@ -70,28 +82,34 @@ try {
   });
 
   await load(desktopPage, '/explorer');
-  const draggedChip = desktopPage.locator('.element-chip').filter({ hasText: '7' }).first();
-  const dropZone = desktopPage.locator('[data-drop-zone="a"]').first();
-  const chipBox = await draggedChip.boundingBox();
-  const zoneBox = await dropZone.boundingBox();
-  assert(chipBox && zoneBox, 'drag targets were not visible');
+  await desktopPage.getByRole('button', { name: /元素 7/ }).click();
+  await desktopPage.getByRole('button', { name: '加入 A' }).click();
+  await desktopPage.getByRole('button', { name: '復原' }).click();
+  assert(
+    (await desktopPage.locator('[aria-label*="元素 7，目前在 U 中但不屬於 A 或 B"]').count()) === 1,
+    'explorer undo did not restore membership'
+  );
+  const element7 = desktopPage.getByRole('button', { name: /元素 7/ });
+  const dropZoneA = desktopPage.locator('.venn-drop-zone--a');
+  const element7Box = await element7.boundingBox();
+  const dropZoneABox = await dropZoneA.boundingBox();
+  assert(element7Box && dropZoneABox, 'explorer drag targets are not visible');
   await desktopPage.mouse.move(
-    chipBox.x + chipBox.width / 2,
-    chipBox.y + chipBox.height / 2
+    element7Box.x + element7Box.width / 2,
+    element7Box.y + element7Box.height / 2
   );
   await desktopPage.mouse.down();
   await desktopPage.mouse.move(
-    zoneBox.x + zoneBox.width / 2,
-    zoneBox.y + zoneBox.height / 2,
-    { steps: 10 }
+    dropZoneABox.x + dropZoneABox.width / 2,
+    dropZoneABox.y + dropZoneABox.height / 2,
+    { steps: 8 }
   );
   await desktopPage.mouse.up();
+  await desktopPage.waitForTimeout(100);
   assert(
-    (await desktopPage.locator('body').innerText()).includes('{1, 2, 3, 4, 7}'),
-    'dragging an element into A did not update the set'
+    (await desktopPage.locator('[aria-label*="元素 7，目前只屬於 A"]').count()) === 1,
+    'explorer drag did not move element into A'
   );
-  await desktopPage.getByRole('button', { name: /元素 3/ }).click();
-  await desktopPage.getByRole('button', { name: '加入 A' }).click();
   await desktopPage.getByRole('button', { name: /Aᶜ/ }).click();
   assert(
     (await desktopPage.getByText('Aᶜ', { exact: true }).count()) >= 1,
@@ -112,6 +130,26 @@ try {
     (await desktopPage.locator('.feedback').count()) === 1,
     'practice feedback did not render'
   );
+  await load(desktopPage, '/practice/membership');
+  assert(
+    (await desktopPage.getByRole('heading', { name: '元素關係' }).count()) === 1,
+    'unit practice did not render'
+  );
+  await desktopPage.screenshot({
+    path: `${outputDir}/practice-desktop.png`,
+    fullPage: true
+  });
+  assert((await overflow(desktopPage)).overflow === 0, 'desktop practice has horizontal overflow');
+
+  await load(desktopPage, '/practice/operations');
+  assert(
+    (await desktopPage.getByRole('heading', { name: '交集、聯集與差集' }).count()) === 1,
+    'operations unit practice did not render'
+  );
+  assert(
+    (await desktopPage.getByText('第 1 / 12 題').count()) === 1,
+    'operations unit practice did not include both operation topics'
+  );
 
   await load(desktopPage, '/quiz');
   await desktopPage.getByRole('button', { name: '開始測驗' }).click();
@@ -127,6 +165,17 @@ try {
     'quiz summary did not show final report'
   );
   assert(
+    (await desktopPage.getByText('建議重學內容').count()) === 1,
+    'quiz summary is missing relearning suggestions'
+  );
+  assert(
+    (await desktopPage.getByRole('button', { name: '錯題重做' }).count()) === 1,
+    'quiz result is missing retry action'
+  );
+  await desktopPage.getByRole('button', { name: '錯題重做' }).click();
+  await desktopPage.getByRole('heading', { name: '重新練習這一組錯題' }).waitFor();
+  await desktopPage.getByRole('button', { name: /返回測驗結果/ }).click();
+  assert(
     await desktopPage.evaluate(() =>
       Boolean(localStorage.getItem('collection-tool:quiz-history:v1'))
     ),
@@ -138,6 +187,15 @@ try {
     (await desktopPage.getByRole('heading', { name: '我的學習結果' }).count()) === 1,
     'results page did not render'
   );
+  assert(
+    (await desktopPage.getByText('建議重學內容').count()) === 1,
+    'results page is missing relearning suggestions'
+  );
+  await desktopPage.screenshot({
+    path: `${outputDir}/results-desktop.png`,
+    fullPage: true
+  });
+  assert((await overflow(desktopPage)).overflow === 0, 'desktop results has horizontal overflow');
 
   assert(consoleErrors.length === 0, `browser console issues: ${consoleErrors.join('\n')}`);
 
@@ -149,6 +207,14 @@ try {
   });
   const mobilePage = await mobile.newPage();
   await load(mobilePage, '/');
+  assert(
+    (await mobilePage.locator('.main-nav__link').first().getAttribute('aria-label')) === '首頁',
+    'mobile nav link is missing an accessible label'
+  );
+  assert(
+    (await mobilePage.getByText('developed by Eric Wong', { exact: true }).count()) === 1,
+    'mobile footer credit is missing'
+  );
   await mobilePage.screenshot({
     path: `${outputDir}/home-mobile.png`,
     fullPage: true
@@ -161,6 +227,13 @@ try {
     fullPage: true
   });
   assert((await overflow(mobilePage)).overflow === 0, 'mobile explorer has horizontal overflow');
+
+  await load(mobilePage, '/practice/membership');
+  await mobilePage.screenshot({
+    path: `${outputDir}/practice-mobile.png`,
+    fullPage: true
+  });
+  assert((await overflow(mobilePage)).overflow === 0, 'mobile practice has horizontal overflow');
 
   await desktop.close();
   await mobile.close();

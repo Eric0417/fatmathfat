@@ -92,7 +92,7 @@ export function operationLabel(operation: SetOperation): string {
     case 'reverseDifference':
       return '屬於 B 但不屬於 A';
     case 'complement':
-      return 'U（宇集）中不屬於 A 的元素';
+      return 'U（全集）中不屬於 A 的元素';
   }
 }
 
@@ -103,8 +103,24 @@ export function operationExplanation(
   const values = operationResult(operation, state);
   const symbol = operationSymbol(operation);
 
+  if (operation === 'complement' && state.universe.length === 0) {
+    return '請先指定全集 U，才能計算 Aᶜ。補集是「U 中不屬於 A 的元素」。';
+  }
+
   if (values.length === 0) {
-    return `${symbol} 為空集合。目前沒有元素同時符合這個條件。`;
+    if (operation === 'complement') {
+      return `${symbol} 為空集合。目前 U 中沒有不屬於 A 的元素。`;
+    }
+    if (operation === 'intersection') {
+      return `${symbol} 為空集合。A 與 B 目前沒有共同元素。`;
+    }
+    if (operation === 'union') {
+      return `${symbol} 為空集合。A 與 B 目前都沒有元素。`;
+    }
+    if (operation === 'difference') {
+      return `${symbol} 為空集合。A 中沒有不屬於 B 的元素。`;
+    }
+    return `${symbol} 為空集合。B 中沒有不屬於 A 的元素。`;
   }
 
   return `${symbol} 包含 ${formatSet(values)}。${operationLabel(operation)}。`;

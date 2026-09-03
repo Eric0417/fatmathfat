@@ -28,13 +28,27 @@ function ElementGroup({
   y: number;
   tone: 'blue' | 'orange' | 'green' | 'neutral';
 }) {
+  const valueText =
+    values.length > 10
+      ? `${values.slice(0, 10).join(' ')} …`
+      : values.join(' ');
+  const valueFontSize = values.length > 8 ? 15 : 18;
+
   return (
-    <g className={`diagram-region diagram-region--${tone}`}>
+    <g
+      className={`diagram-region diagram-region--${tone}`}
+      aria-label={`${label}：${values.length > 0 ? valueText : '無元素'}`}
+    >
       <text className="diagram-region__label" x={x} y={y - 14}>
         {label}
       </text>
-      <text className="diagram-region__value" x={x} y={y + 16}>
-        {values.length > 0 ? values.join('  ') : '無元素'}
+      <text
+        className="diagram-region__value"
+        x={x}
+        y={y + 16}
+        style={{ fontSize: valueFontSize }}
+      >
+        {values.length > 0 ? valueText.replaceAll(' ', '  ') : '無元素'}
       </text>
     </g>
   );
@@ -194,10 +208,10 @@ export function VennDiagram({
         B
       </text>
 
-        <ElementGroup label="A − B" values={region.onlyA} x={190} y={210} tone="blue" />
-        <ElementGroup label="B − A" values={region.onlyB} x={465} y={210} tone="orange" />
-        <ElementGroup label="A ∩ B" values={region.intersection} x={320} y={210} tone="green" />
-        <ElementGroup label="U 中其他元素" values={region.outside} x={88} y={334} tone="neutral" />
+      <ElementGroup label="A − B" values={region.onlyA} x={190} y={210} tone="blue" />
+      <ElementGroup label="B − A" values={region.onlyB} x={465} y={210} tone="orange" />
+      <ElementGroup label="A ∩ B" values={region.intersection} x={320} y={210} tone="green" />
+      <ElementGroup label="U 中其他元素" values={region.outside} x={88} y={334} tone="neutral" />
       </svg>
       {onDrop && (
         <div className="venn-drop-zones" aria-hidden="true">

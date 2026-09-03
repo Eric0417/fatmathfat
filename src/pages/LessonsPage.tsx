@@ -1,7 +1,12 @@
 import { Check, ChevronLeft, ChevronRight, CircleCheck } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { lessons, lessonByTopic } from '../data/curriculum';
-import { loadCompletedLessons, saveCompletedLesson } from '../lib/storage';
+import { questionsForLesson } from '../data/questions';
+import {
+  loadCompletedLessons,
+  saveCompletedLesson,
+  saveLastLesson
+} from '../lib/storage';
 import { VennDiagram } from '../components/VennDiagram';
 import type { Lesson, SetOperation, SetState } from '../types';
 
@@ -40,9 +45,14 @@ function LessonDetail({ lesson }: { lesson: Lesson }) {
   const [completed, setCompleted] = useState(() =>
     loadCompletedLessons().includes(lesson.id)
   );
+  const practiceQuestions = questionsForLesson(lesson.id);
   const state = lessonDiagramState(lesson);
   const nextLesson = lessons.find((item) => item.order === lesson.order + 1);
   const previousLesson = lessons.find((item) => item.order === lesson.order - 1);
+
+  useEffect(() => {
+    saveLastLesson(lesson.id);
+  }, [lesson.id]);
 
   return (
     <div className="lesson-layout">
@@ -87,9 +97,13 @@ function LessonDetail({ lesson }: { lesson: Lesson }) {
 
         <section className="panel lesson-definition">
           <div className="panel-heading panel-heading--compact">
-            <span className="panel-kicker">先看定義</span>
-            <h2>用一句話抓住重點</h2>
+            <span className="panel-kicker">先看初學者版本與正式定義</span>
+            <h2>從直覺語言進入數學語言</h2>
           </div>
+          <p className="lesson-summary">
+            <strong>初學者版本：</strong>
+            {lesson.summary}
+          </p>
           <p className="definition-quote">{lesson.definition}</p>
           <div className="lesson-keypoints">
             {lesson.keyPoints.map((point) => (
@@ -123,6 +137,28 @@ function LessonDetail({ lesson }: { lesson: Lesson }) {
             <strong>解釋：</strong>
             {lesson.explanation}
           </p>
+          <div className="lesson-mistake-card">
+            <h3>常見錯誤</h3>
+            <p>{lesson.commonMistake}</p>
+          </div>
+        </section>
+
+        <section className="panel lesson-practice">
+          <div>
+            <span className="panel-kicker">單元練習</span>
+            <h2>現在試一題</h2>
+            <p>題目會直接對應這個單元的概念，答完立刻看到解釋。</p>
+          </div>
+          <div className="lesson-practice__actions">
+            <span>{practiceQuestions.length} 題</span>
+            <a
+              className="button button--primary"
+              href={`#/practice/${lesson.id === 'operations' ? 'operations' : lesson.practiceTopic}`}
+            >
+              開始練習
+              <ChevronRight size={17} aria-hidden="true" />
+            </a>
+          </div>
         </section>
 
         <div className="lesson-actions">

@@ -4,7 +4,7 @@ type: decision
 status: active
 tags: [memory, decisions]
 created: 2026-09-02
-updated: 2026-09-02
+updated: 2026-09-03
 ---
 
 # 決策紀錄
@@ -49,16 +49,26 @@ updated: 2026-09-02
 
 **影響：** 數學資料模型仍分開保存 subset 與 proper subset；UI 提供中文文字解釋，不能只靠符號表達。
 
-## D-004 建立獨立部署 workspace 並部署為 Render static site
+## D-004 新增獨立部署 workspace 並部署為 Render static site
 
 **狀態：** active
 
-**決定：** 將專案複製到 `/Users/eric/script/math_website_render`，建立獨立 Git repo，使用 `render.yaml` 在 Render 建置 `<repo>/dist`。
+**決定：** 將原專案複製到 `/Users/eric/script/math_website_render`，在那裡加入 pointer-based 拖曳、建立獨立 Git repo，並使用 `render.yaml` 建置 Render static site。
 
-**理由：** 避免部署設定與 Render service 污染原本的 `math_website` 工作區；靜態 PWA 不需要後端，因此使用 Runtime `static`。
+**理由：** 避免 Render 設定、Git repo 與版本控制狀態污染原本的 `math_website` 開發目錄。
 
-**替代方案：** 直接在原目錄建立 `.git` 並部署 —— 會改變原本 workspace 的版本控制狀態，且不具備獨立性。
+**替代方案：** 直接在原目錄初始化 Git 與部署 —— 沒有獨立性，也會改變原本工作區狀態。
 
-**影響：** 後續部署與 drag-and-drop 的修改以 `math_website_render` 為準；Render CLI 會從 GitHub repo 建立 service。
+**影響：** GitHub repo 為 `https://github.com/Eric0417/fatmathfat`，Render URL 為 `https://fatmathfat.onrender.com/`；後續部署修改以 `math_website_render` 為準。
 
-**實現結果：** GitHub repo 為 `https://github.com/Eric0417/fatmathfat`，Render 部署 URL 為 `https://fatmathfat.onrender.com/`，service ID 為 `srv-dac3n73m8hqs73ed7gi0`。舊名稱 `math-website` 與舊網域已由新名稱取代。
+## D-005 保留靜態前端架構，以資料擴充補齊學習體驗
+
+**狀態：** active
+
+**決定：** 不重寫 Vite + React + TypeScript 首版，繼續使用資料驅動題庫、hash routing、`localStorage` 與 PWA；在原有 HTML/CSS/元件上補齊單元練習、錯題重做與操作工具。
+
+**理由：** 現有架構能支援完整 MVP，需求主要是課程深度與學習回饋，不需要新增後端、帳號或框架。擴充題庫與控制能力比重做架構更符合「簡單、易維護」。
+
+**替代方案：** 使用 Next.js 或 React Router、建立後端題目管理、引入狀態管理庫 —— 都增加維護成本，但沒有對應的學習效益。
+
+**影響：** 新功能集中在 `src/data/`、`src/lib/` 與既有頁面元件；PWA 仍維持 production-ready；部署仍以 `dist/` 作為靜態網站。

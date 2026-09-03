@@ -3,10 +3,13 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import {
   addQuizResult,
+  clearAllProgress,
   clearQuizHistory,
   loadCompletedLessons,
+  loadLastLesson,
   loadQuizHistory,
-  saveCompletedLesson
+  saveCompletedLesson,
+  saveLastLesson
 } from './storage';
 import type { QuizResultRecord } from '../types';
 
@@ -20,6 +23,8 @@ const result: QuizResultRecord = {
   topicScores: {
     'set-and-element': { correct: 2, total: 2 },
     membership: { correct: 2, total: 2 },
+    representation: { correct: 0, total: 0 },
+    'empty-set': { correct: 1, total: 1 },
     subset: { correct: 2, total: 2 },
     'intersection-union': { correct: 2, total: 2 },
     difference: { correct: 1, total: 1 },
@@ -49,6 +54,21 @@ describe('local storage', () => {
     saveCompletedLesson('set');
     saveCompletedLesson('set');
     expect(loadCompletedLessons()).toEqual(['set']);
+  });
+
+  it('stores the last viewed lesson', () => {
+    saveLastLesson('membership');
+    expect(loadLastLesson()).toBe('membership');
+  });
+
+  it('clears quiz history and lesson progress', () => {
+    addQuizResult(result);
+    saveCompletedLesson('set');
+    saveLastLesson('membership');
+    clearAllProgress();
+    expect(loadQuizHistory()).toEqual([]);
+    expect(loadCompletedLessons()).toEqual([]);
+    expect(loadLastLesson()).toBeNull();
   });
 
   it('ignores malformed stored data', () => {

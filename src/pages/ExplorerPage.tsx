@@ -2,10 +2,12 @@ import {
   ArrowDown,
   ArrowUp,
   CircleOff,
+  Eraser,
   Plus,
   RotateCcw,
   Shuffle,
-  Trash2
+  Trash2,
+  Undo2
 } from 'lucide-react';
 import { useRef, useState } from 'react';
 import type { PointerEvent as ReactPointerEvent } from 'react';
@@ -57,12 +59,26 @@ const operations: Array<{ value: SetOperation; short: string; title: string }> =
   { value: 'complement', short: 'Aᶜ', title: '補集' }
 ];
 
+interface ExplorerSnapshot {
+  state: SetState;
+  caseIndex: number;
+  operation: SetOperation;
+  nextValue: number;
+}
+
+function nextValueAfter(universe: number[]): number {
+  return universe.length > 0 ? universe.at(-1)! + 1 : 1;
+}
+
 export function ExplorerPage() {
   const [state, setState] = useState<SetState>(cases[0].state);
   const [operation, setOperation] = useState<SetOperation>('intersection');
   const [selected, setSelected] = useState<number | null>(null);
   const [nextValue, setNextValue] = useState(9);
   const [caseIndex, setCaseIndex] = useState(0);
+  const [history, setHistory] = useState<ExplorerSnapshot[]>([]);
+  const [feedback, setFeedback] = useState('');
+  const [confirmClear, setConfirmClear] = useState(false);
   const [draggingValue, setDraggingValue] = useState<number | null>(null);
   const [dropTarget, setDropTarget] = useState<VennDropTarget | null>(null);
   const pointerDragValue = useRef<number | null>(null);
@@ -70,53 +86,146 @@ export function ExplorerPage() {
   const result = operationResult(operation, state);
   const region = regions(state);
   const statusFor = (value: number) => membershipFor(value, state);
+  const complementNeedsUniverse = operation === 'complement' && state.universe.length === 0;
+
+  const commit = (
+    nextState: SetState,
+    message: string,
+    options?: {
+      caseIndex?: number;
+      operation?: SetOperation;
+      nextValue?: number;
+    }
+  ) => {
+    setHistory((current) => [
+      ...current.slice(-19),
+      {
+        state,
+        caseIndex,
+        operation,
+        nextValue
+      }
+    ]);
+    setState(nextState);
+    setFeedback(message);
+    if (options?.caseIndex !== undefined) setCaseIndex(options.caseIndex);
+    if (options?.operation) setOperation(options.operation);
+    if (options?.nextValue !== undefined) setNextValue(options.nextValue);
+  };
 
   const setUniverseValue = (value: number) => {
-    setState((current) => ({
-      ...current,
-      universe: normalizeNumbers([...current.universe, value])
-    }));
+    if (state.universe.includes(value)) {
+      setFeedback(`${value} 已經在 U 中。`);
+      return;
+    }
+    commit(
+      {
+        ...state,
+        universe: normalizeNumbers([...state.universe, value])
+      },
+      `已將 ${value} 加入 U。`
+    );
     setSelected(value);
   };
 
   const assign = (target: 'a' | 'b', add: boolean) => {
     if (selected === null) return;
-    setState((current) => {
-      const source = target === 'a' ? current.a : current.b;
-      const next = add
-        ? normalizeNumbers([...source, selected])
-        : source.filter((value) => value !== selected);
-      return {
-        ...current,
-        [target]: next
-      };
-    });
+    const nextSet = add
+      ? normalizeNumbers([...(target === 'a' ? state.a : state.b), selected])
+      : (target === 'a' ? state.a : state.b).filter((value) => value !== selected);
+    commit(
+      {
+        ...state,
+        [target]: nextSet
+      },
+      add
+        ? `已將 ${selected} 加入 ${target.toUpperCase()}。`
+        : `已將 ${selected} 從 ${target.toUpperCase()} 移除。`
+    );
+  };
+
+  const removeFromBoth = () => {
+    if (selected === null) return;
+    commit(
+      {
+        ...state,
+        a: state.a.filter((value) => value !== selected),
+        b: state.b.filter((value) => value !== selected)
+      },
+      `已將 ${selected} 從 A 與 B 移除。`
+    );
   };
 
   const removeFromUniverse = () => {
     if (selected === null) return;
-    setState((current) => ({
-      universe: current.universe.filter((value) => value !== selected),
-      a: current.a.filter((value) => value !== selected),
-      b: current.b.filter((value) => value !== selected)
-    }));
+    commit(
+      {
+        universe: state.universe.filter((value) => value !== selected),
+        a: state.a.filter((value) => value !== selected),
+        b: state.b.filter((value) => value !== selected)
+      },
+      `已將 ${selected} 從 U 移除。`
+    );
     setSelected(null);
+  };
+
+  const clearSet = (target: 'a' | 'b' | 'universe') => {
+    const nextState =
+      target === 'universe'
+        ? { universe: [], a: [], b: [] }
+        : {
+            ...state,
+            [target]: []
+          };
+    commit(nextState, target === 'universe' ? '已清空所有集合。' : `已清空 ${target.toUpperCase()}。`);
+    setSelected(null);
+    setConfirmClear(false);
+  };
+
+  const clearAll = () => {
+    if (!confirmClear) {
+      setConfirmClear(true);
+      setFeedback('請再按一次「確認清空」；可以之後用復原救回。');
+      return;
+    }
+    clearSet('universe');
+  };
+
+  const undo = () => {
+    const previous = history.at(-1);
+    if (!previous) return;
+    setHistory((current) => current.slice(0, -1));
+    setState(previous.state);
+    setCaseIndex(previous.caseIndex);
+    setOperation(previous.operation);
+    setNextValue(previous.nextValue);
+    setSelected(null);
+    setFeedback('已復原上一步。');
+    setConfirmClear(false);
   };
 
   const moveCase = () => {
     const next = (caseIndex + 1) % cases.length;
-    setCaseIndex(next);
-    setState(cases[next].state);
+    commit(
+      cases[next].state,
+      `已切換到下一組：${cases[next].label}`,
+      {
+        caseIndex: next,
+        nextValue: nextValueAfter(cases[next].state.universe)
+      }
+    );
     setSelected(null);
-    setNextValue(cases[next].state.universe.at(-1)! + 1);
+    setConfirmClear(false);
   };
 
   const reset = () => {
-    setCaseIndex(0);
-    setState(cases[0].state);
+    commit(cases[0].state, '已重新開始。', {
+      caseIndex: 0,
+      operation: 'intersection',
+      nextValue: nextValueAfter(cases[0].state.universe)
+    });
     setSelected(null);
-    setNextValue(9);
-    setOperation('intersection');
+    setConfirmClear(false);
   };
 
   const addFromInput = () => {
@@ -127,18 +236,23 @@ export function ExplorerPage() {
   };
 
   const applyDrop = (value: number, target: VennDropTarget) => {
-    setState((current) => {
-      if (!current.universe.includes(value)) return current;
-      const a =
-        target === 'a' || target === 'both'
-          ? normalizeNumbers([...current.a, value])
-          : current.a.filter((item) => item !== value);
-      const b =
-        target === 'b' || target === 'both'
-          ? normalizeNumbers([...current.b, value])
-          : current.b.filter((item) => item !== value);
-      return { ...current, a, b };
-    });
+    if (!state.universe.includes(value)) return;
+    const nextA =
+      target === 'a' || target === 'both'
+        ? normalizeNumbers([...state.a, value])
+        : state.a.filter((item) => item !== value);
+    const nextB =
+      target === 'b' || target === 'both'
+        ? normalizeNumbers([...state.b, value])
+        : state.b.filter((item) => item !== value);
+    commit(
+      {
+        ...state,
+        a: nextA,
+        b: nextB
+      },
+      `已將 ${value} 拖曳到 ${target === 'a' ? 'A' : target === 'b' ? 'B' : target === 'both' ? 'A ∩ B' : 'U 中其他區域'}。`
+    );
     setSelected(value);
   };
 
@@ -149,6 +263,7 @@ export function ExplorerPage() {
     pointerDragValue.current = value;
     setDraggingValue(value);
     setSelected(value);
+    setFeedback('');
     event.currentTarget.setPointerCapture(event.pointerId);
   };
 
@@ -192,7 +307,7 @@ export function ExplorerPage() {
           </button>
           <button className="button button--ghost" type="button" onClick={reset}>
             <RotateCcw size={17} aria-hidden="true" />
-            重設
+            重新開始
           </button>
         </div>
       </div>
@@ -239,7 +354,10 @@ export function ExplorerPage() {
                     }${draggingValue === value ? ' element-chip--dragging' : ''}`}
                     aria-label={`元素 ${value}，目前${status === 'outside' ? '在 U 中但不屬於 A 或 B' : status === 'a' ? '只屬於 A' : status === 'b' ? '只屬於 B' : '同時屬於 A 和 B'}${isSelected ? '，已選取' : ''}`}
                     aria-pressed={isSelected}
-                    onClick={() => setSelected(value)}
+                    onClick={() => {
+                      setSelected(value);
+                      setFeedback('');
+                    }}
                     onPointerDown={(event) => startPointerDrag(event, value)}
                     onPointerMove={updateDropTarget}
                     onPointerUp={finishPointerDrag}
@@ -275,11 +393,26 @@ export function ExplorerPage() {
             <button
               type="button"
               className="button button--ghost"
+              disabled={selected === null || !state.a.includes(selected)}
+              onClick={() => assign('a', false)}
+            >
+              <ArrowUp size={17} aria-hidden="true" />
+              從 A 移除
+            </button>
+            <button
+              type="button"
+              className="button button--ghost"
+              disabled={selected === null || !state.b.includes(selected)}
+              onClick={() => assign('b', false)}
+            >
+              <ArrowDown size={17} aria-hidden="true" />
+              從 B 移除
+            </button>
+            <button
+              type="button"
+              className="button button--ghost"
               disabled={selected === null}
-              onClick={() => {
-                assign('a', false);
-                assign('b', false);
-              }}
+              onClick={removeFromBoth}
             >
               <CircleOff size={17} aria-hidden="true" />
               移出 A/B
@@ -294,6 +427,48 @@ export function ExplorerPage() {
               移出 U
             </button>
           </div>
+
+          <div className="clear-controls" aria-label="清空、復原與重新開始">
+            <button
+              type="button"
+              className="button button--ghost"
+              disabled={history.length === 0}
+              onClick={undo}
+            >
+              <Undo2 size={17} aria-hidden="true" />
+              復原
+            </button>
+            <button
+              type="button"
+              className="button button--ghost"
+              onClick={() => clearSet('a')}
+            >
+              <Eraser size={17} aria-hidden="true" />
+              清空 A
+            </button>
+            <button
+              type="button"
+              className="button button--ghost"
+              onClick={() => clearSet('b')}
+            >
+              <Eraser size={17} aria-hidden="true" />
+              清空 B
+            </button>
+            <button
+              type="button"
+              className={`button${confirmClear ? ' button--danger' : ' button--ghost'}`}
+              onClick={clearAll}
+            >
+              <Trash2 size={17} aria-hidden="true" />
+              {confirmClear ? '確認清空' : '清空所有'}
+            </button>
+          </div>
+
+          {feedback && (
+            <div className="explorer-feedback" role="status" aria-live="polite">
+              {feedback}
+            </div>
+          )}
 
           <div className="region-summary" aria-label="目前區域統計">
             <span>只屬 A：{formatSet(region.onlyA)}</span>
@@ -314,11 +489,11 @@ export function ExplorerPage() {
             onDrop={applyDrop}
             dropReady={draggingValue !== null}
             dropTarget={dropTarget}
-            ariaLabel={`目前顯示 ${operationLabel(operation)}，結果為 ${formatSet(result)}`}
+            ariaLabel={`目前顯示 ${operationLabel(operation)}，結果為 ${formatSet(result)}${complementNeedsUniverse ? '，但尚未指定 U' : ''}`}
           />
           <div className="explorer-diagram-note">
             <span>高亮區域隨運算切換</span>
-            <span>拖曳元素到 A、B、交集或 U 外可改變成員關係</span>
+            <span>可點選，也可拖曳元素到 A、B、交集或 U 外</span>
           </div>
         </div>
 
@@ -345,7 +520,13 @@ export function ExplorerPage() {
               <code>{formatSet(result)}</code>
             </div>
           </div>
-          <p className="explanation-box">{operationExplanation(operation, state)}</p>
+          <p
+            className={`explanation-box${complementNeedsUniverse ? ' explanation-box--warning' : ''}`}
+          >
+            {complementNeedsUniverse
+              ? '請先指定全集 U，才能計算 Aᶜ。補集是「U 中不屬於 A 的元素」。'
+              : operationExplanation(operation, state)}
+          </p>
           <div className="relation-check">
             <h3>關係檢查</h3>
             <p>
@@ -376,7 +557,10 @@ export function ExplorerPage() {
             type="button"
             className={`operation-tab${operation === item.value ? ' operation-tab--active' : ''}`}
             aria-pressed={operation === item.value}
-            onClick={() => setOperation(item.value)}
+            onClick={() => {
+              setOperation(item.value);
+              setFeedback('');
+            }}
           >
             <strong>{item.short}</strong>
             <span>{item.title}</span>

@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
+  areEqualSets,
   checkSetRelations,
   complement,
   difference,
@@ -8,7 +9,9 @@ import {
   isProperSubset,
   isSubset,
   membershipFor,
+  operationExplanation,
   operationResult,
+  regions,
   union
 } from './setMath';
 import type { SetState } from '../types';
@@ -17,13 +20,13 @@ describe('set math', () => {
   it('calculates intersections, unions, differences and complements', () => {
     const a = [1, 2, 3, 4];
     const b = [3, 4, 5, 6];
-    const universe = [1, 2, 3, 4, 5, 6, 7, 8];
+    const universe = [1, 2, 3, 4, 5, 6, 7];
 
     expect(intersection(a, b)).toEqual([3, 4]);
     expect(union(a, b)).toEqual([1, 2, 3, 4, 5, 6]);
     expect(difference(a, b)).toEqual([1, 2]);
     expect(difference(b, a)).toEqual([5, 6]);
-    expect(complement(universe, a)).toEqual([5, 6, 7, 8]);
+    expect(complement(universe, a)).toEqual([5, 6, 7]);
   });
 
   it('normalizes duplicate and unordered values', () => {
@@ -63,5 +66,33 @@ describe('set math', () => {
     expect(operationResult('intersection', state)).toEqual([2, 3]);
     expect(operationResult('union', state)).toEqual([1, 2, 3, 4]);
     expect(operationResult('complement', state)).toEqual([4, 5]);
+  });
+
+  it('describes empty regions and set relations consistently', () => {
+    const state: SetState = {
+      universe: [1, 2, 3, 4],
+      a: [1, 2],
+      b: [3, 4]
+    };
+
+    expect(regions(state)).toEqual({
+      outside: [],
+      onlyA: [1, 2],
+      onlyB: [3, 4],
+      intersection: []
+    });
+    expect(operationExplanation('intersection', state)).toContain('沒有共同元素');
+    expect(areEqualSets([1, 2, 3], [3, 2, 1])).toBe(true);
+    expect(areEqualSets([1, 2], [1, 2, 3])).toBe(false);
+  });
+
+  it('requires a universe before explaining complement', () => {
+    const state: SetState = {
+      universe: [],
+      a: [1, 2],
+      b: []
+    };
+
+    expect(operationExplanation('complement', state)).toContain('請先指定全集');
   });
 });

@@ -1,12 +1,20 @@
 import { ArrowLeft, ArrowRight, Check, CircleHelp } from 'lucide-react';
 import { useState } from 'react';
+import { VennDiagram } from './VennDiagram';
+import {
+  difficultyLabels,
+  questionKindLabels,
+  topicLabels
+} from '../data/questions';
 import { formatSet } from '../lib/setMath';
 import type { QuizQuestion } from '../types';
 
 interface QuestionRunnerProps {
   questions: QuizQuestion[];
-  mode: 'practice' | 'quiz';
+  mode: 'practice' | 'quiz' | 'review';
   onComplete?: (answers: Record<string, string>) => void;
+  onBack?: () => void;
+  backLabel?: string;
 }
 
 function QuestionData({ question }: { question: QuizQuestion }) {
@@ -33,7 +41,9 @@ function QuestionData({ question }: { question: QuizQuestion }) {
 export function QuestionRunner({
   questions,
   mode,
-  onComplete
+  onComplete,
+  onBack,
+  backLabel
 }: QuestionRunnerProps) {
   const [index, setIndex] = useState(0);
   const [selected, setSelected] = useState('');
@@ -48,8 +58,22 @@ export function QuestionRunner({
     return (
       <div className="empty-state" role="status">
         <Check size={28} aria-hidden="true" />
-        <h2>{mode === 'practice' ? '練習完成' : '測驗完成'}</h2>
-        <p>{mode === 'practice' ? '你已經看完這一組練習。' : '正在整理你的學習結果。'}</p>
+        <h2>
+          {mode === 'quiz' ? '測驗完成' : mode === 'review' ? '錯題重做完成' : '練習完成'}
+        </h2>
+        <p>
+          {mode === 'quiz'
+            ? '正在整理你的學習結果。'
+            : mode === 'review'
+              ? '你已完成這一組錯題練習。'
+              : '你已經看完這一組練習。'}
+        </p>
+        {onBack && (
+          <button className="button button--ghost" type="button" onClick={onBack}>
+            <ArrowLeft size={17} aria-hidden="true" />
+            {backLabel ?? '返回'}
+          </button>
+        )}
       </div>
     );
   }
@@ -57,9 +81,9 @@ export function QuestionRunner({
   if (!question) return null;
 
   const setAnswer = (value: string) => {
-    if (mode === 'practice' && checked) return;
+    if (mode !== 'quiz' && checked) return;
     setSelected(value);
-    if (mode === 'practice') {
+    if (mode !== 'quiz') {
       setChecked(true);
       setAnswers((current) => ({ ...current, [question.id]: value }));
     }
@@ -104,16 +128,34 @@ export function QuestionRunner({
       <div className="question-runner__body">
         <span className="question-runner__kicker">
           <CircleHelp size={16} aria-hidden="true" />
-          {mode === 'practice' ? '基礎練習' : '綜合測驗'}
+          {mode === 'practice'
+            ? '基礎練習'
+            : mode === 'review'
+              ? '錯題重做'
+              : '綜合測驗'}
         </span>
         <h2 id="question-title">{question.prompt}</h2>
         <QuestionData question={question} />
+        <div className="question-runner__meta" aria-label="題目資訊">
+          <span>{topicLabels[question.topic]}</span>
+          <span>{questionKindLabels[question.kind]}</span>
+          <span>{difficultyLabels[question.difficulty]}</span>
+        </div>
+        {question.venn && (
+          <div className="question-venn">
+            <VennDiagram
+              state={question.venn}
+              operation={question.vennOperation}
+              ariaLabel={`Venn 圖：A 為 ${formatSet(question.venn.a)}，B 為 ${formatSet(question.venn.b)}，U 為 ${formatSet(question.venn.universe)}`}
+            />
+          </div>
+        )}
 
         <div className="choice-list" role="group" aria-label="選擇答案">
           {question.choices.map((choice) => {
             const isSelected = selected === choice;
-            const isAnswer = mode === 'practice' && checked && choice === question.answer;
-            const isWrong = mode === 'practice' && checked && isSelected && !isCorrect;
+            const isAnswer = mode !== 'quiz' && checked && choice === question.answer;
+            const isWrong = mode !== 'quiz' && checked && isSelected && !isCorrect;
             return (
               <button
                 key={choice}
@@ -135,7 +177,7 @@ export function QuestionRunner({
           })}
         </div>
 
-        {mode === 'practice' && checked && (
+        {mode !== 'quiz' && checked && (
           <div
             className={`feedback feedback--${isCorrect ? 'correct' : 'incorrect'}`}
             role="status"
@@ -143,6 +185,7 @@ export function QuestionRunner({
           >
             <strong>{isCorrect ? '正確' : '再想一次'}</strong>
             <p>{question.explanation}</p>
+            {question.hint && <p className="feedback__hint">提示：{question.hint}</p>}
           </div>
         )}
 
@@ -168,7 +211,7 @@ export function QuestionRunner({
           >
             {mode === 'quiz' && isLast
               ? '完成測驗'
-              : mode === 'practice' && checked
+              : mode !== 'quiz' && checked
                 ? '下一題'
                 : '確認答案'}
             <ArrowRight size={17} aria-hidden="true" />

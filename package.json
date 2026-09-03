@@ -9,6 +9,7 @@
     "preview": "vite preview",
     "test": "vitest run",
     "test:browser": "node scripts/browser-verify.mjs",
+    "test:offline": "node scripts/offline-verify.mjs",
     "test:watch": "vitest",
     "typecheck": "tsc -b"
   },

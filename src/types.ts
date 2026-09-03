@@ -15,6 +15,32 @@ export interface SetState {
   b: number[];
 }
 
+export type QuizTopic =
+  | 'set-and-element'
+  | 'membership'
+  | 'representation'
+  | 'empty-set'
+  | 'subset'
+  | 'intersection-union'
+  | 'difference'
+  | 'complement';
+
+export type QuestionKind =
+  | 'membership'
+  | 'equality'
+  | 'subset'
+  | 'intersection'
+  | 'union'
+  | 'difference'
+  | 'complement'
+  | 'enumeration'
+  | 'set-builder'
+  | 'cardinality'
+  | 'empty-set'
+  | 'venn';
+
+export type QuestionDifficulty = 'basic' | 'standard' | 'challenge';
+
 export type LessonTopic =
   | 'set'
   | 'membership'
@@ -35,18 +61,12 @@ export interface Lesson {
   explanation: string;
   keyPoints: string[];
   color: 'blue' | 'orange' | 'green' | 'red' | 'teal' | 'navy' | 'slate';
+  commonMistake: string;
+  practiceTopic: QuizTopic;
   universe?: number[];
   setA?: number[];
   setB?: number[];
 }
-
-export type QuizTopic =
-  | 'set-and-element'
-  | 'membership'
-  | 'subset'
-  | 'intersection-union'
-  | 'difference'
-  | 'complement';
 
 export type MistakeTag =
   | 'union-intersection-confusion'
@@ -60,13 +80,18 @@ export type MistakeTag =
 export interface QuizQuestion {
   id: string;
   topic: QuizTopic;
+  kind: QuestionKind;
+  difficulty: QuestionDifficulty;
   prompt: string;
   universe?: number[];
   setA?: number[];
   setB?: number[];
+  venn?: SetState;
+  vennOperation?: SetOperation;
   choices: string[];
   answer: string;
   explanation: string;
+  hint?: string;
   mistakeTags: MistakeTag[];
 }
 

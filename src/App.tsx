@@ -33,6 +33,8 @@ export function App() {
     content = <ExplorerPage />;
   } else if (route === '/practice') {
     content = <PracticePage />;
+  } else if (route.startsWith('/practice/')) {
+    content = <PracticePage topic={route.split('/')[2]} />;
   } else if (route === '/quiz') {
     content = <QuizPage />;
   } else if (route === '/results') {

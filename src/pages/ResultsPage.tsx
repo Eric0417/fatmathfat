@@ -1,16 +1,21 @@
-import { BarChart3, CircleAlert, Download, Trash2 } from 'lucide-react';
+import {
+  ArrowLeft,
+  BarChart3,
+  CircleAlert,
+  Download,
+  Trash2
+} from 'lucide-react';
 import { useState } from 'react';
-import { clearQuizHistory, loadQuizHistory } from '../lib/storage';
-import type { QuizResultRecord, QuizTopic } from '../types';
-
-const topicLabels: Record<QuizTopic, string> = {
-  'set-and-element': '集合與元素',
-  membership: '元素關係',
-  subset: '子集合與相等',
-  'intersection-union': '交集與聯集',
-  difference: '差集',
-  complement: '補集'
-};
+import { QuestionRunner } from '../components/QuestionRunner';
+import { lessons, lessonByTopic } from '../data/curriculum';
+import { quizQuestions, topicLabels } from '../data/questions';
+import {
+  clearAllProgress,
+  loadCompletedLessons,
+  loadLastLesson,
+  loadQuizHistory
+} from '../lib/storage';
+import type { QuizQuestion, QuizResultRecord, QuizTopic } from '../types';
 
 function formatDate(value: string): string {
   return new Intl.DateTimeFormat('zh-Hant', {
@@ -61,10 +66,26 @@ function ResultTable({ results }: { results: QuizResultRecord[] }) {
 export function ResultsPage() {
   const [results, setResults] = useState<QuizResultRecord[]>(() => loadQuizHistory());
   const [confirmClear, setConfirmClear] = useState(false);
+  const [retryQuestions, setRetryQuestions] = useState<QuizQuestion[] | null>(null);
+  const completedLessons = loadCompletedLessons();
+  const lastLesson = loadLastLesson();
   const latest = results[0];
+  const highest = results.length > 0 ? Math.max(...results.map((result) => result.score)) : null;
+  const recentScore = latest?.score ?? null;
+  const weakTopics = latest
+    ? Object.entries(latest.topicScores)
+        .filter(([, score]) => score.total > 0 && score.correct < score.total)
+        .map(([topic]) => topic as QuizTopic)
+    : [];
+  const recentQuestions =
+    latest?.mistakes
+      .map((mistake) =>
+        quizQuestions.find((question) => question.id === mistake.questionId)
+      )
+      .filter((question): question is QuizQuestion => Boolean(question)) ?? [];
 
   const clear = () => {
-    clearQuizHistory();
+    clearAllProgress();
     setResults([]);
     setConfirmClear(false);
   };
@@ -81,6 +102,35 @@ export function ResultsPage() {
     URL.revokeObjectURL(url);
   };
 
+  if (retryQuestions) {
+    return (
+      <div className="page-stack">
+        <div className="page-heading">
+          <div>
+            <span className="eyebrow">錯題重做</span>
+            <h1>重新練習最近一次的錯題</h1>
+            <p>答題後會立即顯示正確答案與原因，這次練習不會重新計分。</p>
+          </div>
+          <button
+            type="button"
+            className="button button--ghost"
+            onClick={() => setRetryQuestions(null)}
+          >
+            <ArrowLeft size={17} aria-hidden="true" />
+            返回學習結果
+          </button>
+        </div>
+        <QuestionRunner
+          key={retryQuestions.map((question) => question.id).join('-')}
+          questions={retryQuestions}
+          mode="review"
+          onBack={() => setRetryQuestions(null)}
+          backLabel="返回學習結果"
+        />
+      </div>
+    );
+  }
+
   return (
     <div className="page-stack">
       <div className="page-heading">
@@ -96,9 +146,14 @@ export function ResultsPage() {
               下載 JSON
             </button>
             {confirmClear ? (
-              <button className="button button--danger" type="button" onClick={clear}>
-                確認清除
-              </button>
+              <>
+                <button className="button button--danger" type="button" onClick={clear}>
+                  確認清除
+                </button>
+                <button className="button button--ghost" type="button" onClick={() => setConfirmClear(false)}>
+                  取消
+                </button>
+              </>
             ) : (
               <button className="button button--ghost" type="button" onClick={() => setConfirmClear(true)}>
                 <Trash2 size={17} aria-hidden="true" />
@@ -125,30 +180,103 @@ export function ResultsPage() {
                 </div>
               </div>
               <div className="result-overview-card__topics">
-                {Object.entries(latest.topicScores).map(([topic, score]) => (
-                  <div className="topic-result" key={topic}>
-                    <div className="topic-result__label">
-                      <strong>{topicLabels[topic as QuizTopic]}</strong>
-                      <span>{score.correct} / {score.total}</span>
+                {Object.entries(latest.topicScores).map(([topic, score]) => {
+                  const label = topicLabels[topic as QuizTopic];
+                  if (!label || score.total === 0) return null;
+                  return (
+                    <div className="topic-result" key={topic}>
+                      <div className="topic-result__label">
+                        <strong>{label}</strong>
+                        <span>{score.correct} / {score.total}</span>
+                      </div>
+                      <div className="topic-result__track" aria-hidden="true">
+                        <span
+                          style={{
+                            width: `${(score.correct / score.total) * 100}%`
+                          }}
+                        />
+                      </div>
                     </div>
-                    <div className="topic-result__track" aria-hidden="true">
-                      <span
-                        style={{
-                          width: `${score.total === 0 ? 0 : (score.correct / score.total) * 100}%`
-                        }}
-                      />
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
+              </div>
+              {weakTopics.length > 0 && (
+                <div className="recommendation-section">
+                  <h3>
+                    <CircleAlert size={18} aria-hidden="true" />
+                    建議重學內容
+                  </h3>
+                  <ul>
+                    {weakTopics.map((topic) => (
+                      <li key={topic}>
+                        <a href={`#/practice/${topic}`}>
+                          {topicLabels[topic]} 練習
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+              <div className="button-row results-actions">
+                <button
+                  type="button"
+                  className="button button--secondary"
+                  disabled={recentQuestions.length === 0}
+                  onClick={() => setRetryQuestions(recentQuestions)}
+                >
+                  {recentQuestions.length > 0 ? '錯題重做' : '沒有錯題'}
+                </button>
+                <a className="button button--ghost" href="#/lessons">
+                  回到學習頁
+                </a>
               </div>
             </div>
             <div className="panel result-count-card">
               <span className="panel-kicker">目前本機</span>
               <h2>{results.length} 次測驗紀錄</h2>
               <p>最多保留最近 30 次，可隨時下載或清除。</p>
+              <div className="learning-stats">
+                <div>
+                  <strong>{highest ?? '—'}</strong>
+                  <span>最高分</span>
+                </div>
+                <div>
+                  <strong>{recentScore ?? '—'}</strong>
+                  <span>最近分數</span>
+                </div>
+                <div>
+                  <strong>{completedLessons.length} / {lessons.length}</strong>
+                  <span>完成單元</span>
+                </div>
+              </div>
               <a href="#/quiz" className="button button--primary">
                 再做一次
               </a>
+            </div>
+          </section>
+
+          <section className="panel unit-progress-panel" aria-labelledby="unit-progress-title">
+            <div className="panel-heading">
+              <div>
+                <span className="panel-kicker">單元完成狀態</span>
+                <h2 id="unit-progress-title">各單元進度</h2>
+              </div>
+              <p className="learning-location">
+                最近學習位置：
+                {lastLesson ? lessonByTopic(lastLesson)?.title ?? '已離開課程' : '尚未開始'}
+              </p>
+            </div>
+            <div className="unit-progress-list">
+              {lessons.map((lesson) => {
+                const completed = completedLessons.includes(lesson.id);
+                return (
+                  <div className={`unit-progress-row${completed ? ' unit-progress-row--completed' : ''}`} key={lesson.id}>
+                    <span className="unit-progress-row__number">{String(lesson.order).padStart(2, '0')}</span>
+                    <span>{lesson.title}</span>
+                    <strong>{completed ? '已完成' : '未完成'}</strong>
+                  </div>
+                );
+              })}
             </div>
           </section>
 
@@ -168,7 +296,7 @@ export function ResultsPage() {
       {confirmClear && (
         <p className="confirmation-note" role="alert">
           <CircleAlert size={17} aria-hidden="true" />
-          清除後無法復原。請確認已下載需要的紀錄。
+          清除後將刪除這台裝置上的學習紀錄，且無法復原。
         </p>
       )}
     </div>

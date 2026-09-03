@@ -1,6 +1,17 @@
-import { BookOpen, ChevronRight, ClipboardList, ListChecks, Shapes } from 'lucide-react';
-import { lessons } from '../data/curriculum';
-import { loadCompletedLessons, loadQuizHistory } from '../lib/storage';
+import {
+  BarChart3,
+  BookOpen,
+  ChevronRight,
+  ClipboardList,
+  ListChecks,
+  Shapes
+} from 'lucide-react';
+import { lessons, lessonByTopic } from '../data/curriculum';
+import {
+  loadCompletedLessons,
+  loadLastLesson,
+  loadQuizHistory
+} from '../lib/storage';
 import { VennDiagram } from '../components/VennDiagram';
 
 const previewState = {
@@ -12,6 +23,8 @@ const previewState = {
 export function HomePage() {
   const completed = loadCompletedLessons().length;
   const latestResult = loadQuizHistory()[0];
+  const lastLesson = loadLastLesson();
+  const lastLessonTitle = lastLesson ? lessonByTopic(lastLesson)?.title : undefined;
 
   return (
     <>
@@ -28,6 +41,11 @@ export function HomePage() {
           開始學習
           <ChevronRight size={18} aria-hidden="true" />
         </a>
+      </div>
+
+      <div className="home-notice" role="note" aria-label="使用說明">
+        <span>不需要登入，學習紀錄只保存在目前這台裝置。</span>
+        <span>可以依序學習，也可以直接操作集合工具。</span>
       </div>
 
       <section className="home-overview" aria-label="學習入口">
@@ -68,6 +86,14 @@ export function HomePage() {
               <span>
                 <strong>綜合測驗</strong>
                 <small>按概念看學習結果</small>
+              </span>
+              <ChevronRight size={17} aria-hidden="true" />
+            </a>
+            <a className="quick-link" href="#/results">
+              <BarChart3 size={18} aria-hidden="true" />
+              <span>
+                <strong>學習結果</strong>
+                <small>{lastLessonTitle ? `上次看到：${lastLessonTitle}` : '查看分數與單元進度'}</small>
               </span>
               <ChevronRight size={17} aria-hidden="true" />
             </a>

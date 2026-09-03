@@ -7,6 +7,7 @@ import {
   ListChecks,
   Shapes
 } from 'lucide-react';
+import { useEffect, useState } from 'react';
 
 interface NavItem {
   href: string;
@@ -30,6 +31,21 @@ interface AppShellProps {
 }
 
 export function AppShell({ route, children }: AppShellProps) {
+  const [isOnline, setIsOnline] = useState(() =>
+    typeof navigator === 'undefined' ? true : navigator.onLine
+  );
+
+  useEffect(() => {
+    const handleOnline = () => setIsOnline(true);
+    const handleOffline = () => setIsOnline(false);
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, []);
+
   const isActive = (item: NavItem) => {
     if (item.match === '/') return route === '/' || route === '';
     return route.startsWith(item.match);
@@ -57,6 +73,7 @@ export function AppShell({ route, children }: AppShellProps) {
                   className="main-nav__link"
                   href={item.href}
                   aria-current={isActive(item) ? 'page' : undefined}
+                  aria-label={item.label}
                 >
                   <Icon size={17} strokeWidth={2} aria-hidden="true" />
                   <span>{item.label}</span>
@@ -67,12 +84,19 @@ export function AppShell({ route, children }: AppShellProps) {
         </div>
       </header>
 
+      {!isOnline && (
+        <div className="offline-banner" role="status" aria-live="polite">
+          目前離線。教材、集合工具與測驗仍可使用，學習紀錄會留在這台裝置。
+        </div>
+      )}
+
       <main className="app-main">{children}</main>
 
       <footer className="app-footer">
         <div className="app-footer__inner">
           <p>免登入、免後端。學習紀錄只保存在目前使用中的裝置。</p>
           <p>本網站統一使用 ⊆ 表示子集合，⊊ 表示真子集合；A ⊂ B 表示同義的子集合關係。</p>
+          <p className="site-credit">developed by Eric Wong</p>
         </div>
       </footer>
     </div>
