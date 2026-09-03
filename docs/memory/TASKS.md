@@ -25,7 +25,7 @@ updated: 2026-09-03
 | 教學用語對照 | done | 已加入宇集／餘集與教材同義記號 |
 | 建立獨立部署 workspace | done | 已複製至 `math_website_render` |
 | Venn 元素拖放 | done | pointer capture 與 drop zones 已驗證 |
-| Render 部署 | done | GitHub repo 已建立；Render static site 已 live |
+| Render 部署 | done | GitHub `main` 已包含 `1f1ab9f`；Render deploy `dep-dacoej61egvs73976jgg` 已 live |
 | 單元教材與常見錯誤 | done | 加入初學者版本、正式定義、常見錯誤與練習入口 |
 | 題庫與題型擴充 | done | 8 個主題、題型、難度、提示與 Venn 圖題型 |
 | 單元練習與綜合練習 | done | `/practice` 與 `/practice/:topic` 路由 |

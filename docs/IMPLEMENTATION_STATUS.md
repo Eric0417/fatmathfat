@@ -50,4 +50,4 @@ updated: 2026-09-03
 
 ## 部署狀態
 
-本版功能在目前 `math_website` workspace 完成並驗證。Render 部署位於獨立 workspace `/Users/eric/script/math_website_render`，本任務沒有直接修改或推送該 workspace；線上版若要看到這版功能，仍需將目前原始碼同步至部署 workspace、建立 commit 並推送到 Render 使用的 GitHub repo。
+本版功能已在 `math_website_render` 合併並驗證。GitHub commit `1f1ab9f` 已推送到 `Eric0417/fatmathfat` 的 `main`，Render deploy `dep-dacoej61egvs73976jgg` 狀態為 `live`，線上版已使用新版 assets。

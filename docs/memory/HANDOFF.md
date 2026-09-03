@@ -55,4 +55,4 @@ updated: 2026-09-03
 - 主要入口在 `src/`：路由、資料、集合運算、儲存與頁面各自分離。
 - 重大決策已記進 `DECISIONS.md`，也要同步 CBM ADR。
 - 原本的 `math_website` 仍是未初始化 Git 的開發目錄；部署與拖曳修改在 `math_website_render`。
-- 本版完成於 `math_website`；尚未同步到 `math_website_render` 或推送到 Render 的 GitHub repo。
+- 本版已同步到 `math_website_render`、推送到 GitHub `main`，且 Render deploy 已確認 `live`。
