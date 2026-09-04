@@ -91,4 +91,4 @@ updated: 2026-09-04
 
 結果：通過。
 
-線上驗證需在 Render 設定郵件與 DeepSeek secrets 後，再以真實測試帳號執行 OTP、AI 生成與管理員數據檢查。
+線上 OTP 在 Python 3.11.11、`SMTP_PORT=465` 與既有 Gmail secrets 下仍回 `503`，Render 日誌為 `timed out`；另一套 IELTS starter plan 可成功寄信。後續需升級 API plan，或改用 Resend API／Gmail API 後再驗證。

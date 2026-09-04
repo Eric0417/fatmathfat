@@ -110,3 +110,5 @@ updated: 2026-09-04
 **替代方案：** 只保留 Resend API——需要額外 key；只保留 Gmail OAuth——需要 Google Cloud OAuth Client 與授權流程。Google Device Flow 不支援 `gmail.send` scope。
 
 **影響：** Render 需設定 `EMAIL_FROM`、`GMAIL_APP_PASSWORD`，並使用 `SMTP_PORT=465`；`GOOGLE_CLIENT_ID` 不是寄送驗證碼的必要條件。線上服務需使用 Python 3.11.11 環境變數。
+
+**目前狀態：** 已部署到 `math_website_render` 並確認 Python 3.11.11，但 `fatmathfat-api`（free plan）連 `smtp.gmail.com:465` 仍逾時；可成功寄信的 IELTS 專案使用 starter plan。若維持 free plan，需改用 Resend API 或 Gmail API。
