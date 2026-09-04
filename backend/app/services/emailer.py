@@ -9,6 +9,8 @@ from email.mime.text import MIMEText
 import httpx
 
 from app.config import settings
+from app.database import SessionLocal
+from app.models import EmailCredential
 
 logger = logging.getLogger(__name__)
 _original_getaddrinfo = socket.getaddrinfo
@@ -30,10 +32,23 @@ def _build_message(from_addr: str, to: str, subject: str, html_body: str) -> MIM
 
 
 def _get_gmail_access_token() -> str | None:
+    refresh_token = settings.GOOGLE_REFRESH_TOKEN.strip()
+    if not refresh_token:
+        db = SessionLocal()
+        try:
+            credential = (
+                db.query(EmailCredential)
+                .filter(EmailCredential.id == 1)
+                .first()
+            )
+            refresh_token = credential.refresh_token if credential else ""
+        finally:
+            db.close()
+
     if (
         not settings.GOOGLE_CLIENT_ID
         or not settings.GOOGLE_CLIENT_SECRET
-        or not settings.GOOGLE_REFRESH_TOKEN
+        or not refresh_token
     ):
         return None
     try:
@@ -42,7 +57,7 @@ def _get_gmail_access_token() -> str | None:
             data={
                 "client_id": settings.GOOGLE_CLIENT_ID,
                 "client_secret": settings.GOOGLE_CLIENT_SECRET,
-                "refresh_token": settings.GOOGLE_REFRESH_TOKEN,
+                "refresh_token": refresh_token,
                 "grant_type": "refresh_token",
             },
             timeout=settings.GMAIL_API_TIMEOUT_SECONDS,
