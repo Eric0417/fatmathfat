@@ -1,4 +1,9 @@
-const API_BASE = import.meta.env.VITE_API_BASE_URL || '';
+const API_BASE =
+  import.meta.env.VITE_API_BASE_URL ||
+  (typeof window !== 'undefined' &&
+  window.location.hostname === 'fatmathfat.onrender.com'
+    ? 'https://fatmathfat-api.onrender.com'
+    : '');
 const TOKEN_KEY = 'mathfatfat:auth-token';
 
 export class ApiError extends Error {
