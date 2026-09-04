@@ -24,12 +24,21 @@ def send_email(to: str, subject: str, html_body: str) -> bool:
 
     try:
         context = ssl.create_default_context()
-        with smtplib.SMTP_SSL(
-            settings.SMTP_HOST,
-            settings.SMTP_PORT,
-            context=context,
-            timeout=settings.SMTP_TIMEOUT_SECONDS,
-        ) as server:
+        if settings.SMTP_PORT == 465:
+            smtp = smtplib.SMTP_SSL(
+                settings.SMTP_HOST,
+                settings.SMTP_PORT,
+                context=context,
+                timeout=settings.SMTP_TIMEOUT_SECONDS,
+            )
+        else:
+            smtp = smtplib.SMTP(
+                settings.SMTP_HOST,
+                settings.SMTP_PORT,
+                timeout=settings.SMTP_TIMEOUT_SECONDS,
+            )
+            smtp.starttls(context=context)
+        with smtp as server:
             server.login(from_addr, app_password)
             server.sendmail(from_addr, to, msg.as_string())
         return True
