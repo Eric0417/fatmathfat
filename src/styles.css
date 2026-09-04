@@ -4438,3 +4438,125 @@ textarea:focus-visible {
     grid-template-columns: auto minmax(0, 1fr);
   }
 }
+
+/* AI teacher interaction refinements */
+.ai-teacher__status {
+  display: flex;
+  min-height: 1.25rem;
+  align-items: center;
+  color: var(--color-text-secondary);
+  font-size: 0.72rem;
+}
+
+.ai-teacher__status--loading {
+  color: var(--color-primary);
+  font-weight: 700;
+}
+
+.ai-teacher__status--loading span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.ai-teacher__status-icon {
+  animation: spin 1s linear infinite;
+}
+
+.ai-teacher__input {
+  transition:
+    border-color 160ms ease,
+    background 160ms ease;
+}
+
+.ai-teacher__input:focus-within {
+  border-color: var(--color-primary-hover);
+}
+
+.ai-teacher__input[aria-busy="true"] textarea {
+  border-color: var(--color-primary);
+  color: var(--color-text-secondary);
+  background: var(--color-surface-soft);
+  box-shadow: 0 0 0 3px var(--color-focus);
+}
+
+.ai-teacher__typing {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--color-text-secondary);
+  font-size: 0.78rem;
+}
+
+.ai-teacher__typing-dots {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+}
+
+.ai-teacher__typing-dots i {
+  display: block;
+  width: 0.38rem;
+  height: 0.38rem;
+  border-radius: 50%;
+  background: var(--color-primary);
+  animation: ai-typing 1.05s ease-in-out infinite;
+}
+
+.ai-teacher__typing-dots i:nth-child(2) {
+  animation-delay: 0.15s;
+}
+
+.ai-teacher__typing-dots i:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+.ai-teacher__streaming {
+  display: flex;
+  min-height: 1.5rem;
+  align-items: flex-end;
+  gap: 0.12rem;
+  color: var(--color-body);
+}
+
+.ai-teacher__streaming > span:first-child {
+  white-space: pre-wrap;
+}
+
+.ai-teacher__streaming-caret {
+  display: inline-block;
+  width: 2px;
+  height: 1rem;
+  margin-bottom: 0.08rem;
+  border-radius: 1px;
+  background: var(--color-primary);
+  animation: ai-caret 0.75s steps(1) infinite;
+}
+
+@keyframes ai-typing {
+  0%,
+  60%,
+  100% {
+    opacity: 0.35;
+    transform: translateY(0);
+  }
+
+  30% {
+    opacity: 1;
+    transform: translateY(-0.16rem);
+  }
+}
+
+@keyframes ai-caret {
+  50% {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ai-teacher__status-icon,
+  .ai-teacher__typing-dots i,
+  .ai-teacher__streaming-caret {
+    animation: none;
+  }
+}

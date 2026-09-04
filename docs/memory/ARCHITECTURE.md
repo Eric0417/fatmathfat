@@ -44,6 +44,7 @@ updated: 2026-09-05
 - 桌面使用左側導覽，平板與手機切換為頂部導覽；卡片使用輕度陰影、細邊框與 10px 至 14px 圓角。
 - Venn 圖使用低飽和 A/B/交集色，保留 SVG 高亮與拖放區。
 - 樣式集中在 `src/styles.css`；`backend/`、`render.yaml` 與 API 契約不變。
+- AI 老師前端使用等待狀態、動態點點、逐字回覆與自動捲動；後端 `/api/ai/chat` 契約與 DeepSeek 服務不變。
 
 ## 目前範圍
 

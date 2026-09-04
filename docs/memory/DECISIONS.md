@@ -136,3 +136,15 @@ updated: 2026-09-05
 **替代方案：** 保留舊視覺或只改開發版不部署。舊視覺不符合使用者方向；只改開發版不會讓線上網站更新。
 
 **影響：** 只修改 Render workspace 的前端樣式、首頁 icon 結構、PWA 顏色與品牌資產；後端、資料庫、API、`render.yaml`、部署或環境變數不變。提交至 GitHub `main` 後由 Render blueprint 部署 static site；`fatmathfat-api` 程式碼未動。
+
+## D-011 強化 AI 老師前回答互動
+
+**狀態：** active
+
+**決定：** 在不修改 DeepSeek 後端或 `/api/ai/chat` 契約的前提下，增加 AI 老師的等待、動態提示與回應呈現。送出問題後輸入區顯示「AI 正在整理回答」、對話區顯示動態點點；收到 API 回覆後以短暫逐字效果呈現，並自動捲動到最新訊息。回應內容仍完全來自後端。
+
+**理由：** 原本只有 loading 與 disable 狀態，學生不易判斷 AI 是否仍在處理；新增視覺節奏能減少等待不安，也不會改變數學回答或 API 邏輯。
+
+**替代方案：** 改接 streaming API 或修改後端回應格式。需要新增後端協定且會擴大改動範圍；目前需求可由前端呈現層完成。
+
+**影響：** 修改 `src/components/AiTeacherPanel.tsx`、`src/styles.css`，新增 `AiTeacherPanel.test.tsx`；後端、資料庫、環境變數與 API response model 不變。

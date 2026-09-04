@@ -49,7 +49,9 @@ updated: 2026-09-05
 - Render 部署網址：`https://fatmathfat.onrender.com/`。
 - 課程教材擴充已推送為 `e643121`，Render static site 已 live；線上 bundle 已確認包含新版例子與詳細說明。
 - 已將 Academic Blue 學術視覺同步至 Render 全棧版：淺灰白頁面、白色卡片、深藏青左側導覽、學院藍按鈕與低飽和學術集合圖；登入、API、AI、管理員、資料模型後端與 Render blueprint 未改。
-- 已通過 Render workspace 的 `npm run typecheck`、12 項前端測試、production build，並以 mock 登入 State 驗證桌面、平板與手機頁面及登入頁。
+- 已通過 Render workspace 的 `npm run typecheck`、13 項前端測試、production build，並以 mock 登入 State 驗證桌面、平板與手機頁面及登入頁。
+- 已強化 AI 老師前端交互：送出後顯示等待狀態與動態點點，回覆以逐字效果顯示並自動捲動；後端 `/api/ai/chat` 與 AI 回覆內容不變。
+- 已新增 `AiTeacherPanel.test.tsx`，以 jsdom 與真實 Chrome mock API 驗證等待狀態、停用狀態與回覆呈現。
 
 ## 進行中
 
@@ -67,6 +69,7 @@ updated: 2026-09-05
 - 任何結構性變更都要重新索引 graph；目前 index 已反映新程式碼（681 nodes / 1888 edges），且 D-010 已寫入 ADR。
 - 網站需要連線；PWA 靜態資源仍可快取，但未登入或離線時顯示登入頁。
 - 目前視覺決策是 D-010「使用 Academic Blue 學術視覺並部署至 Render」；後續視覺調整集中在 `src/styles.css`，不要改回紫色、玻璃或霓虹風格。
+- AI 老師目前為前端呈現層強化，決策與範圍記錄為 D-011；DeepSeek 後端與 API 契約未改。
 - 後端路由在 `backend/app/routers/`，AI 服務在 `backend/app/services/`，資料庫 migration 在 `backend/alembic/`。
 - 前端登入與 API client 在 `src/context/AuthContext.tsx` 與 `src/lib/api.ts`；AI 面板在 `src/components/AiTeacherPanel.tsx`。
 - 重大決策已記進 `DECISIONS.md`；結構變更後需重新執行 CBM index 與 ADR。
