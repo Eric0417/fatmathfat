@@ -47,6 +47,7 @@ updated: 2026-09-04
 - 已在獨立 workspace 新增 pointer-based 元素拖放與 `render.yaml`。
 - 建立 GitHub repo `Eric0417/fatmathfat` 並部署 Render static site `fatmathfat`，deploy 狀態為 `live`。
 - Render 部署網址：`https://fatmathfat.onrender.com/`。
+- 課程教材擴充已推送為 `e643121`，Render static site 已 live；線上 bundle 已確認包含新版例子與詳細說明。
 
 ## 進行中
 
@@ -67,4 +68,4 @@ updated: 2026-09-04
 - 前端登入與 API client 在 `src/context/AuthContext.tsx` 與 `src/lib/api.ts`；AI 面板在 `src/components/AiTeacherPanel.tsx`。
 - 重大決策已記進 `DECISIONS.md`；結構變更後需重新執行 CBM index 與 ADR。
 - 原本的 `math_website` 仍是未初始化 Git 的開發目錄；本期實作與部署修改在 `math_website_render`。
-- 本次尚未推送到 GitHub；部署前需確認 Render env、Mail 與 DeepSeek secrets。
+- 本次已推送到 GitHub 並部署至 Render；`fatmathfat` static site 與 `fatmathfat-api` 均為 live。

@@ -52,4 +52,4 @@ updated: 2026-09-04
 
 ## 部署狀態
 
-本版功能已在 `math_website_render` 實作並完成本機驗證。Render blueprint 已加入 backend service 與 PostgreSQL，並補上 Resend API 選項；尚未推送 GitHub／部署，也尚未在 Render 填入 Resend／Gmail OAuth 與 DeepSeek secrets。
+本版功能已推送為 GitHub `e643121` 並部署。Render static site `fatmathfat` 與 backend `fatmathfat-api` 均為 live；線上 bundle 已確認包含 7 個主題的新版例子與詳細說明。
