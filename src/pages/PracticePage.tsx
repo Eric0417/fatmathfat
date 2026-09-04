@@ -2,8 +2,12 @@ import {
   ArrowLeft,
   ChevronRight,
   ListChecks,
+  RefreshCw,
+  Sparkles,
   Target
 } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { useAuth } from '../context/AuthContext';
 import { QuestionRunner } from '../components/QuestionRunner';
 import {
   mixedPracticeQuestions,
@@ -11,7 +15,11 @@ import {
   questionsForTopic,
   topicLabels
 } from '../data/questions';
-import type { QuizTopic } from '../types';
+import type {
+  PracticeProgressResponse,
+  QuizQuestion,
+  QuizTopic
+} from '../types';
 
 const practiceTopics = Object.keys(topicLabels) as QuizTopic[];
 
@@ -20,15 +28,26 @@ function isQuizTopic(value: string | undefined): value is QuizTopic {
 }
 
 export function PracticePage({ topic }: { topic?: string }) {
+  const { apiFetch } = useAuth();
   const selectedTopic =
     topic && topic !== 'mixed' && (isQuizTopic(topic) || topic === 'operations')
       ? topic
       : undefined;
-  const practiceQuestions = selectedTopic
+  const initialQuestions = selectedTopic
     ? selectedTopic === 'operations'
       ? questionsForLesson('operations')
       : questionsForTopic(selectedTopic)
     : mixedPracticeQuestions();
+  const [questions, setQuestions] = useState<QuizQuestion[]>(initialQuestions);
+  const [generated, setGenerated] = useState(false);
+  const [generating, setGenerating] = useState(false);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    setQuestions(initialQuestions);
+    setGenerated(false);
+    setError('');
+  }, [selectedTopic]);
   const title =
     selectedTopic === 'operations'
       ? '交集、聯集與差集'
@@ -53,14 +72,61 @@ export function PracticePage({ topic }: { topic?: string }) {
         <div className="heading-meta">
           <span>
             <ListChecks size={16} aria-hidden="true" />
-            {practiceQuestions.length} 題
+            {questions.length} 題
           </span>
           <span>
             <Target size={16} aria-hidden="true" />
             即時回饋
           </span>
+          <button
+            className="button button--ghost ai-practice-button"
+            type="button"
+            disabled={generating}
+            onClick={() => {
+              setGenerating(true);
+              setError('');
+              const aiTopic =
+                selectedTopic === 'operations'
+                  ? 'intersection-union'
+                  : selectedTopic;
+              void apiFetch<{ questions: QuizQuestion[] }>(
+                '/api/ai/generate-practice',
+                {
+                  method: 'POST',
+                  body: JSON.stringify({
+                    topics: aiTopic ? [aiTopic] : [],
+                    difficulty: 'standard',
+                    count: 5
+                  })
+                }
+              )
+                .then((response) => {
+                  setQuestions(response.questions);
+                  setGenerated(true);
+                })
+                .catch((err) => {
+                  setError(
+                    err instanceof Error ? err.message : 'AI 練習生成失敗。'
+                  );
+                })
+                .finally(() => setGenerating(false));
+            }}
+          >
+            {generating ? (
+              <RefreshCw className="spin" size={17} aria-hidden="true" />
+            ) : (
+              <Sparkles size={17} aria-hidden="true" />
+            )}
+            {generating ? '生成中...' : '生成弱點練習'}
+          </button>
         </div>
       </div>
+
+      {error && (
+        <p className="confirmation-note" role="alert">
+          {error}
+        </p>
+      )}
 
       {selectedTopic && (
         <a className="button button--ghost back-link" href="#/practice">
@@ -97,9 +163,24 @@ export function PracticePage({ topic }: { topic?: string }) {
 
       <QuestionRunner
         key={selectedTopic ?? 'mixed'}
-        questions={practiceQuestions}
+        questions={questions}
         mode="practice"
         backLabel="回到練習選單"
+        onComplete={(answers) => {
+          const correct = questions.filter(
+            (question) => answers[question.id] === question.answer
+          ).length;
+          void apiFetch<PracticeProgressResponse>('/api/progress/practice', {
+            method: 'POST',
+            body: JSON.stringify({
+              source: generated ? 'ai_generated' : 'topic',
+              topic: selectedTopic ?? 'mixed',
+              correct,
+              total: questions.length,
+              duration_ms: 0
+            })
+          }).catch(() => undefined);
+        }}
         onBack={() => {
           if (selectedTopic) window.location.hash = '#/practice';
         }}

@@ -4,7 +4,7 @@ type: decision
 status: active
 tags: [memory, decisions]
 created: 2026-09-02
-updated: 2026-09-03
+updated: 2026-09-04
 ---
 
 # 決策紀錄
@@ -27,7 +27,7 @@ updated: 2026-09-03
 
 ## D-002 採用靜態 React/TypeScript PWA
 
-**狀態：** active
+**狀態：** archived
 
 **決定：** 首版使用 Vite + React + TypeScript，加上 PWA service worker，資料與紀錄全部放在瀏覽器端，不建立後端。
 
@@ -36,6 +36,8 @@ updated: 2026-09-03
 **替代方案：** Next.js / 後端 API / 帳號系統 —— 會增加部署與權限成本，但沒有對應的學習效益。
 
 **影響：** 部署目標為靜態檔案；課程題目集中放在 `src/data/`，集合運算與儲存邏輯留在 `src/lib/`。
+
+**過時因為：** D-006 已新增 FastAPI + PostgreSQL 後端與登入；靜態前端本身保留，但「不建立後端」不再適用。
 
 ## D-003 保留「⊆ / ⊊」主約定，並標註台灣教材同義記號
 
@@ -72,3 +74,27 @@ updated: 2026-09-03
 **替代方案：** 使用 Next.js 或 React Router、建立後端題目管理、引入狀態管理庫 —— 都增加維護成本，但沒有對應的學習效益。
 
 **影響：** 新功能集中在 `src/data/`、`src/lib/` 與既有頁面元件；PWA 仍維持 production-ready；部署仍以 `dist/` 作為靜態網站。
+
+## D-006 加入 FastAPI 後端與學校郵箱 OTP 登入
+
+**狀態：** active
+
+**決定：** 保留原有 Vite + React 前端，新增 FastAPI + PostgreSQL 後端；學生使用 `^[0-9]{7}-[0-9]$@g.puiching.edu.mo` 郵箱 OTP 登入，`wongeric1417@gmail.com` 為第一位管理員，其他教師透過後台白名單加入。
+
+**理由：** 需要全站登入、跨裝置學習數據與管理員檢視，純前端無法安全寄送驗證碼或保存學生資料。
+
+**替代方案：** 繼續使用 `localStorage` 或以 Supabase Auth 取代自建 API —— 無法滿足管理員學習數據；Supabase 會引入額外服務但可行。
+
+**影響：** 網站不再宣稱免登入或離線可用；舊紀錄留於原裝置但不遷移。Render 新增 web service 與 PostgreSQL。
+
+## D-007 使用 DeepSeek 作為全站 AI 老師
+
+**狀態：** active
+
+**決定：** 後端以 DeepSeek `deepseek-v4-flash` proxy 提供全站 AI 面板；測驗進行中禁止使用，課程與練習未作答時只給提示，完成後才解釋答案。依弱點生成練習題必須符合現有 `QuizQuestion` 契約並通過後端驗證。
+
+**理由：** 直接把 API key 放前端會外洩；生成題目若不驗證，AI 可能有數學錯誤或格式錯誤。
+
+**替代方案：** 只做固定提示、不生成新題、或使用其他 AI API —— 會少掉個人化弱點練習或需重新驗證 API。
+
+**影響：** 不保存對話、不保存 AI 生成題目，只保存練習摘要；需要 DeepSeek API key、模型名稱與 Render 環境變數。

@@ -5,17 +5,18 @@ import {
   Download,
   Trash2
 } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useAuth } from '../context/AuthContext';
 import { QuestionRunner } from '../components/QuestionRunner';
 import { lessons, lessonByTopic } from '../data/curriculum';
 import { quizQuestions, topicLabels } from '../data/questions';
-import {
-  clearAllProgress,
-  loadCompletedLessons,
-  loadLastLesson,
-  loadQuizHistory
-} from '../lib/storage';
-import type { QuizQuestion, QuizResultRecord, QuizTopic } from '../types';
+import type {
+  ProgressResponse,
+  QuizAttemptResponse,
+  QuizQuestion,
+  QuizResultRecord,
+  QuizTopic
+} from '../types';
 
 function formatDate(value: string): string {
   return new Intl.DateTimeFormat('zh-Hant', {
@@ -24,11 +25,29 @@ function formatDate(value: string): string {
   }).format(new Date(value));
 }
 
+function toResultRecord(response: QuizAttemptResponse): QuizResultRecord {
+  return {
+    id: String(response.id),
+    completedAt: response.completed_at,
+    score: response.score,
+    correct: response.correct,
+    total: response.total,
+    durationMs: response.duration_ms,
+    topicScores: response.topic_scores,
+    mistakes: response.mistakes.map((mistake) => ({
+      questionId: mistake.question_id,
+      selected: mistake.selected,
+      answer: mistake.answer,
+      tags: mistake.tags
+    }))
+  };
+}
+
 function ResultTable({ results }: { results: QuizResultRecord[] }) {
   return (
     <div className="panel result-table-panel">
       <div className="panel-heading">
-        <span className="panel-kicker">本機歷史紀錄</span>
+        <span className="panel-kicker">學習紀錄</span>
         <h2>最近測驗</h2>
       </div>
       <div className="result-table-wrap">
@@ -64,11 +83,15 @@ function ResultTable({ results }: { results: QuizResultRecord[] }) {
 }
 
 export function ResultsPage() {
-  const [results, setResults] = useState<QuizResultRecord[]>(() => loadQuizHistory());
+  const { apiFetch } = useAuth();
+  const [progress, setProgress] = useState<ProgressResponse | null>(null);
+  const [loading, setLoading] = useState(true);
   const [confirmClear, setConfirmClear] = useState(false);
   const [retryQuestions, setRetryQuestions] = useState<QuizQuestion[] | null>(null);
-  const completedLessons = loadCompletedLessons();
-  const lastLesson = loadLastLesson();
+  const results = (progress?.quiz_attempts ?? []).map(toResultRecord);
+  const completedLessons =
+    progress?.completed_lessons.map((item) => item.lesson_id) ?? [];
+  const lastLesson = progress?.last_lesson ?? null;
   const latest = results[0];
   const highest = results.length > 0 ? Math.max(...results.map((result) => result.score)) : null;
   const recentScore = latest?.score ?? null;
@@ -84,10 +107,25 @@ export function ResultsPage() {
       )
       .filter((question): question is QuizQuestion => Boolean(question)) ?? [];
 
+  const load = () => {
+    setLoading(true);
+    void apiFetch<ProgressResponse>('/api/progress')
+      .then(setProgress)
+      .catch(() => setProgress(null))
+      .finally(() => setLoading(false));
+  };
+
+  useEffect(() => {
+    load();
+  }, [apiFetch]);
+
   const clear = () => {
-    clearAllProgress();
-    setResults([]);
-    setConfirmClear(false);
+    void apiFetch<ProgressResponse>('/api/progress', {
+      method: 'DELETE'
+    })
+      .then(setProgress)
+      .catch(() => setProgress(null))
+      .finally(() => setConfirmClear(false));
   };
 
   const download = () => {
@@ -135,9 +173,9 @@ export function ResultsPage() {
     <div className="page-stack">
       <div className="page-heading">
         <div>
-          <span className="eyebrow">只保留在目前裝置</span>
+          <span className="eyebrow">帳號學習數據</span>
           <h1>我的學習結果</h1>
-          <p>成績按概念分開顯示，不會比較或排名；換裝置不會自動同步。</p>
+          <p>成績按概念分開顯示，登入後會同步到學習帳號。</p>
         </div>
         {results.length > 0 && (
           <div className="button-row">
@@ -157,14 +195,19 @@ export function ResultsPage() {
             ) : (
               <button className="button button--ghost" type="button" onClick={() => setConfirmClear(true)}>
                 <Trash2 size={17} aria-hidden="true" />
-                清除本機紀錄
+                清除學習紀錄
               </button>
             )}
           </div>
         )}
       </div>
 
-      {latest ? (
+      {loading ? (
+        <div className="panel empty-state">
+          <BarChart3 size={30} aria-hidden="true" />
+          <h2>正在載入學習結果</h2>
+        </div>
+      ) : latest ? (
         <>
           <section className="results-overview" aria-label="最近一次測驗">
             <div className="panel result-overview-card">
@@ -232,7 +275,7 @@ export function ResultsPage() {
               </div>
             </div>
             <div className="panel result-count-card">
-              <span className="panel-kicker">目前本機</span>
+              <span className="panel-kicker">目前帳號</span>
               <h2>{results.length} 次測驗紀錄</h2>
               <p>最多保留最近 30 次，可隨時下載或清除。</p>
               <div className="learning-stats">
@@ -296,7 +339,7 @@ export function ResultsPage() {
       {confirmClear && (
         <p className="confirmation-note" role="alert">
           <CircleAlert size={17} aria-hidden="true" />
-          清除後將刪除這台裝置上的學習紀錄，且無法復原。
+          清除後將刪除這個帳號上的學習紀錄，且無法復原。
         </p>
       )}
     </div>

@@ -4,7 +4,7 @@ type: task
 status: active
 tags: [memory, tasks]
 created: 2026-09-02
-updated: 2026-09-03
+updated: 2026-09-04
 ---
 
 # 任務清單
@@ -25,7 +25,7 @@ updated: 2026-09-03
 | 教學用語對照 | done | 已加入宇集／餘集與教材同義記號 |
 | 建立獨立部署 workspace | done | 已複製至 `math_website_render` |
 | Venn 元素拖放 | done | pointer capture 與 drop zones 已驗證 |
-| Render 部署 | done | GitHub `main` 已包含 `1f1ab9f`；Render deploy `dep-dacoej61egvs73976jgg` 已 live |
+| Render 靜態部署（舊版） | done | 歷史記錄；新全棧版已更新 blueprint，但尚未部署 |
 | 單元教材與常見錯誤 | done | 加入初學者版本、正式定義、常見錯誤與練習入口 |
 | 題庫與題型擴充 | done | 8 個主題、題型、難度、提示與 Venn 圖題型 |
 | 單元練習與綜合練習 | done | `/practice` 與 `/practice/:topic` 路由 |
@@ -34,4 +34,12 @@ updated: 2026-09-03
 | 錯題重做與學習紀錄 | done | 測驗/結果頁均可重做錯題；保存最近位置 |
 | 頁尾與無障礙 | done | `developed by Eric Wong`、導覽標籤、離線提示 |
 | 離線重載驗證 | done | 新增 `test:offline` 並通過 production preview 驗證 |
+| FastAPI 後端與資料模型 | done | PostgreSQL、Alembic、OTP、JWT、學習數據與管理員 API |
+| 學校郵箱與角色規則 | done | 學生 `7位-1位`，預設管理員與後台新增管理員 |
+| DeepSeek AI 老師 | done | 全站面板、測驗中停用、依弱點生成練習、題目驗證 |
+| 前端登入與角色導覽 | done | `#/login`、路由保護、管理員 `#/admin` |
+| AI 生成練習 | done | 不保存題目，保存練習摘要 |
+| Render 全棧部署設定 | done | 新增 backend web service 與 PostgreSQL blueprint |
+| 後端與瀏覽器測試 | done | pytest、Vitest、Playwright 與離線登入驗證 |
+| 實際部署 secrets | pending | 需在 Render 設定 Email 與 DeepSeek API key |
 | 描述法論域資料模型 | pending | 若要支援描述法轉列舉法，需另存 `domain` |

@@ -38,19 +38,15 @@ try {
   await page.waitForSelector('h1');
 
   const title = await page.locator('h1').first().textContent();
-  const footerCount = await page.getByText('developed by Eric Wong', {
-    exact: true
-  }).count();
 
-  assert(Boolean(title), 'offline reload did not render the app');
-  assert(footerCount === 1, 'offline reload is missing the footer');
+  assert(title === '登入', 'offline reload did not render the login gate');
 
   await page.goto(`${baseUrl}/#/explorer`, { waitUntil: 'domcontentloaded' });
   await page.waitForSelector('h1');
   const explorerTitle = await page.locator('h1').first().textContent();
   assert(
-    explorerTitle === '集合操作工具',
-    'offline reload did not render the explorer'
+    explorerTitle === '登入',
+    'offline explorer was reachable without authentication'
   );
   assert(errors.length === 0, `offline console issues: ${errors.join('\n')}`);
   await context.setOffline(false);

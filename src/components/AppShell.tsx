@@ -5,9 +5,13 @@ import {
   ClipboardList,
   Home,
   ListChecks,
+  LogOut,
+  ShieldCheck,
   Shapes
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { useAuth } from '../context/AuthContext';
+import { AiTeacherPanel } from './AiTeacherPanel';
 
 interface NavItem {
   href: string;
@@ -31,6 +35,7 @@ interface AppShellProps {
 }
 
 export function AppShell({ route, children }: AppShellProps) {
+  const { user, logout } = useAuth();
   const [isOnline, setIsOnline] = useState(() =>
     typeof navigator === 'undefined' ? true : navigator.onLine
   );
@@ -65,7 +70,7 @@ export function AppShell({ route, children }: AppShellProps) {
             </span>
           </a>
           <nav className="main-nav" aria-label="主要導覽">
-            {navItems.map((item) => {
+            {[...navItems, ...(user?.role === 'teacher' ? [{ href: '#/admin', label: '管理', icon: ShieldCheck, match: '/admin' }] : [])].map((item) => {
               const Icon = item.icon;
               return (
                 <a
@@ -80,21 +85,29 @@ export function AppShell({ route, children }: AppShellProps) {
                 </a>
               );
             })}
+            <div className="main-nav__account" aria-label="帳號">
+              <span className="main-nav__email">{user?.email}</span>
+              <button type="button" className="main-nav__logout" onClick={logout}>
+                <LogOut size={16} aria-hidden="true" />
+                <span>登出</span>
+              </button>
+            </div>
           </nav>
         </div>
       </header>
 
       {!isOnline && (
         <div className="offline-banner" role="status" aria-live="polite">
-          目前離線。教材、集合工具與測驗仍可使用，學習紀錄會留在這台裝置。
+          目前離線。本網站需要連線才能登入與同步學習資料。
         </div>
       )}
 
       <main className="app-main">{children}</main>
+      <AiTeacherPanel />
 
       <footer className="app-footer">
         <div className="app-footer__inner">
-          <p>免登入、免後端。學習紀錄只保存在目前使用中的裝置。</p>
+          <p>學校專用學習區，登入後會同步學習紀錄。</p>
           <p>本網站統一使用 ⊆ 表示子集合，⊊ 表示真子集合；A ⊂ B 表示同義的子集合關係。</p>
           <p className="site-credit">developed by Eric Wong</p>
         </div>

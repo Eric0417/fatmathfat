@@ -1,6 +1,7 @@
 import { chromium } from 'playwright-core';
 
 const baseUrl = process.env.BASE_URL ?? 'http://127.0.0.1:5173';
+const testToken = process.env.TEST_TOKEN;
 const outputDir =
   process.env.SCREENSHOT_DIR ??
   '/Users/eric/.codex/visualizations/2026/09/02/01a0627b-cfa6-77a0-8ea4-4c11561abead';
@@ -9,8 +10,26 @@ function assert(condition, message) {
   if (!condition) throw new Error(message);
 }
 
+if (!testToken) {
+  throw new Error(
+    'TEST_TOKEN is required. Start the local backend and pass a valid teacher JWT.'
+  );
+}
+
 async function load(page, route) {
   await page.goto(`${baseUrl}#${route}`, { waitUntil: 'networkidle' });
+  await page.waitForTimeout(500);
+}
+
+async function prepare(page) {
+  await page.goto(baseUrl, { waitUntil: 'domcontentloaded' });
+  if (testToken) {
+    await page.evaluate((token) => {
+      localStorage.setItem('mathfatfat:auth-token', token);
+    }, testToken);
+    await page.reload({ waitUntil: 'domcontentloaded' });
+  }
+  await page.goto(`${baseUrl}#/`, { waitUntil: 'networkidle' });
   await page.waitForTimeout(500);
 }
 
@@ -48,7 +67,7 @@ try {
   });
   desktopPage.on('pageerror', (error) => consoleErrors.push(`pageerror: ${error.message}`));
 
-  await load(desktopPage, '/');
+  await prepare(desktopPage);
   assert(
     (await desktopPage.getByText('developed by Eric Wong', { exact: true }).count()) === 1,
     'footer credit is missing'
@@ -69,11 +88,13 @@ try {
     (await desktopPage.getByRole('link', { name: '開始練習' }).count()) === 1,
     'lesson practice entry is missing'
   );
-  await desktopPage.getByRole('button', { name: '標記完成' }).click();
+  const markButton = desktopPage.getByRole('button', { name: '標記完成' });
+  if ((await markButton.count()) > 0) {
+    await markButton.click();
+  }
+  await desktopPage.getByText('已標記完成', { exact: true }).waitFor();
   assert(
-    await desktopPage.evaluate(() =>
-      localStorage.getItem('collection-tool:progress:v1')?.includes('membership')
-    ),
+    (await desktopPage.getByText('已標記完成', { exact: true }).count()) === 1,
     'completed lesson was not saved'
   );
   await desktopPage.screenshot({
@@ -175,12 +196,16 @@ try {
   await desktopPage.getByRole('button', { name: '錯題重做' }).click();
   await desktopPage.getByRole('heading', { name: '重新練習這一組錯題' }).waitFor();
   await desktopPage.getByRole('button', { name: /返回測驗結果/ }).click();
-  assert(
-    await desktopPage.evaluate(() =>
-      Boolean(localStorage.getItem('collection-tool:quiz-history:v1'))
-    ),
-    'quiz result was not saved'
-  );
+  const quizSaved = await desktopPage.evaluate(async () => {
+    const token = localStorage.getItem('mathfatfat:auth-token');
+    const response = await fetch('/api/progress', {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    if (!response.ok) return false;
+    const progress = await response.json();
+    return progress.quiz_attempts.length > 0;
+  });
+  assert(quizSaved, 'quiz result was not saved');
 
   await load(desktopPage, '/results');
   assert(
@@ -197,6 +222,25 @@ try {
   });
   assert((await overflow(desktopPage)).overflow === 0, 'desktop results has horizontal overflow');
 
+  await load(desktopPage, '/admin');
+  await desktopPage.getByRole('heading', { name: '學生學習數據' }).waitFor();
+  assert(
+    (await desktopPage.locator('.admin-teacher-form').count()) === 1,
+    'admin teacher management did not render'
+  );
+  assert(
+    (await desktopPage.locator('.admin-table').count()) === 1,
+    'admin student table did not render'
+  );
+
+  await desktopPage.getByRole('button', { name: 'AI 老師' }).click();
+  await desktopPage.locator('.ai-teacher__panel').waitFor();
+  assert(
+    (await desktopPage.locator('.ai-teacher__input textarea').count()) === 1,
+    'AI teacher panel did not render'
+  );
+  await desktopPage.getByRole('button', { name: '關閉 AI 老師' }).click();
+
   assert(consoleErrors.length === 0, `browser console issues: ${consoleErrors.join('\n')}`);
 
   const mobile = await browser.newContext({
@@ -206,7 +250,7 @@ try {
     hasTouch: true
   });
   const mobilePage = await mobile.newPage();
-  await load(mobilePage, '/');
+  await prepare(mobilePage);
   assert(
     (await mobilePage.locator('.main-nav__link').first().getAttribute('aria-label')) === '首頁',
     'mobile nav link is missing an accessible label'

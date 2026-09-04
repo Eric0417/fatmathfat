@@ -4,14 +4,14 @@ type: handoff
 status: active
 tags: [memory, handoff]
 created: 2026-09-02
-updated: 2026-09-03
+updated: 2026-09-04
 ---
 
 # 交接與目前狀態
 
 ## 摘要
 
-本專案已進入**可用首版**：以 Vite + React + TypeScript 建立免登入、本機儲存、可離線使用的「集合概念視覺化與基礎解題工具」。目前有七個學習單元、八個練習主題、互動 Venn 工具、錯題重做與本機學習紀錄。
+本專案已進入**全棧學校版**：Vite + React + TypeScript 前端，FastAPI + PostgreSQL 後端，Email OTP 登入、學生／管理員角色、學習數據同步與 DeepSeek AI 老師。目前有七個學習單元、八個練習主題、互動 Venn 工具、錯題重做與跨裝置學習紀錄。
 
 ## 已完成
 
@@ -31,6 +31,14 @@ updated: 2026-09-03
 - 完成全站頁尾 `developed by Eric Wong`、離線提示、手機導覽 `aria-label` 與響應式細節。
 - 完成 PWA manifest、service worker 與離線重載驗證。
 - 通過 `npm run typecheck`、`npm test`、`npm run build`、Playwright 桌面/手機瀏覽器驗證。
+- 新增 FastAPI backend：PostgreSQL 資料模型、Alembic migration、Email OTP、JWT 與 CORS。
+- 完成學校郵箱角色規則：`^[0-9]{7}-[0-9]$` 學生，`wongeric1417@gmail.com` 預設管理員，其他管理員由後台加入。
+- 完成學習數據 API：最後登入／活動、課程完成度、練習摘要、測驗成績與錯題。
+- 完成管理員 API 與 `#/admin`：學生清單、學習數據、教師白名單新增／移除。
+- 完成 DeepSeek `deepseek-v4-flash` AI 老師：全站面板、測驗中停用、依弱點生成練習、題目結構與集合運算驗證。
+- 完成前端登入、路由保護、角色導覽、AI 面板、練習生成與 API 資料層；舊 `localStorage` 資料未遷移。
+- 更新 Render blueprint：新增 `fatmathfat-api`、`fatmathfat-db` 與 `VITE_API_BASE_URL`。
+- 通過後端 pytest 8 項、前端 Vitest 10 項、後端 Alembic、前端 build、桌面／手機 Playwright 與離線登入驗證。
 - 已將台灣教材用語稽核結果整合到說明文字；CBM 已重新索引至 249 nodes / 530 edges。
 - 已建立獨立部署 workspace `/Users/eric/script/math_website_render`。
 - 已在獨立 workspace 新增 pointer-based 元素拖放與 `render.yaml`。
@@ -39,20 +47,21 @@ updated: 2026-09-03
 
 ## 進行中
 
-- 目前無進行中的功能開發。
+- 尚需在 Render Dashboard 填入郵件寄件與 DeepSeek 的實際 secrets，並完成第一次線上 OTP 寄送測試。
 
 ## 待辦
 
 - 若要支援描述法轉列舉法，需另存論域（如 `ℤ`、`ℕ`）並建立對應題型。
-- 若要支援教師自訂題目，需把測驗題型與錯誤識別碼正式化為資料契約。
-- 目前無進行中的功能開發；下一版可先做內容擴充、論域資料模型或多裝置同步方案評估。
+- 若要支援作業派發、即時在線狀態、AI 對話審查或 AI 題目入庫，需另做資料模型與管理流程。
+- 若要支援描述法轉列舉法的實際論域資料模型，需建立 domain 資料結構。
 
 ## 給下一個 agent 的提示
 
 - 先讀 `CONVENTIONS.md`，再讀本檔。
 - 任何結構性變更都要重新索引 graph；目前 index 已反映新程式碼（249 nodes / 530 edges），且已寫入 ADR。
-- 首版刻意不加入帳號、排行、教師後台、多人連線與複雜動畫。
-- 主要入口在 `src/`：路由、資料、集合運算、儲存與頁面各自分離。
-- 重大決策已記進 `DECISIONS.md`，也要同步 CBM ADR。
-- 原本的 `math_website` 仍是未初始化 Git 的開發目錄；部署與拖曳修改在 `math_website_render`。
-- 本版已同步到 `math_website_render`、推送到 GitHub `main`，且 Render deploy 已確認 `live`。
+- 網站需要連線；PWA 靜態資源仍可快取，但未登入或離線時顯示登入頁。
+- 後端路由在 `backend/app/routers/`，AI 服務在 `backend/app/services/`，資料庫 migration 在 `backend/alembic/`。
+- 前端登入與 API client 在 `src/context/AuthContext.tsx` 與 `src/lib/api.ts`；AI 面板在 `src/components/AiTeacherPanel.tsx`。
+- 重大決策已記進 `DECISIONS.md`；結構變更後需重新執行 CBM index 與 ADR。
+- 原本的 `math_website` 仍是未初始化 Git 的開發目錄；本期實作與部署修改在 `math_website_render`。
+- 本次尚未推送到 GitHub；部署前需確認 Render env、Mail 與 DeepSeek secrets。

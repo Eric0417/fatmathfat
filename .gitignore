@@ -2,3 +2,10 @@ node_modules/
 dist/
 .codebase-memory/
 .DS_Store
+backend/.env
+backend/.venv/
+backend/**/__pycache__/
+backend/**/*.db
+backend/**/*.sqlite
+backend/.pytest_cache/
+.pytest_cache/

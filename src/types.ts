@@ -110,3 +110,67 @@ export interface QuizResultRecord {
     tags: MistakeTag[];
   }>;
 }
+
+export type UserRole = 'student' | 'teacher';
+
+export interface User {
+  id: number;
+  email: string;
+  role: UserRole;
+  student_number?: string | null;
+  last_login_at?: string | null;
+  last_seen_at?: string | null;
+  last_lesson?: string | null;
+  created_at: string;
+}
+
+export interface QuizAttemptResponse {
+  id: number | string;
+  completed_at: string;
+  score: number;
+  correct: number;
+  total: number;
+  duration_ms: number;
+  topic_scores: Record<QuizTopic, { correct: number; total: number }>;
+  mistakes: Array<{
+    question_id: string;
+    selected: string;
+    answer: string;
+    tags: MistakeTag[];
+  }>;
+}
+
+export interface PracticeProgressResponse {
+  id: number;
+  source: 'topic' | 'ai_generated' | 'review';
+  topic: string;
+  correct: number;
+  total: number;
+  duration_ms: number;
+  completed_at: string;
+}
+
+export interface ProgressResponse {
+  user: User;
+  completed_lessons: Array<{
+    lesson_id: string;
+    completed_at: string;
+  }>;
+  last_lesson: string | null;
+  practice_progress: PracticeProgressResponse[];
+  quiz_attempts: QuizAttemptResponse[];
+}
+
+export interface AiQuestionContext {
+  route: string;
+  lesson_id?: string | null;
+  topic?: string | null;
+  question_id?: string | null;
+  prompt?: string | null;
+  kind?: string | null;
+  difficulty?: string | null;
+  choices: string[];
+  selected?: string | null;
+  answered: boolean;
+  allow_answer: boolean;
+}

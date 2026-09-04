@@ -8,9 +8,15 @@ import {
 } from 'lucide-react';
 import { useState } from 'react';
 import { QuestionRunner } from '../components/QuestionRunner';
+import { useAuth } from '../context/AuthContext';
 import { quizQuestions, topicLabels } from '../data/questions';
-import { addQuizResult } from '../lib/storage';
-import type { MistakeTag, QuizQuestion, QuizResultRecord, QuizTopic } from '../types';
+import type {
+  MistakeTag,
+  QuizAttemptResponse,
+  QuizQuestion,
+  QuizResultRecord,
+  QuizTopic
+} from '../types';
 
 const mistakeLabels: Record<MistakeTag, string> = {
   'union-intersection-confusion': '交集／聯集混淆',
@@ -54,7 +60,7 @@ function QuizSummary({
         <div>
           <span className="panel-kicker">學習表現與建議</span>
           <h2>答對 {result.correct} / {result.total} 題</h2>
-          <p>結果已保存在目前裝置，不會與他人比較。</p>
+          <p>結果已同步到學習帳號，不會與他人比較。</p>
         </div>
       </div>
 
@@ -142,6 +148,7 @@ function QuizSummary({
 }
 
 export function QuizPage() {
+  const { apiFetch } = useAuth();
   const [started, setStarted] = useState(false);
   const [runKey, setRunKey] = useState(0);
   const [result, setResult] = useState<QuizResultRecord | null>(null);
@@ -155,7 +162,7 @@ export function QuizPage() {
     setStartedAt(Date.now());
   };
 
-  const complete = (answers: Record<string, string>) => {
+  const complete = async (answers: Record<string, string>) => {
     const topicScores = emptyTopicScores();
     const mistakes: QuizResultRecord['mistakes'] = [];
     let correct = 0;
@@ -187,7 +194,24 @@ export function QuizPage() {
       mistakes
     };
 
-    addQuizResult(nextResult);
+    void apiFetch<QuizAttemptResponse>('/api/progress/quiz', {
+      method: 'POST',
+      body: JSON.stringify({
+        id: nextResult.id,
+        completed_at: nextResult.completedAt,
+        score: nextResult.score,
+        correct: nextResult.correct,
+        total: nextResult.total,
+        duration_ms: nextResult.durationMs,
+        topic_scores: nextResult.topicScores,
+        mistakes: nextResult.mistakes.map((mistake) => ({
+          question_id: mistake.questionId,
+          selected: mistake.selected,
+          answer: mistake.answer,
+          tags: mistake.tags
+        }))
+      })
+    }).catch(() => undefined);
     setResult(nextResult);
     setStarted(false);
   };

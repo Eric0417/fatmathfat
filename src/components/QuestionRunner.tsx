@@ -1,5 +1,6 @@
 import { ArrowLeft, ArrowRight, Check, CircleHelp } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useAiTeacher } from '../context/AiTeacherContext';
 import { VennDiagram } from './VennDiagram';
 import {
   difficultyLabels,
@@ -50,9 +51,42 @@ export function QuestionRunner({
   const [checked, setChecked] = useState(false);
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [finished, setFinished] = useState(false);
-
+  const { setContext, setQuizActive } = useAiTeacher();
   const question = questions[index];
   const isLast = index === questions.length - 1;
+
+  useEffect(() => {
+    const route = window.location.hash.replace(/^#/, '').split('?')[0];
+    setQuizActive(mode === 'quiz' && !finished);
+    const currentQuestion = finished ? null : question;
+    setContext({
+      route,
+      lesson_id: currentQuestion?.topic ?? null,
+      topic: currentQuestion?.topic ?? null,
+      question_id: currentQuestion?.id ?? null,
+      prompt: currentQuestion?.prompt ?? null,
+      kind: currentQuestion?.kind ?? null,
+      difficulty: currentQuestion?.difficulty ?? null,
+      choices: currentQuestion?.choices ?? [],
+      selected,
+      answered: finished ? true : checked,
+      allow_answer: !finished && mode !== 'quiz' && checked
+    });
+  }, [
+    checked,
+    finished,
+    mode,
+    question,
+    selected,
+    setContext,
+    setQuizActive
+  ]);
+
+  useEffect(() => {
+    return () => {
+      setQuizActive(false);
+    };
+  }, [setQuizActive]);
 
   if (finished) {
     return (
@@ -101,7 +135,10 @@ export function QuestionRunner({
       }
     } else {
       if (isLast) {
+        const finalAnswers = { ...answers, [question.id]: selected };
+        setAnswers(finalAnswers);
         setFinished(true);
+        onComplete?.(finalAnswers);
       } else {
         setIndex((current) => current + 1);
       }

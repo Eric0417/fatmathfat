@@ -6,13 +6,11 @@ import {
   ListChecks,
   Shapes
 } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { useAuth } from '../context/AuthContext';
 import { lessons, lessonByTopic } from '../data/curriculum';
-import {
-  loadCompletedLessons,
-  loadLastLesson,
-  loadQuizHistory
-} from '../lib/storage';
 import { VennDiagram } from '../components/VennDiagram';
+import type { ProgressResponse } from '../types';
 
 const previewState = {
   universe: [1, 2, 3, 4, 5, 6, 7, 8],
@@ -21,10 +19,18 @@ const previewState = {
 };
 
 export function HomePage() {
-  const completed = loadCompletedLessons().length;
-  const latestResult = loadQuizHistory()[0];
-  const lastLesson = loadLastLesson();
+  const { apiFetch } = useAuth();
+  const [progress, setProgress] = useState<ProgressResponse | null>(null);
+  const completed = progress?.completed_lessons.length ?? 0;
+  const latestResult = progress?.quiz_attempts[0] ?? null;
+  const lastLesson = progress?.last_lesson ?? null;
   const lastLessonTitle = lastLesson ? lessonByTopic(lastLesson)?.title : undefined;
+
+  useEffect(() => {
+    void apiFetch<ProgressResponse>('/api/progress')
+      .then(setProgress)
+      .catch(() => setProgress(null));
+  }, [apiFetch]);
 
   return (
     <>
@@ -44,7 +50,7 @@ export function HomePage() {
       </div>
 
       <div className="home-notice" role="note" aria-label="使用說明">
-        <span>不需要登入，學習紀錄只保存在目前這台裝置。</span>
+        <span>登入後會同步學習紀錄。</span>
         <span>可以依序學習，也可以直接操作集合工具。</span>
       </div>
 

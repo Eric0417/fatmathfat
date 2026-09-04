@@ -1,14 +1,10 @@
 import { Check, ChevronLeft, ChevronRight, CircleCheck } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
+import { useAuth } from '../context/AuthContext';
 import { lessons, lessonByTopic } from '../data/curriculum';
 import { questionsForLesson } from '../data/questions';
-import {
-  loadCompletedLessons,
-  saveCompletedLesson,
-  saveLastLesson
-} from '../lib/storage';
 import { VennDiagram } from '../components/VennDiagram';
-import type { Lesson, SetOperation, SetState } from '../types';
+import type { Lesson, ProgressResponse, SetOperation, SetState } from '../types';
 
 function lessonDiagramState(lesson: Lesson): SetState {
   return {
@@ -41,18 +37,26 @@ function EmptySetVisual() {
   );
 }
 
-function LessonDetail({ lesson }: { lesson: Lesson }) {
-  const [completed, setCompleted] = useState(() =>
-    loadCompletedLessons().includes(lesson.id)
-  );
+function LessonDetail({
+  lesson,
+  completedLessons,
+  onComplete,
+  onVisit
+}: {
+  lesson: Lesson;
+  completedLessons: string[];
+  onComplete: (lessonId: string) => void;
+  onVisit: (lessonId: string) => void;
+}) {
+  const completed = completedLessons.includes(lesson.id);
   const practiceQuestions = questionsForLesson(lesson.id);
   const state = lessonDiagramState(lesson);
   const nextLesson = lessons.find((item) => item.order === lesson.order + 1);
   const previousLesson = lessons.find((item) => item.order === lesson.order - 1);
 
   useEffect(() => {
-    saveLastLesson(lesson.id);
-  }, [lesson.id]);
+    onVisit(lesson.id);
+  }, [lesson.id, onVisit]);
 
   return (
     <div className="lesson-layout">
@@ -71,7 +75,7 @@ function LessonDetail({ lesson }: { lesson: Lesson }) {
               >
                 <span className="lesson-list__number">{String(item.order).padStart(2, '0')}</span>
                 <span>{item.title}</span>
-                {loadCompletedLessons().includes(item.id) && (
+                {completedLessons.includes(item.id) && (
                   <Check size={16} aria-label="已完成" />
                 )}
               </a>
@@ -174,10 +178,7 @@ function LessonDetail({ lesson }: { lesson: Lesson }) {
             <button
               type="button"
               className="button button--secondary"
-              onClick={() => {
-                saveCompletedLesson(lesson.id);
-                setCompleted(true);
-              }}
+              onClick={() => onComplete(lesson.id)}
               disabled={completed}
             >
               <Check size={17} aria-hidden="true" />
@@ -207,13 +208,43 @@ function LessonDetail({ lesson }: { lesson: Lesson }) {
 }
 
 export function LessonsPage({ lessonId }: { lessonId?: string }) {
+  const { apiFetch } = useAuth();
   const [currentLessonId, setCurrentLessonId] = useState(
     lessonId ?? lessons[0]?.id
   );
+  const [progress, setProgress] = useState<ProgressResponse | null>(null);
+
+  const loadProgress = () => {
+    void apiFetch<ProgressResponse>('/api/progress')
+      .then(setProgress)
+      .catch(() => setProgress(null));
+  };
 
   useEffect(() => {
     if (lessonId) setCurrentLessonId(lessonId);
   }, [lessonId]);
+
+  useEffect(() => {
+    loadProgress();
+  }, [apiFetch, currentLessonId]);
+
+  const visitLesson = useCallback((id: string) => {
+    void apiFetch<ProgressResponse>('/api/progress/lessons', {
+      method: 'POST',
+      body: JSON.stringify({ lesson_id: id, mark_complete: false })
+    })
+      .then(setProgress)
+      .catch(() => undefined);
+  }, [apiFetch]);
+
+  const completeLesson = useCallback((id: string) => {
+    void apiFetch<ProgressResponse>('/api/progress/lessons', {
+      method: 'POST',
+      body: JSON.stringify({ lesson_id: id, mark_complete: true })
+    })
+      .then(setProgress)
+      .catch(() => undefined);
+  }, [apiFetch]);
 
   const lesson = lessonByTopic(currentLessonId ?? '');
 
@@ -231,5 +262,15 @@ export function LessonsPage({ lessonId }: { lessonId?: string }) {
     );
   }
 
-  return <LessonDetail key={lesson.id} lesson={lesson} />;
+  return (
+    <LessonDetail
+      key={lesson.id}
+      lesson={lesson}
+      completedLessons={
+        progress?.completed_lessons.map((item) => item.lesson_id) ?? []
+      }
+      onComplete={completeLesson}
+      onVisit={visitLesson}
+    />
+  );
 }
