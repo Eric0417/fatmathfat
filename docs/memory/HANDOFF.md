@@ -38,8 +38,9 @@ updated: 2026-09-04
 - 完成 DeepSeek `deepseek-v4-flash` AI 老師：全站面板、測驗中停用、依弱點生成練習、題目結構與集合運算驗證。
 - 完成前端登入、路由保護、角色導覽、AI 面板、練習生成與 API 資料層；舊 `localStorage` 資料未遷移。
 - 更新 Render blueprint：新增 `fatmathfat-api`、`fatmathfat-db` 與 `VITE_API_BASE_URL`。
-- 通過後端 pytest 8 項、前端 Vitest 10 項、後端 Alembic、前端 build、桌面／手機 Playwright 與離線登入驗證。
-- 已將台灣教材用語稽核結果整合到說明文字；CBM 已重新索引至 249 nodes / 530 edges。
+- 診斷線上 OTP 失敗：原是 587 / STARTTLS 連線問題；改回 Gmail SMTP 465 / SSL，並以另一個 Render 專案的成功寄信日誌驗證。
+- 通過後端 pytest 12 項、前端 Vitest 10 項、後端 Alembic、前端 build、桌面／手機 Playwright 與離線登入驗證。
+- 已將台灣教材用語稽核結果整合到說明文字；CBM 已重新索引至 669 nodes / 1838 edges。
 - 已建立獨立部署 workspace `/Users/eric/script/math_website_render`。
 - 已在獨立 workspace 新增 pointer-based 元素拖放與 `render.yaml`。
 - 建立 GitHub repo `Eric0417/fatmathfat` 並部署 Render static site `fatmathfat`，deploy 狀態為 `live`。
@@ -47,7 +48,7 @@ updated: 2026-09-04
 
 ## 進行中
 
-- 尚需在 Render Dashboard 填入郵件寄件與 DeepSeek 的實際 secrets，並完成第一次線上 OTP 寄送測試。
+- 尚需在 Render Dashboard 確認 `EMAIL_FROM`、`GMAIL_APP_PASSWORD`、`SMTP_PORT=465` 與 Python 3.11.11，再完成第一次線上 OTP 寄送測試。
 
 ## 待辦
 

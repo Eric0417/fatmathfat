@@ -40,6 +40,7 @@ updated: 2026-09-04
 | 前端登入與角色導覽 | done | `#/login`、路由保護、管理員 `#/admin` |
 | AI 生成練習 | done | 不保存題目，保存練習摘要 |
 | Render 全棧部署設定 | done | 新增 backend web service 與 PostgreSQL blueprint |
+| 郵件供應商支援 | done | Gmail SMTP 465 為基礎；Resend API 與 Gmail API 可選 |
 | 後端與瀏覽器測試 | done | pytest、Vitest、Playwright 與離線登入驗證 |
-| 實際部署 secrets | pending | 需在 Render 設定 Email 與 DeepSeek API key |
+| 實際部署 secrets | pending | 需在 Render 設定 Resend／Gmail OAuth 與 DeepSeek API key |
 | 描述法論域資料模型 | pending | 若要支援描述法轉列舉法，需另存 `domain` |

@@ -31,6 +31,23 @@ def _build_message(from_addr: str, to: str, subject: str, html_body: str) -> MIM
     return msg
 
 
+def _get_sender_email() -> str:
+    from_addr = settings.EMAIL_FROM.strip()
+    if from_addr:
+        return from_addr
+
+    db = SessionLocal()
+    try:
+        credential = (
+            db.query(EmailCredential)
+            .filter(EmailCredential.id == 1)
+            .first()
+        )
+        return credential.account_email.strip() if credential else ""
+    finally:
+        db.close()
+
+
 def _get_gmail_access_token() -> str | None:
     refresh_token = settings.GOOGLE_REFRESH_TOKEN.strip()
     if not refresh_token:
@@ -76,7 +93,7 @@ def _get_gmail_access_token() -> str | None:
 
 
 def _send_via_gmail_api(to: str, subject: str, html_body: str) -> bool:
-    from_addr = settings.EMAIL_FROM.strip()
+    from_addr = _get_sender_email()
     access_token = _get_gmail_access_token()
     if not from_addr or not access_token:
         return False
@@ -106,7 +123,48 @@ def _send_via_gmail_api(to: str, subject: str, html_body: str) -> bool:
         return False
 
 
+def _send_via_resend(to: str, subject: str, html_body: str) -> bool:
+    api_key = settings.RESEND_API_KEY.strip()
+    from_addr = settings.RESEND_FROM.strip() or (
+        "onboarding@resend.dev" if api_key else settings.EMAIL_FROM.strip()
+    )
+    if not api_key or not from_addr:
+        return False
+
+    try:
+        response = httpx.post(
+            "https://api.resend.com/emails",
+            headers={
+                "Authorization": f"Bearer {api_key}",
+                "Content-Type": "application/json",
+            },
+            json={
+                "from": from_addr,
+                "to": [to],
+                "subject": subject,
+                "html": html_body,
+            },
+            timeout=settings.RESEND_TIMEOUT_SECONDS,
+        )
+        if response.status_code not in (200, 201):
+            logger.warning(
+                "Resend API error: %s %s",
+                response.status_code,
+                response.text[:300],
+            )
+            return False
+        return True
+    except Exception as exc:
+        logger.warning("Resend send failed for %s: %s", to, exc)
+        return False
+
+
 def send_email(to: str, subject: str, html_body: str) -> bool:
+    if settings.RESEND_API_KEY:
+        sent = _send_via_resend(to, subject, html_body)
+        if sent:
+            return True
+
     if settings.GOOGLE_CLIENT_ID and settings.GOOGLE_CLIENT_SECRET:
         sent = _send_via_gmail_api(to, subject, html_body)
         if sent:

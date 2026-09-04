@@ -28,7 +28,7 @@ services:
       - key: GMAIL_APP_PASSWORD
         sync: false
       - key: SMTP_PORT
-        value: "587"
+        value: "465"
       - key: SMTP_TIMEOUT_SECONDS
         value: "10"
       - key: GOOGLE_CLIENT_ID
@@ -40,6 +40,12 @@ services:
       - key: GOOGLE_REDIRECT_URI
         value: "https://fatmathfat-api.onrender.com/api/auth/google/callback"
       - key: GMAIL_API_TIMEOUT_SECONDS
+        value: "10"
+      - key: RESEND_API_KEY
+        sync: false
+      - key: RESEND_FROM
+        sync: false
+      - key: RESEND_TIMEOUT_SECONDS
         value: "10"
       - key: DEEPSEEK_API_KEY
         sync: false

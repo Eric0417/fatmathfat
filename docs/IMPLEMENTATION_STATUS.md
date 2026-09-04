@@ -29,6 +29,7 @@ updated: 2026-09-04
 | 學習數據後端 | 已完成 | PostgreSQL 保存測驗、完成單元、練習摘要、最後登入與最後活動。
 | 清除紀錄 | 已完成 | 二次確認、取消按鈕與指定提示文字。
 | OTP 登入 | 已完成 | 學校郵箱格式限定、管理員白名單、驗證碼到期與次數限制。
+| 郵件寄送 | 待設定 | Gmail SMTP 465 為基礎；Render 需設定 EMAIL_FROM、GMAIL_APP_PASSWORD 與 SMTP_PORT=465。
 | 教師管理 | 已完成 | 學生數據、練習與測驗統計、管理員白名單新增／移除。
 | AI 老師 | 已完成 | DeepSeek 全站面板、依弱點生成練習、測驗進行中停用。
 | 頁尾署名 | 已完成 | 全站共用 `AppShell` 顯示 `developed by Eric Wong`。
@@ -51,4 +52,4 @@ updated: 2026-09-04
 
 ## 部署狀態
 
-本版功能已在 `math_website_render` 實作並完成本機驗證。Render blueprint 已加入 backend service 與 PostgreSQL；尚未推送 GitHub／部署，也尚未在 Render 填入 Email 與 DeepSeek secrets。
+本版功能已在 `math_website_render` 實作並完成本機驗證。Render blueprint 已加入 backend service 與 PostgreSQL，並補上 Resend API 選項；尚未推送 GitHub／部署，也尚未在 Render 填入 Resend／Gmail OAuth 與 DeepSeek secrets。

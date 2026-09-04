@@ -20,7 +20,7 @@ updated: 2026-09-04
 | `npm run typecheck` | 通過 | `tsc -b`，無 TypeScript 錯誤。 |
 | `npm test` | 通過 | 2 個測試檔、10 個測試全數通過。 |
 | `npm run build` | 通過 | Vite production build 成功；PWA 預快取 18 個資源。 |
-| `backend/.venv/bin/python -m pytest` | 通過 | 後端 8 個測試全數通過。 |
+| `backend/.venv/bin/python -m pytest` | 通過 | 後端 12 個測試全數通過。 |
 | `npm run test:browser` | 通過 | 登入 token 下桌面與手機 Chrome 驗證，含管理員與 AI 面板。 |
 | `npm run test:offline` | 通過 | production preview 下離線重新載入會顯示登入頁。 |
 | `npm run lint` | 未提供 | `package.json` 沒有對應 script，也未安裝 ESLint。 |
@@ -46,6 +46,8 @@ updated: 2026-09-04
 
 - 學生郵箱格式、非白名單郵箱拒絕與管理員白名單。
 - OTP 取得、驗證、過期、次數限制與管理員角色。
+- Resend API 優先使用；Gmail API 在 `EMAIL_FROM` 為空時讀取 OAuth 授權後儲存的寄件郵箱。
+- Gmail SMTP 465 / SSL 在沒有 Google Client Secret 時仍可寄送。
 - 管理員 API 權限、管理員新增／移除。
 - 學習資料 API：課程完成、練習摘要、測驗結果與最後活動。
 

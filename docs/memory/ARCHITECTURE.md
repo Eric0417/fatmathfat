@@ -22,7 +22,7 @@ updated: 2026-09-04
 | 圖形 | SVG/CSS Venn 圖 | 小、容易離線、可靜態高亮 |
 | 後端 | FastAPI + SQLAlchemy + Alembic | 提供認證、學習數據與 AI proxy |
 | 儲存 | PostgreSQL | 保存帳號、進度、測驗與管理員白名單 |
-| 認證 | Email OTP + JWT | 學生格式限定，管理員使用白名單 |
+| 認證 | Email OTP + JWT | 學生格式限定，管理員使用白名單；Gmail SMTP 465 為基礎，Resend API 與 Gmail API 可選 |
 | AI | DeepSeek `deepseek-v4-flash` | 答題引導與依弱點生成練習 |
 | 測試 | Vitest + pytest + Playwright Core | 覆蓋邏輯、API、登入與瀏覽器流程 |
 

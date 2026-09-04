@@ -17,6 +17,7 @@ updated: 2026-09-04
 - FastAPI + SQLAlchemy + Alembic
 - PostgreSQL（Render）與 SQLite（本機測試）
 - Email OTP 登入 + JWT 會話
+- 郵件寄送：Resend API 優先，其次 Gmail API，最後 Gmail SMTP
 - DeepSeek `deepseek-v4-flash` AI 老師
 - 原生 hash routing、單一 CSS、無 UI 框架
 - `src/lib/setMath.ts`：集合運算與圖形區域邏輯
@@ -37,7 +38,7 @@ cd backend
 python3 -m venv .venv
 .venv/bin/pip install -r requirements.txt
 cp .env.example .env
-# 設定 DATABASE_URL、JWT_SECRET、GMAIL_APP_PASSWORD、EMAIL_FROM、DEEPSEEK_API_KEY
+# 設定 DATABASE_URL、JWT_SECRET、DEEPSEEK_API_KEY，以及 EMAIL_FROM、GMAIL_APP_PASSWORD（Gmail SMTP 465）
 .venv/bin/alembic upgrade head
 .venv/bin/uvicorn app.main:app --reload --port 8000
 ```
@@ -109,6 +110,16 @@ npm run test:offline
 - `fatmathfat-db`：Render PostgreSQL database
 
 在 Render 環境變數中設定 `JWT_SECRET`、`ADMIN_EMAILS`、`GMAIL_APP_PASSWORD`、`EMAIL_FROM`、`DEEPSEEK_API_KEY` 等值；生產 API 網址為 `https://fatmathfat-api.onrender.com`。前端靜態站須設定 `VITE_API_BASE_URL`。
+
+### 寄件方式
+
+**最簡單的 Gmail SMTP：** Render 的 `fatmathfat-api` 設定 `EMAIL_FROM` 與 `GMAIL_APP_PASSWORD`，並使用 `SMTP_PORT=465`。這個網站不需要 `GOOGLE_CLIENT_ID` 才能寄出驗證碼，Client ID 是另一個 OAuth/登入用途；如果已經有它，留著不影響 SMTP。
+
+**建議使用 Resend：** 在 Resend Dashboard 建立 API key，於 `fatmathfat-api` 設定 `RESEND_API_KEY`；未驗證網域時可使用 `RESEND_FROM=onboarding@resend.dev` 測試，但此地址通常只能寄送給帳戶擁有者。正式寄信給學校學生前，需驗證寄件網域並改用該網域的寄件地址。
+
+**備用方式為 Gmail OAuth：** 在 Google Cloud Console 建立 OAuth Client，將 `https://fatmathfat-api.onrender.com/api/auth/google/callback` 加入 authorized redirect URI，並把 `GOOGLE_CLIENT_ID`、`GOOGLE_CLIENT_SECRET` 設到 Render。接著開啟 `https://fatmathfat-api.onrender.com/api/auth/google/authorize` 完成授權；程式會把 refresh token 與授權郵箱存入資料庫，不需要再設定 `GOOGLE_REFRESH_TOKEN`。若仍使用 Gmail SMTP，要另外設定 `EMAIL_FROM` 與 `GMAIL_APP_PASSWORD`。
+
+**注意：** Gmail API 不能只用 `GOOGLE_CLIENT_ID`。Google Device Authorization Flow 沒有開放 `gmail.send` scope，因此仍需要 Web Application OAuth 的 `GOOGLE_CLIENT_SECRET` 與 callback URL。
 
 ## 文件
 

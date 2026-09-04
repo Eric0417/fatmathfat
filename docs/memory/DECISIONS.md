@@ -98,3 +98,15 @@ updated: 2026-09-04
 **替代方案：** 只做固定提示、不生成新題、或使用其他 AI API —— 會少掉個人化弱點練習或需重新驗證 API。
 
 **影響：** 不保存對話、不保存 AI 生成題目，只保存練習摘要；需要 DeepSeek API key、模型名稱與 Render 環境變數。
+
+## D-008 郵件寄送以 Gmail SMTP 465 為基礎
+
+**狀態：** active
+
+**決定：** 寄送驗證碼採用 Gmail SMTP 465 / SSL，使用 `EMAIL_FROM` 與 `GMAIL_APP_PASSWORD`。Resend API 與 Gmail API 保留為可選路徑，但不需要為寄送驗證碼設定 Google Client Secret 或 redirect URI。
+
+**理由：** 另一個 IELTS Render 專案已驗證 `smtp.gmail.com:465` 可成功寄信；本專案先前的失敗來自 587 / STARTTLS 路徑，而且線上服務未使用 Render blueprint 的 Python 3.11 環境變數。
+
+**替代方案：** 只保留 Resend API——需要額外 key；只保留 Gmail OAuth——需要 Google Cloud OAuth Client 與授權流程。Google Device Flow 不支援 `gmail.send` scope。
+
+**影響：** Render 需設定 `EMAIL_FROM`、`GMAIL_APP_PASSWORD`，並使用 `SMTP_PORT=465`；`GOOGLE_CLIENT_ID` 不是寄送驗證碼的必要條件。線上服務需使用 Python 3.11.11 環境變數。
