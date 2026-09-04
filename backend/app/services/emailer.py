@@ -5,6 +5,8 @@ import socket
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
+import httpx
+
 from app.config import settings
 
 logger = logging.getLogger(__name__)
@@ -18,6 +20,9 @@ def _ipv4_getaddrinfo(host, port, *args, **kwargs):
 
 
 def send_email(to: str, subject: str, html_body: str) -> bool:
+    if settings.RESEND_API_KEY:
+        return _send_via_resend(to, subject, html_body)
+
     from_addr = settings.EMAIL_FROM.strip()
     app_password = "".join(settings.GMAIL_APP_PASSWORD.split())
 
@@ -68,6 +73,40 @@ def send_email(to: str, subject: str, html_body: str) -> bool:
         return False
     finally:
         socket.getaddrinfo = original_getaddrinfo
+
+
+def _send_via_resend(to: str, subject: str, html_body: str) -> bool:
+    api_key = settings.RESEND_API_KEY.strip()
+    from_addr = settings.RESEND_FROM.strip() or settings.EMAIL_FROM.strip()
+    if not api_key or not from_addr:
+        return False
+
+    try:
+        response = httpx.post(
+            "https://api.resend.com/emails",
+            headers={
+                "Authorization": f"Bearer {api_key}",
+                "Content-Type": "application/json",
+            },
+            json={
+                "from": from_addr,
+                "to": [to],
+                "subject": subject,
+                "html": html_body,
+            },
+            timeout=settings.RESEND_TIMEOUT_SECONDS,
+        )
+        if response.status_code not in (200, 201):
+            logger.warning(
+                "Resend API error: %s %s",
+                response.status_code,
+                response.text[:300],
+            )
+            return False
+        return True
+    except Exception as exc:
+        logger.warning("Resend send failed for %s: %s", to, exc)
+        return False
 
 
 def send_verification_email(to: str, code: str) -> bool:

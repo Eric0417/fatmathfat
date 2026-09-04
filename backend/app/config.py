@@ -22,6 +22,10 @@ class Settings(BaseSettings):
     SMTP_PORT: int = 587
     SMTP_TIMEOUT_SECONDS: int = 10
 
+    RESEND_API_KEY: str = ""
+    RESEND_FROM: str = ""
+    RESEND_TIMEOUT_SECONDS: int = 10
+
     DEEPSEEK_API_KEY: str = ""
     DEEPSEEK_BASE_URL: str = "https://api.deepseek.com"
     DEEPSEEK_MODEL: str = "deepseek-v4-flash"

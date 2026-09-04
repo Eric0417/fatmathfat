@@ -31,6 +31,12 @@ services:
         value: "587"
       - key: SMTP_TIMEOUT_SECONDS
         value: "10"
+      - key: RESEND_API_KEY
+        sync: false
+      - key: RESEND_FROM
+        sync: false
+      - key: RESEND_TIMEOUT_SECONDS
+        value: "10"
       - key: DEEPSEEK_API_KEY
         sync: false
       - key: DEEPSEEK_BASE_URL
