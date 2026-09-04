@@ -77,7 +77,9 @@ def send_email(to: str, subject: str, html_body: str) -> bool:
 
 def _send_via_resend(to: str, subject: str, html_body: str) -> bool:
     api_key = settings.RESEND_API_KEY.strip()
-    from_addr = settings.RESEND_FROM.strip() or settings.EMAIL_FROM.strip()
+    from_addr = settings.RESEND_FROM.strip() or (
+        "onboarding@resend.dev" if api_key else settings.EMAIL_FROM.strip()
+    )
     if not api_key or not from_addr:
         return False
 
