@@ -57,15 +57,22 @@ export interface Lesson {
   shortTitle: string;
   summary: string;
   definition: string;
-  example: string;
+  examples: LessonExample[];
   explanation: string;
   keyPoints: string[];
   color: 'blue' | 'orange' | 'green' | 'red' | 'teal' | 'navy' | 'slate';
-  commonMistake: string;
+  detailedNotes: string[];
+  commonMistakes: string[];
   practiceTopic: QuizTopic;
   universe?: number[];
   setA?: number[];
   setB?: number[];
+}
+
+export interface LessonExample {
+  title: string;
+  statement: string;
+  explanation: string;
 }
 
 export type MistakeTag =

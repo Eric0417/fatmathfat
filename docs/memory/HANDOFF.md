@@ -37,11 +37,12 @@ updated: 2026-09-04
 - 完成管理員 API 與 `#/admin`：學生清單、學習數據、教師白名單新增／移除。
 - 完成 DeepSeek `deepseek-v4-flash` AI 老師：全站面板、測驗中停用、依弱點生成練習、題目結構與集合運算驗證。
 - 修復 AI 老師在非測驗頁被錯誤停用的問題：離開測驗時清除殘留 context，後端只以明確的 `quiz_active` 判斷測驗中。
+- 擴充 7 個課程主題教材：每個主題增加最少 3 個例子、4 段詳細說明與 2 條常見錯誤，課程頁改為多例子與詳細說明區塊。
 - 完成前端登入、路由保護、角色導覽、AI 面板、練習生成與 API 資料層；舊 `localStorage` 資料未遷移。
 - 更新 Render blueprint：新增 `fatmathfat-api`、`fatmathfat-db` 與 `VITE_API_BASE_URL`。
 - 完成線上 OTP 寄送：`fatmathfat-api` 升級至 `0.5c-512mb` 後，Gmail SMTP 465 / SSL、Python 3.11.11 已成功寄出驗證碼。
-- 通過後端 pytest 13 項、前端 Vitest 11 項、後端 Alembic、前端 build、桌面／手機 Playwright 與離線登入驗證。
-- 已將台灣教材用語稽核結果整合到說明文字；CBM 已重新索引至 675 nodes / 1878 edges。
+- 通過後端 pytest 13 項、前端 Vitest 12 項、後端 Alembic、前端 build、桌面／手機 Playwright 與離線登入驗證。
+- 已將台灣教材用語稽核結果整合到說明文字；CBM 已重新索引至 679 nodes / 1886 edges。
 - 已建立獨立部署 workspace `/Users/eric/script/math_website_render`。
 - 已在獨立 workspace 新增 pointer-based 元素拖放與 `render.yaml`。
 - 建立 GitHub repo `Eric0417/fatmathfat` 並部署 Render static site `fatmathfat`，deploy 狀態為 `live`。
@@ -60,7 +61,7 @@ updated: 2026-09-04
 ## 給下一個 agent 的提示
 
 - 先讀 `CONVENTIONS.md`，再讀本檔。
-- 任何結構性變更都要重新索引 graph；目前 index 已反映新程式碼（675 nodes / 1878 edges），且已寫入 ADR。
+- 任何結構性變更都要重新索引 graph；目前 index 已反映新程式碼（679 nodes / 1886 edges），且已寫入 ADR。
 - 網站需要連線；PWA 靜態資源仍可快取，但未登入或離線時顯示登入頁。
 - 後端路由在 `backend/app/routers/`，AI 服務在 `backend/app/services/`，資料庫 migration 在 `backend/alembic/`。
 - 前端登入與 API client 在 `src/context/AuthContext.tsx` 與 `src/lib/api.ts`；AI 面板在 `src/components/AiTeacherPanel.tsx`。

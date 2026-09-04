@@ -82,6 +82,31 @@ try {
   });
   assert((await overflow(desktopPage)).overflow === 0, 'desktop home has horizontal overflow');
 
+  const lessonIds = [
+    'set',
+    'membership',
+    'representation',
+    'empty-set',
+    'subset',
+    'operations',
+    'complement'
+  ];
+  for (const lessonId of lessonIds) {
+    await load(desktopPage, `/lessons/${lessonId}`);
+    assert(
+      (await desktopPage.locator('.lesson-example-item').count()) >= 3,
+      `${lessonId} is missing detailed examples`
+    );
+    assert(
+      (await desktopPage.locator('.lesson-detail-list li').count()) >= 4,
+      `${lessonId} is missing detailed notes`
+    );
+    assert(
+      (await desktopPage.locator('.lesson-mistake-list li').count()) >= 2,
+      `${lessonId} is missing common mistakes`
+    );
+  }
+
   await load(desktopPage, '/lessons/membership');
   await desktopPage.getByRole('heading', { name: '元素與集合的關係' }).waitFor();
   assert(

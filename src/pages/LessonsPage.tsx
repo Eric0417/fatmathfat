@@ -122,7 +122,7 @@ function LessonDetail({
         <section className="panel lesson-example">
           <div className="panel-heading panel-heading--compact">
             <span className="panel-kicker">再對照例子</span>
-            <h2>圖形與符號同步出現</h2>
+            <h2>多個例子，同一套規則</h2>
           </div>
           {lesson.id === 'empty-set' ? (
             <EmptySetVisual />
@@ -134,17 +134,46 @@ function LessonDetail({
             />
           )}
           <p className="lesson-example__text">
-            <strong>例子：</strong>
-            {lesson.example}
-          </p>
-          <p className="lesson-example__text">
-            <strong>解釋：</strong>
+            <strong>概念解釋：</strong>
             {lesson.explanation}
           </p>
+          <div className="lesson-example-list">
+            {lesson.examples.map((example, index) => (
+              <article className="lesson-example-item" key={example.title}>
+                <div className="lesson-example-item__heading">
+                  <span>{String(index + 1).padStart(2, '0')}</span>
+                  <h3>{example.title}</h3>
+                </div>
+                <p className="lesson-example__text">
+                  <strong>例子：</strong>
+                  {example.statement}
+                </p>
+                <p className="lesson-example-item__explanation">
+                  {example.explanation}
+                </p>
+              </article>
+            ))}
+          </div>
           <div className="lesson-mistake-card">
             <h3>常見錯誤</h3>
-            <p>{lesson.commonMistake}</p>
+            <ol className="lesson-mistake-list">
+              {lesson.commonMistakes.map((mistake) => (
+                <li key={mistake}>{mistake}</li>
+              ))}
+            </ol>
           </div>
+        </section>
+
+        <section className="panel lesson-detail">
+          <div className="panel-heading panel-heading--compact">
+            <span className="panel-kicker">把概念再看清楚</span>
+            <h2>進一步說明</h2>
+          </div>
+          <ol className="lesson-detail-list">
+            {lesson.detailedNotes.map((note) => (
+              <li key={note}>{note}</li>
+            ))}
+          </ol>
         </section>
 
         <section className="panel lesson-practice">

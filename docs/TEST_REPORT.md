@@ -18,7 +18,7 @@ updated: 2026-09-04
 | 指令 | 結果 | 說明 |
 |------|------|------|
 | `npm run typecheck` | 通過 | `tsc -b`，無 TypeScript 錯誤。 |
-| `npm test` | 通過 | 3 個測試檔、11 個測試全數通過。 |
+| `npm test` | 通過 | 4 個測試檔、12 個測試全數通過。 |
 | `npm run build` | 通過 | Vite production build 成功；PWA 預快取 18 個資源。 |
 | `backend/.venv/bin/python -m pytest` | 通過 | 後端 13 個測試全數通過。 |
 | `npm run test:browser` | 通過 | 登入 token 下桌面與手機 Chrome 驗證，含管理員與 AI 面板。 |
@@ -72,6 +72,7 @@ updated: 2026-09-04
 - 頁尾在桌面與手機均完全顯示 `developed by Eric Wong`。
 - 手機導覽連結具有 `aria-label`。
 - 課程頁提供「開始練習」入口。
+- 7 個課程主題逐一驗證：每頁至少 3 個例子、4 段詳細說明、2 條常見錯誤。
 - 探索器加入元素後可用「復原」回到上一步；元素可從 U 移除。
 - 探索器實際拖拽元素到 A 區域後，Venn 圖與元素狀態同步更新。
 - 練習答題後顯示回饋；單元練習路由可正常載入。
