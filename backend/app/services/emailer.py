@@ -1,14 +1,17 @@
 import smtplib
 import ssl
+import logging
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
 from app.config import settings
 
+logger = logging.getLogger(__name__)
+
 
 def send_email(to: str, subject: str, html_body: str) -> bool:
     from_addr = settings.EMAIL_FROM.strip()
-    app_password = settings.GMAIL_APP_PASSWORD.strip()
+    app_password = "".join(settings.GMAIL_APP_PASSWORD.split())
 
     if not from_addr or not app_password:
         return False
@@ -25,11 +28,13 @@ def send_email(to: str, subject: str, html_body: str) -> bool:
             settings.SMTP_HOST,
             settings.SMTP_PORT,
             context=context,
+            timeout=settings.SMTP_TIMEOUT_SECONDS,
         ) as server:
             server.login(from_addr, app_password)
             server.sendmail(from_addr, to, msg.as_string())
         return True
-    except Exception:
+    except Exception as exc:
+        logger.warning("Email send failed for %s: %s", to, exc)
         return False
 
 

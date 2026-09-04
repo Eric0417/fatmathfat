@@ -20,6 +20,7 @@ class Settings(BaseSettings):
     GMAIL_APP_PASSWORD: str = ""
     SMTP_HOST: str = "smtp.gmail.com"
     SMTP_PORT: int = 465
+    SMTP_TIMEOUT_SECONDS: int = 10
 
     DEEPSEEK_API_KEY: str = ""
     DEEPSEEK_BASE_URL: str = "https://api.deepseek.com"

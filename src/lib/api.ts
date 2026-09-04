@@ -5,6 +5,7 @@ const API_BASE =
     ? 'https://fatmathfat-api.onrender.com'
     : '');
 const TOKEN_KEY = 'mathfatfat:auth-token';
+const REQUEST_TIMEOUT_MS = 15000;
 
 export class ApiError extends Error {
   status: number;
@@ -44,23 +45,36 @@ export async function apiFetch<T>(
     headers.set('Authorization', `Bearer ${token}`);
   }
 
-  const response = await fetch(`${API_BASE}${path}`, {
-    ...options,
-    headers
-  });
+  const controller = new AbortController();
+  const timeout = window.setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
 
-  const data = (await response.json().catch(() => ({}))) as {
-    detail?: string;
-    message?: string;
-  };
-  if (!response.ok) {
-    if (response.status === 401) {
-      clearToken();
+  try {
+    const response = await fetch(`${API_BASE}${path}`, {
+      ...options,
+      headers,
+      signal: controller.signal
+    });
+
+    const data = (await response.json().catch(() => ({}))) as {
+      detail?: string;
+      message?: string;
+    };
+    if (!response.ok) {
+      if (response.status === 401) {
+        clearToken();
+      }
+      throw new ApiError(
+        data.detail || data.message || '請求失敗，請稍後再試。',
+        response.status
+      );
     }
-    throw new ApiError(
-      data.detail || data.message || '請求失敗，請稍後再試。',
-      response.status
-    );
+    return data as T;
+  } catch (error) {
+    if (error instanceof Error && error.name === 'AbortError') {
+      throw new ApiError('伺服器回應逾時，請稍後再試。', 408);
+    }
+    throw error;
+  } finally {
+    window.clearTimeout(timeout);
   }
-  return data as T;
 }
