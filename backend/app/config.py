@@ -22,9 +22,11 @@ class Settings(BaseSettings):
     SMTP_PORT: int = 587
     SMTP_TIMEOUT_SECONDS: int = 10
 
-    RESEND_API_KEY: str = ""
-    RESEND_FROM: str = ""
-    RESEND_TIMEOUT_SECONDS: int = 10
+    GOOGLE_CLIENT_ID: str = ""
+    GOOGLE_CLIENT_SECRET: str = ""
+    GOOGLE_REFRESH_TOKEN: str = ""
+    GOOGLE_REDIRECT_URI: str = ""
+    GMAIL_API_TIMEOUT_SECONDS: int = 10
 
     DEEPSEEK_API_KEY: str = ""
     DEEPSEEK_BASE_URL: str = "https://api.deepseek.com"

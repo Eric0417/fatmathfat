@@ -31,11 +31,15 @@ services:
         value: "587"
       - key: SMTP_TIMEOUT_SECONDS
         value: "10"
-      - key: RESEND_API_KEY
+      - key: GOOGLE_CLIENT_ID
         sync: false
-      - key: RESEND_FROM
+      - key: GOOGLE_CLIENT_SECRET
         sync: false
-      - key: RESEND_TIMEOUT_SECONDS
+      - key: GOOGLE_REFRESH_TOKEN
+        sync: false
+      - key: GOOGLE_REDIRECT_URI
+        value: "https://fatmathfat-api.onrender.com/api/auth/google/callback"
+      - key: GMAIL_API_TIMEOUT_SECONDS
         value: "10"
       - key: DEEPSEEK_API_KEY
         sync: false

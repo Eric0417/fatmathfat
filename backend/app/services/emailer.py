@@ -1,5 +1,6 @@
 import smtplib
 import ssl
+import base64
 import logging
 import socket
 from email.mime.multipart import MIMEMultipart
@@ -19,9 +20,82 @@ def _ipv4_getaddrinfo(host, port, *args, **kwargs):
     return ipv4 or results
 
 
+def _build_message(from_addr: str, to: str, subject: str, html_body: str) -> MIMEMultipart:
+    msg = MIMEMultipart("alternative")
+    msg["Subject"] = subject
+    msg["From"] = from_addr
+    msg["To"] = to
+    msg.attach(MIMEText(html_body, "html"))
+    return msg
+
+
+def _get_gmail_access_token() -> str | None:
+    if (
+        not settings.GOOGLE_CLIENT_ID
+        or not settings.GOOGLE_CLIENT_SECRET
+        or not settings.GOOGLE_REFRESH_TOKEN
+    ):
+        return None
+    try:
+        response = httpx.post(
+            "https://oauth2.googleapis.com/token",
+            data={
+                "client_id": settings.GOOGLE_CLIENT_ID,
+                "client_secret": settings.GOOGLE_CLIENT_SECRET,
+                "refresh_token": settings.GOOGLE_REFRESH_TOKEN,
+                "grant_type": "refresh_token",
+            },
+            timeout=settings.GMAIL_API_TIMEOUT_SECONDS,
+        )
+        if response.status_code != 200:
+            logger.warning(
+                "Google OAuth token error: %s %s",
+                response.status_code,
+                response.text[:300],
+            )
+            return None
+        return str(response.json().get("access_token") or "")
+    except Exception as exc:
+        logger.warning("Google OAuth token failed: %s", exc)
+        return None
+
+
+def _send_via_gmail_api(to: str, subject: str, html_body: str) -> bool:
+    from_addr = settings.EMAIL_FROM.strip()
+    access_token = _get_gmail_access_token()
+    if not from_addr or not access_token:
+        return False
+
+    message = _build_message(from_addr, to, subject, html_body)
+    raw_message = base64.urlsafe_b64encode(message.as_bytes()).decode("ascii")
+    try:
+        response = httpx.post(
+            "https://gmail.googleapis.com/gmail/v1/users/me/messages/send",
+            headers={
+                "Authorization": f"Bearer {access_token}",
+                "Content-Type": "application/json",
+            },
+            json={"raw": raw_message},
+            timeout=settings.GMAIL_API_TIMEOUT_SECONDS,
+        )
+        if response.status_code not in (200, 201):
+            logger.warning(
+                "Gmail API error: %s %s",
+                response.status_code,
+                response.text[:300],
+            )
+            return False
+        return True
+    except Exception as exc:
+        logger.warning("Gmail API send failed for %s: %s", to, exc)
+        return False
+
+
 def send_email(to: str, subject: str, html_body: str) -> bool:
-    if settings.RESEND_API_KEY:
-        return _send_via_resend(to, subject, html_body)
+    if settings.GOOGLE_CLIENT_ID and settings.GOOGLE_CLIENT_SECRET:
+        sent = _send_via_gmail_api(to, subject, html_body)
+        if sent:
+            return True
 
     from_addr = settings.EMAIL_FROM.strip()
     app_password = "".join(settings.GMAIL_APP_PASSWORD.split())
@@ -29,11 +103,7 @@ def send_email(to: str, subject: str, html_body: str) -> bool:
     if not from_addr or not app_password:
         return False
 
-    msg = MIMEMultipart("alternative")
-    msg["Subject"] = subject
-    msg["From"] = from_addr
-    msg["To"] = to
-    msg.attach(MIMEText(html_body, "html"))
+    msg = _build_message(from_addr, to, subject, html_body)
 
     original_getaddrinfo = socket.getaddrinfo
     socket.getaddrinfo = _ipv4_getaddrinfo
@@ -73,42 +143,6 @@ def send_email(to: str, subject: str, html_body: str) -> bool:
         return False
     finally:
         socket.getaddrinfo = original_getaddrinfo
-
-
-def _send_via_resend(to: str, subject: str, html_body: str) -> bool:
-    api_key = settings.RESEND_API_KEY.strip()
-    from_addr = settings.RESEND_FROM.strip() or (
-        "onboarding@resend.dev" if api_key else settings.EMAIL_FROM.strip()
-    )
-    if not api_key or not from_addr:
-        return False
-
-    try:
-        response = httpx.post(
-            "https://api.resend.com/emails",
-            headers={
-                "Authorization": f"Bearer {api_key}",
-                "Content-Type": "application/json",
-            },
-            json={
-                "from": from_addr,
-                "to": [to],
-                "subject": subject,
-                "html": html_body,
-            },
-            timeout=settings.RESEND_TIMEOUT_SECONDS,
-        )
-        if response.status_code not in (200, 201):
-            logger.warning(
-                "Resend API error: %s %s",
-                response.status_code,
-                response.text[:300],
-            )
-            return False
-        return True
-    except Exception as exc:
-        logger.warning("Resend send failed for %s: %s", to, exc)
-        return False
 
 
 def send_verification_email(to: str, code: str) -> bool:
