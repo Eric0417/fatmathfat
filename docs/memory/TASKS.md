@@ -4,7 +4,7 @@ type: task
 status: active
 tags: [memory, tasks]
 created: 2026-09-02
-updated: 2026-09-04
+updated: 2026-09-05
 ---
 
 # 任務清單
@@ -45,4 +45,5 @@ updated: 2026-09-04
 | 7 主題課程教材擴充 | done | 每主題 3+ 例子、4+ 詳細說明、2+ 常見錯誤 |
 | 後端與瀏覽器測試 | done | pytest、Vitest、Playwright 與離線登入驗證 |
 | 線上 OTP 寄送 | done | `0.5c-512mb`、Python 3.11.11、Gmail SMTP 465；`/api/auth/request-code` 回傳 200 |
+| Academic Blue 前端視覺同步 | done | Render 版改為學術藍風格；保留登入、API、AI、管理員與全棧互動 |
 | 描述法論域資料模型 | pending | 若要支援描述法轉列舉法，需另存 `domain` |

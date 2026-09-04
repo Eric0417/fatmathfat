@@ -4,7 +4,7 @@ type: decision
 status: active
 tags: [memory, decisions]
 created: 2026-09-02
-updated: 2026-09-04
+updated: 2026-09-05
 ---
 
 # 決策紀錄
@@ -124,3 +124,15 @@ updated: 2026-09-04
 **替代方案：** 只在前端清 context，不修改後端──仍可能因其他呼叫或舊請求送出不完整狀態；只改後端不清理前端──較易留下錯誤展示。
 
 **影響：** AI 測驗保護由明確的請求旗標負責；`do not answer during quiz` 的系統提示仍保留。
+
+## D-010 使用 Academic Blue 學術視覺並部署至 Render
+
+**狀態：** active
+
+**決定：** 在 Render 全棧版前端同步 Academic Blue 視覺：淺灰白頁面、白色卡片、深藏青左側導覽、學院藍主色、低飽和陶土色與學術集合圖。保留登入、角色導覽、AI 老師、管理後台、API client 與所有互動。
+
+**理由：** 數學學習網站需要專業、理性、清晰且適合長時間閱讀，不適合遊戲、社交或霓虹科技風格。
+
+**替代方案：** 保留舊視覺或只改開發版不部署。舊視覺不符合使用者方向；只改開發版不會讓線上網站更新。
+
+**影響：** 只修改 Render workspace 的前端樣式、首頁 icon 結構、PWA 顏色與品牌資產；後端、資料庫、API、`render.yaml`、部署或環境變數不變。提交至 GitHub `main` 後由 Render blueprint 部署 static site；`fatmathfat-api` 程式碼未動。

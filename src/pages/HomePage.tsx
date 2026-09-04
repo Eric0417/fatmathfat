@@ -55,7 +55,7 @@ export function HomePage() {
       </div>
 
       <section className="home-overview" aria-label="學習入口">
-        <div className="panel home-overview__intro">
+        <div className="home-overview__intro">
           <div className="home-metrics" aria-label="目前進度">
             <div className="metric">
               <span className="metric__value">{completed}</span>
@@ -72,7 +72,9 @@ export function HomePage() {
           </div>
           <div className="home-overview__links">
             <a className="quick-link" href="#/explorer">
-              <Shapes size={18} aria-hidden="true" />
+              <span className="quick-link__icon quick-link__icon--academic">
+                <Shapes size={22} aria-hidden="true" />
+              </span>
               <span>
                 <strong>集合工具</strong>
                 <small>自己放元素、切換運算</small>
@@ -80,7 +82,9 @@ export function HomePage() {
               <ChevronRight size={17} aria-hidden="true" />
             </a>
             <a className="quick-link" href="#/practice">
-              <ListChecks size={18} aria-hidden="true" />
+              <span className="quick-link__icon quick-link__icon--sage">
+                <ListChecks size={22} aria-hidden="true" />
+              </span>
               <span>
                 <strong>基礎練習</strong>
                 <small>即時看錯誤解釋</small>
@@ -88,7 +92,9 @@ export function HomePage() {
               <ChevronRight size={17} aria-hidden="true" />
             </a>
             <a className="quick-link" href="#/quiz">
-              <ClipboardList size={18} aria-hidden="true" />
+              <span className="quick-link__icon quick-link__icon--clay">
+                <ClipboardList size={22} aria-hidden="true" />
+              </span>
               <span>
                 <strong>綜合測驗</strong>
                 <small>按概念看學習結果</small>
@@ -96,7 +102,9 @@ export function HomePage() {
               <ChevronRight size={17} aria-hidden="true" />
             </a>
             <a className="quick-link" href="#/results">
-              <BarChart3 size={18} aria-hidden="true" />
+              <span className="quick-link__icon quick-link__icon--steel">
+                <BarChart3 size={22} aria-hidden="true" />
+              </span>
               <span>
                 <strong>學習結果</strong>
                 <small>{lastLessonTitle ? `上次看到：${lastLessonTitle}` : '查看分數與單元進度'}</small>
@@ -105,7 +113,7 @@ export function HomePage() {
             </a>
           </div>
         </div>
-        <div className="panel home-overview__visual">
+        <div className="home-overview__visual">
           <div className="panel-heading">
             <span className="panel-kicker">實際操作預覽</span>
             <h2>A ∩ B 與 A ∪ B</h2>

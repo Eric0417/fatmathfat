@@ -4,7 +4,7 @@ type: note
 status: active
 tags: [memory, architecture]
 created: 2026-09-02
-updated: 2026-09-04
+updated: 2026-09-05
 ---
 
 # 架構
@@ -37,6 +37,13 @@ updated: 2026-09-04
 - `public/`：PWA icon、favicon、manifest 資源。
 
 路由分為 `#/lessons/:id`、`#/explorer`、`#/practice/:topic`、`#/quiz` 與 `#/results`。題目資料集中於 `src/data/questions.ts`，每個單元至少 5 題，題型與難度以資料欄位描述，避免把大量題目寫入 UI 元件。
+
+## 視覺與互動設計
+
+- 目前使用 Academic Blue：淺灰白頁面、白色卡片、深藏青左側導覽、學院藍主色與低飽和陶土色強調。
+- 桌面使用左側導覽，平板與手機切換為頂部導覽；卡片使用輕度陰影、細邊框與 10px 至 14px 圓角。
+- Venn 圖使用低飽和 A/B/交集色，保留 SVG 高亮與拖放區。
+- 樣式集中在 `src/styles.css`；`backend/`、`render.yaml` 與 API 契約不變。
 
 ## 目前範圍
 

@@ -4,7 +4,7 @@ type: handoff
 status: active
 tags: [memory, handoff]
 created: 2026-09-02
-updated: 2026-09-04
+updated: 2026-09-05
 ---
 
 # 交接與目前狀態
@@ -48,6 +48,8 @@ updated: 2026-09-04
 - 建立 GitHub repo `Eric0417/fatmathfat` 並部署 Render static site `fatmathfat`，deploy 狀態為 `live`。
 - Render 部署網址：`https://fatmathfat.onrender.com/`。
 - 課程教材擴充已推送為 `e643121`，Render static site 已 live；線上 bundle 已確認包含新版例子與詳細說明。
+- 已將 Academic Blue 學術視覺同步至 Render 全棧版：淺灰白頁面、白色卡片、深藏青左側導覽、學院藍按鈕與低飽和學術集合圖；登入、API、AI、管理員、資料模型後端與 Render blueprint 未改。
+- 已通過 Render workspace 的 `npm run typecheck`、12 項前端測試、production build，並以 mock 登入 State 驗證桌面、平板與手機頁面及登入頁。
 
 ## 進行中
 
@@ -62,10 +64,11 @@ updated: 2026-09-04
 ## 給下一個 agent 的提示
 
 - 先讀 `CONVENTIONS.md`，再讀本檔。
-- 任何結構性變更都要重新索引 graph；目前 index 已反映新程式碼（679 nodes / 1886 edges），且已寫入 ADR。
+- 任何結構性變更都要重新索引 graph；目前 index 已反映新程式碼（681 nodes / 1888 edges），且 D-010 已寫入 ADR。
 - 網站需要連線；PWA 靜態資源仍可快取，但未登入或離線時顯示登入頁。
+- 目前視覺決策是 D-010「使用 Academic Blue 學術視覺並部署至 Render」；後續視覺調整集中在 `src/styles.css`，不要改回紫色、玻璃或霓虹風格。
 - 後端路由在 `backend/app/routers/`，AI 服務在 `backend/app/services/`，資料庫 migration 在 `backend/alembic/`。
 - 前端登入與 API client 在 `src/context/AuthContext.tsx` 與 `src/lib/api.ts`；AI 面板在 `src/components/AiTeacherPanel.tsx`。
 - 重大決策已記進 `DECISIONS.md`；結構變更後需重新執行 CBM index 與 ADR。
 - 原本的 `math_website` 仍是未初始化 Git 的開發目錄；本期實作與部署修改在 `math_website_render`。
-- 本次已推送到 GitHub 並部署至 Render；`fatmathfat` static site 與 `fatmathfat-api` 均為 live。
+- 本次 Academic Blue 前端改版將推送到 GitHub `main`，由 Render 自動部署 `fatmathfat` static site；後端服務不被修改。
