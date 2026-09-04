@@ -38,7 +38,7 @@ updated: 2026-09-04
 - 完成 DeepSeek `deepseek-v4-flash` AI 老師：全站面板、測驗中停用、依弱點生成練習、題目結構與集合運算驗證。
 - 完成前端登入、路由保護、角色導覽、AI 面板、練習生成與 API 資料層；舊 `localStorage` 資料未遷移。
 - 更新 Render blueprint：新增 `fatmathfat-api`、`fatmathfat-db` 與 `VITE_API_BASE_URL`。
-- 診斷線上 OTP 失敗：已改成 Gmail SMTP 465 / SSL 與 Python 3.11.11 並部署，但 `fatmathfat-api` free plan 仍逾時；另一套 IELTS starter 服務可成功寄信。
+- 完成線上 OTP 寄送：`fatmathfat-api` 升級至 `0.5c-512mb` 後，Gmail SMTP 465 / SSL、Python 3.11.11 已成功寄出驗證碼。
 - 通過後端 pytest 12 項、前端 Vitest 10 項、後端 Alembic、前端 build、桌面／手機 Playwright 與離線登入驗證。
 - 已將台灣教材用語稽核結果整合到說明文字；CBM 已重新索引至 669 nodes / 1838 edges。
 - 已建立獨立部署 workspace `/Users/eric/script/math_website_render`。
@@ -48,7 +48,7 @@ updated: 2026-09-04
 
 ## 進行中
 
-- 尚需決定將 `fatmathfat-api` 升到 starter plan，或改用 Resend API／Gmail API；目前的 free plan無法完成 Gmail SMTP 465 線上寄送。
+- 目前無進行中的郵件寄送問題；線上 OTP 已完成第一次真實寄送測試。
 
 ## 待辦
 

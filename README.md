@@ -115,7 +115,7 @@ npm run test:offline
 
 **最簡單的 Gmail SMTP：** Render 的 `fatmathfat-api` 設定 `EMAIL_FROM` 與 `GMAIL_APP_PASSWORD`，並使用 `SMTP_PORT=465`。這個網站不需要 `GOOGLE_CLIENT_ID` 才能寄出驗證碼，Client ID 是另一個 OAuth/登入用途；如果已經有它，留著不影響 SMTP。
 
-目前 `fatmathfat-api` 是 Render free plan，實際連 `smtp.gmail.com:465` 仍會逾時；另一套可寄信的 IELTS 專案使用 starter plan。若維持 free plan，建議改用 Resend API 或 Gmail API。
+`fatmathfat-api` 已升級至 `0.5c-512mb`，線上 `POST /api/auth/request-code` 已回傳 `200`，Gmail SMTP 465 寄送驗證碼通過。
 
 **建議使用 Resend：** 在 Resend Dashboard 建立 API key，於 `fatmathfat-api` 設定 `RESEND_API_KEY`；未驗證網域時可使用 `RESEND_FROM=onboarding@resend.dev` 測試，但此地址通常只能寄送給帳戶擁有者。正式寄信給學校學生前，需驗證寄件網域並改用該網域的寄件地址。
 

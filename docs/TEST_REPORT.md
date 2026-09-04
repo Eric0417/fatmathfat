@@ -91,4 +91,4 @@ updated: 2026-09-04
 
 結果：通過。
 
-線上 OTP 在 Python 3.11.11、`SMTP_PORT=465` 與既有 Gmail secrets 下仍回 `503`，Render 日誌為 `timed out`；另一套 IELTS starter plan 可成功寄信。後續需升級 API plan，或改用 Resend API／Gmail API 後再驗證。
+線上 OTP 在 Render `0.5c-512mb`、Python 3.11.11、`SMTP_PORT=465` 與既有 Gmail secrets 下回傳 `200`，日誌為 `POST /api/auth/request-code HTTP/1.1 200 OK`，且無新的寄信逾時記錄。
