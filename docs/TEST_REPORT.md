@@ -18,9 +18,9 @@ updated: 2026-09-04
 | 指令 | 結果 | 說明 |
 |------|------|------|
 | `npm run typecheck` | 通過 | `tsc -b`，無 TypeScript 錯誤。 |
-| `npm test` | 通過 | 2 個測試檔、10 個測試全數通過。 |
+| `npm test` | 通過 | 3 個測試檔、11 個測試全數通過。 |
 | `npm run build` | 通過 | Vite production build 成功；PWA 預快取 18 個資源。 |
-| `backend/.venv/bin/python -m pytest` | 通過 | 後端 12 個測試全數通過。 |
+| `backend/.venv/bin/python -m pytest` | 通過 | 後端 13 個測試全數通過。 |
 | `npm run test:browser` | 通過 | 登入 token 下桌面與手機 Chrome 驗證，含管理員與 AI 面板。 |
 | `npm run test:offline` | 通過 | production preview 下離線重新載入會顯示登入頁。 |
 | `npm run lint` | 未提供 | `package.json` 沒有對應 script，也未安裝 ESLint。 |
@@ -80,6 +80,7 @@ updated: 2026-09-04
 - 學習結果頁顯示最近分數、最高分、完成單元、最近學習位置與錯題重做。
 - 管理員後台顯示學生清單、管理員白名單與學習數據表格。
 - AI 老師浮動面板可在桌面開啟且輸入框正常渲染。
+- 測驗結束並跳到其他頁面後送出 AI 問題，請求的 `quiz_active=false`，且無殘留 `/quiz` context。
 - 桌面、手機首頁、探索器、練習頁均無水平溢出。
 
 ## 離線驗證

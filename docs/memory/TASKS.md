@@ -41,6 +41,7 @@ updated: 2026-09-04
 | AI 生成練習 | done | 不保存題目，保存練習摘要 |
 | Render 全棧部署設定 | done | 新增 backend web service 與 PostgreSQL blueprint |
 | 郵件供應商支援 | done | Gmail SMTP 465 為基礎；Resend API 與 Gmail API 可選 |
+| AI 老師非測驗停用修正 | done | 離開測驗清除 context；後端只依 `quiz_active` 判斷 |
 | 後端與瀏覽器測試 | done | pytest、Vitest、Playwright 與離線登入驗證 |
 | 線上 OTP 寄送 | done | `0.5c-512mb`、Python 3.11.11、Gmail SMTP 465；`/api/auth/request-code` 回傳 200 |
 | 描述法論域資料模型 | pending | 若要支援描述法轉列舉法，需另存 `domain` |

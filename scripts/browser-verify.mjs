@@ -233,11 +233,29 @@ try {
     'admin student table did not render'
   );
 
+  let aiPayload = null;
+  await desktopPage.route('**/api/ai/chat', async (route) => {
+    aiPayload = route.request().postDataJSON();
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({ message: 'AI 測試請求成功' })
+    });
+  });
+
   await desktopPage.getByRole('button', { name: 'AI 老師' }).click();
   await desktopPage.locator('.ai-teacher__panel').waitFor();
   assert(
     (await desktopPage.locator('.ai-teacher__input textarea').count()) === 1,
     'AI teacher panel did not render'
+  );
+  await desktopPage.locator('.ai-teacher__input textarea').fill('請解釋交集。');
+  await desktopPage.locator('.ai-teacher__send').click();
+  await desktopPage.getByText('AI 測試請求成功', { exact: true }).waitFor();
+  assert(aiPayload && aiPayload.quiz_active === false, 'AI request was still quiz active');
+  assert(
+    !(aiPayload.context.route === '/quiz' && aiPayload.context.question_id),
+    'stale quiz context was sent to AI teacher'
   );
   await desktopPage.getByRole('button', { name: '關閉 AI 老師' }).click();
 

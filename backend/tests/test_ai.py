@@ -14,6 +14,28 @@ def test_ai_chat_rejects_quiz_active(client, student_token):
     assert response.status_code == 403
 
 
+def test_ai_chat_allows_stale_quiz_context_when_quiz_is_inactive(
+    client,
+    student_token,
+    monkeypatch,
+):
+    monkeypatch.setattr(
+        "app.routers.ai.call_json",
+        lambda _system, _user: {"message": "可以繼續問集合概念。"},
+    )
+    response = client.post(
+        "/api/ai/chat",
+        headers=auth_headers(student_token),
+        json={
+            "message": "集合的交集是什麼？",
+            "context": {"route": "/quiz", "question_id": "quiz-q1"},
+            "quiz_active": False,
+        },
+    )
+    assert response.status_code == 200
+    assert response.json()["message"] == "可以繼續問集合概念。"
+
+
 def test_ai_chat_returns_message(client, student_token, monkeypatch):
     monkeypatch.setattr(
         "app.routers.ai.call_json",

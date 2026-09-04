@@ -112,3 +112,15 @@ updated: 2026-09-04
 **影響：** Render 需設定 `EMAIL_FROM`、`GMAIL_APP_PASSWORD`，並使用 `SMTP_PORT=465`；`GOOGLE_CLIENT_ID` 不是寄送驗證碼的必要條件。線上服務需使用 Python 3.11.11 環境變數。
 
 **目前狀態：** `fatmathfat-api` 已升級至 `0.5c-512mb`，Python 3.11.11 與 Gmail SMTP 465 已部署；線上 `POST /api/auth/request-code` 回傳 `200`，Gmail SMTP 寄送驗證碼通過。
+
+## D-009 AI 測驗停用狀態以明確旗標為準
+
+**狀態：** active
+
+**決定：** 後端只在 `AiChatRequest.quiz_active=true` 時拒絕 AI，不能從 UI 殘留的 `context.route=/quiz` 與 `question_id` 推斷測驗中。前端離開 `QuestionRunner` 時同時清除 `quizActive` 與 AI context。
+
+**理由：** 使用者完成測驗並離開後，全域 context 的舊值仍可能被送出，導致明明不在測驗中卻得到「測驗進行中」的錯誤。
+
+**替代方案：** 只在前端清 context，不修改後端──仍可能因其他呼叫或舊請求送出不完整狀態；只改後端不清理前端──較易留下錯誤展示。
+
+**影響：** AI 測驗保護由明確的請求旗標負責；`do not answer during quiz` 的系統提示仍保留。

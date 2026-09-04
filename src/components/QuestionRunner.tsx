@@ -85,8 +85,15 @@ export function QuestionRunner({
   useEffect(() => {
     return () => {
       setQuizActive(false);
+      setContext({
+        route: '',
+        choices: [],
+        question_id: null,
+        answered: false,
+        allow_answer: false
+      });
     };
-  }, [setQuizActive]);
+  }, [setContext, setQuizActive]);
 
   if (finished) {
     return (

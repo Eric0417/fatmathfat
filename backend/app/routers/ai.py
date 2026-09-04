@@ -126,9 +126,7 @@ def ai_chat(
             detail="請輸入問題。",
         )
     message = _redact_identifiers(message)
-    if body.quiz_active or (
-        body.context.route.startswith("/quiz") and body.context.question_id
-    ):
+    if body.quiz_active:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="測驗進行中不可使用 AI 老師。",
