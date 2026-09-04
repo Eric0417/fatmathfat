@@ -1,12 +1,20 @@
 import smtplib
 import ssl
 import logging
+import socket
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
 from app.config import settings
 
 logger = logging.getLogger(__name__)
+_original_getaddrinfo = socket.getaddrinfo
+
+
+def _ipv4_getaddrinfo(host, port, *args, **kwargs):
+    results = _original_getaddrinfo(host, port, *args, **kwargs)
+    ipv4 = [result for result in results if result[0] == socket.AF_INET]
+    return ipv4 or results
 
 
 def send_email(to: str, subject: str, html_body: str) -> bool:
@@ -22,8 +30,21 @@ def send_email(to: str, subject: str, html_body: str) -> bool:
     msg["To"] = to
     msg.attach(MIMEText(html_body, "html"))
 
+    original_getaddrinfo = socket.getaddrinfo
+    socket.getaddrinfo = _ipv4_getaddrinfo
     try:
         context = ssl.create_default_context()
+        addresses = original_getaddrinfo(
+            settings.SMTP_HOST,
+            settings.SMTP_PORT,
+            socket.AF_INET,
+            socket.SOCK_STREAM,
+        )
+        logger.info(
+            "SMTP IPv4 candidates for %s: %s",
+            settings.SMTP_HOST,
+            [address[4][0] for address in addresses],
+        )
         if settings.SMTP_PORT == 465:
             smtp = smtplib.SMTP_SSL(
                 settings.SMTP_HOST,
@@ -45,6 +66,8 @@ def send_email(to: str, subject: str, html_body: str) -> bool:
     except Exception as exc:
         logger.warning("Email send failed for %s: %s", to, exc)
         return False
+    finally:
+        socket.getaddrinfo = original_getaddrinfo
 
 
 def send_verification_email(to: str, code: str) -> bool:
