@@ -56,10 +56,11 @@ updated: 2026-09-05
 - 修正正式教師網域登入問題：學校官網教師郵箱使用 `@puiching.edu.mo`，此前程式只允許 `@g.puiching.edu.mo`，因此這類郵箱會在寄送驗證碼前被拒絕。
 - 修正正式驗證碼郵件格式：診斷純文字信可送達，非學生格式郵箱改為與診斷信一致的單一 `text/plain`；學生格式郵箱保留 multipart/alternative。
 - 通過後端 pytest 20 項、前端 Vitest 13 項、typecheck 與 production build。
+- 已部署 `eb7047b` 至 Render；線上 `imwong@g.puiching.edu.mo` 驗證碼郵件已確認由 Render egress 寄出，MIME 為單一 `text/plain`。
 
 ## 進行中
 
-- 目前無進行中的程式修改；AI 診斷已完成，尚未決定是否實作錯誤分類日誌、重試或 streaming。非學生格式郵箱已改用 plain text，等待部署後做線上投遞確認。
+- 目前無進行中的程式修改；AI 診斷已完成，尚未決定是否實作錯誤分類日誌、重試或 streaming。非學生格式郵箱已部署為 plain text；最後一步是確認 `951507` 是否進入教師收件匣。
 
 ## 待辦
 
