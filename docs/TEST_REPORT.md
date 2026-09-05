@@ -4,7 +4,7 @@ type: note
 status: active
 tags: [memory, test-report, math-website]
 created: 2026-09-03
-updated: 2026-09-05
+updated: 2026-09-06
 ---
 
 # 集合好好學測試報告
@@ -20,7 +20,7 @@ updated: 2026-09-05
 | `npm run typecheck` | 通過 | `tsc -b`，無 TypeScript 錯誤。 |
 | `npm test` | 通過 | 5 個測試檔、13 個測試全數通過。 |
 | `npm run build` | 通過 | Vite production build 成功；PWA 預快取 18 個資源。 |
-| `backend/.venv/bin/python -m pytest` | 通過 | 後端 14 個測試全數通過。 |
+| `backend/.venv/bin/python -m pytest` | 通過 | 後端 21 個測試全數通過。 |
 | `npm run test:browser` | 通過 | 登入 token 下桌面與手機 Chrome 驗證，含管理員與 AI 面板。 |
 | `npm run test:offline` | 通過 | production preview 下離線重新載入會顯示登入頁。 |
 | `npm run lint` | 未提供 | `package.json` 沒有對應 script，也未安裝 ESLint。 |
@@ -49,14 +49,13 @@ updated: 2026-09-05
 - OTP 取得、驗證、過期、次數限制與管理員角色。
 - 學生格式使用 multipart/alternative；非學生格式使用單一 `text/plain`，並以測試確認路由與 MIME 格式。
 - 線上 Render API 以 `bot012223333@gmail.com` 對教師地址寄出後，Gmail Sent Mail 已確認 `text/plain` 單一 MIME 與自訂 `Message-ID`。
-- Resend API 優先使用；Gmail API 在 `EMAIL_FROM` 為空時讀取 OAuth 授權後儲存的寄件郵箱。
-- Gmail SMTP 465 / SSL 在沒有 Google Client Secret 時仍可寄送。
+- Resend API 與 Gmail SMTP 465 / SSL 為目前可用的寄件路徑；Google OAuth 端點已移除。
 - 管理員 API 權限、管理員新增／移除。
 - 學習資料 API：課程完成、練習摘要、測驗結果與最後活動。
 
 ### AI 老師
 
-- 測驗進行中禁止 AI。
+- 測驗進行中由伺服器 quiz session 禁止 AI，不再信任客戶端 `quiz_active`。
 - DeepSeek 回應 JSON 解析與錯誤處理。
 - 生成題目白名單、選項唯一性、答案包含性與集合運算驗證。
 - 不合法的生成題目會被後端拒絕。
@@ -84,7 +83,14 @@ updated: 2026-09-05
 - 學習結果頁顯示最近分數、最高分、完成單元、最近學習位置與錯題重做。
 - 管理員後台顯示學生清單、管理員白名單與學習數據表格。
 - AI 老師浮動面板可在桌面開啟且輸入框正常渲染。
-- 測驗結束並跳到其他頁面後送出 AI 問題，請求的 `quiz_active=false`，且無殘留 `/quiz` context。
+- 測驗結束並跳到其他頁面後送出 AI 問題，請求的 `quiz_session_id=null`，且無殘留 `/quiz` context。
+
+## 安全硬化驗證
+
+- Google OAuth `authorize` 與 `callback` 端點均回傳 `404`。
+- OTP 同 IP 超過限流後回傳 `429`。
+- 測驗分數由後端答案庫重新計算；直接提交 `score` 等舊欄位不再影響結果。
+- Alembic 新 migration `002_quiz_sessions` 在 SQLite 空資料庫與既有 revision 情境下可正常升級。
 - 桌面、手機首頁、探索器、練習頁均無水平溢出。
 
 ## 離線驗證

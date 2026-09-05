@@ -18,15 +18,11 @@ class Settings(BaseSettings):
 
     EMAIL_FROM: str = ""
     GMAIL_APP_PASSWORD: str = ""
+    TEACHER_EMAIL_FROM: str = ""
+    TEACHER_GMAIL_APP_PASSWORD: str = ""
     SMTP_HOST: str = "smtp.gmail.com"
     SMTP_PORT: int = 465
     SMTP_TIMEOUT_SECONDS: int = 10
-
-    GOOGLE_CLIENT_ID: str = ""
-    GOOGLE_CLIENT_SECRET: str = ""
-    GOOGLE_REFRESH_TOKEN: str = ""
-    GOOGLE_REDIRECT_URI: str = ""
-    GMAIL_API_TIMEOUT_SECONDS: int = 10
 
     RESEND_API_KEY: str = ""
     RESEND_FROM: str = ""
@@ -41,6 +37,7 @@ class Settings(BaseSettings):
     AI_MAX_MESSAGE_LENGTH: int = 500
     AI_DEFAULT_QUESTION_COUNT: int = 5
     AI_MAX_QUESTION_COUNT: int = 10
+    QUIZ_SESSION_TTL_MINUTES: int = 120
 
     @property
     def cors_origins_list(self) -> list[str]:

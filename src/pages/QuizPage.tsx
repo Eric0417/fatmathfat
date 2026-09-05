@@ -15,6 +15,7 @@ import type {
   QuizAttemptResponse,
   QuizQuestion,
   QuizResultRecord,
+  QuizSessionResponse,
   QuizTopic
 } from '../types';
 
@@ -153,13 +154,26 @@ export function QuizPage() {
   const [runKey, setRunKey] = useState(0);
   const [result, setResult] = useState<QuizResultRecord | null>(null);
   const [startedAt, setStartedAt] = useState(0);
+  const [quizSessionId, setQuizSessionId] = useState<string | null>(null);
+  const [error, setError] = useState('');
   const [reviewQuestions, setReviewQuestions] = useState<QuizQuestion[] | null>(null);
 
-  const start = () => {
+  const start = async () => {
     setResult(null);
+    setError('');
     setStarted(true);
     setRunKey((key) => key + 1);
     setStartedAt(Date.now());
+    setQuizSessionId(null);
+    try {
+      const session = await apiFetch<QuizSessionResponse>('/api/quiz/start', {
+        method: 'POST'
+      });
+      setQuizSessionId(session.quiz_session_id);
+    } catch (err) {
+      setStarted(false);
+      setError(err instanceof Error ? err.message : '無法開始測驗。');
+    }
   };
 
   const complete = async (answers: Record<string, string>) => {
@@ -194,25 +208,40 @@ export function QuizPage() {
       mistakes
     };
 
-    void apiFetch<QuizAttemptResponse>('/api/progress/quiz', {
-      method: 'POST',
-      body: JSON.stringify({
-        id: nextResult.id,
-        completed_at: nextResult.completedAt,
-        score: nextResult.score,
-        correct: nextResult.correct,
-        total: nextResult.total,
-        duration_ms: nextResult.durationMs,
-        topic_scores: nextResult.topicScores,
-        mistakes: nextResult.mistakes.map((mistake) => ({
-          question_id: mistake.questionId,
-          selected: mistake.selected,
-          answer: mistake.answer,
-          tags: mistake.tags
-        }))
-      })
-    }).catch(() => undefined);
-    setResult(nextResult);
+    if (quizSessionId) {
+      try {
+        const saved = await apiFetch<QuizAttemptResponse>('/api/progress/quiz', {
+          method: 'POST',
+          body: JSON.stringify({
+            quiz_session_id: quizSessionId,
+            answers,
+            duration_ms: nextResult.durationMs
+          })
+        });
+        setResult({
+          id: String(saved.id),
+          completedAt: saved.completed_at,
+          score: saved.score,
+          correct: saved.correct,
+          total: saved.total,
+          durationMs: saved.duration_ms,
+          topicScores: saved.topic_scores,
+          mistakes: saved.mistakes.map((mistake) => ({
+            questionId: mistake.question_id,
+            selected: mistake.selected,
+            answer: mistake.answer,
+            tags: mistake.tags
+          }))
+        });
+      } catch (err) {
+        setResult(nextResult);
+        setError(err instanceof Error ? err.message : '測驗結果同步失敗。');
+      }
+    } else {
+      setResult(nextResult);
+      setError('測驗 session 尚未準備好，結果未同步。');
+    }
+    setQuizSessionId(null);
     setStarted(false);
   };
 
@@ -272,6 +301,7 @@ export function QuizPage() {
           key={runKey}
           questions={quizQuestions}
           mode="quiz"
+          quizSessionId={quizSessionId}
           onComplete={complete}
         />
       </div>
@@ -288,6 +318,12 @@ export function QuizPage() {
         </div>
       </div>
 
+      {error && (
+        <p className="confirmation-note" role="alert">
+          {error}
+        </p>
+      )}
+
       <div className="panel quiz-intro">
         <div className="quiz-intro__icon">
           <ClipboardList size={28} aria-hidden="true" />
@@ -297,7 +333,7 @@ export function QuizPage() {
           <p>題目涵蓋：集合與元素、元素關係、集合表示法、空集合、子集合、交集、聯集、差集與補集。</p>
           <p>作答時不會立即顯示答案；完成後會顯示各概念的分數與錯題類型。</p>
         </div>
-        <button className="button button--primary button--large" type="button" onClick={start}>
+        <button className="button button--primary button--large" type="button" onClick={() => void start()}>
           開始測驗
         </button>
       </div>

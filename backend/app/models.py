@@ -72,23 +72,23 @@ class TeacherAllowlist(Base):
     )
 
 
-class EmailCredential(Base):
-    __tablename__ = "email_credentials"
+class QuizSession(Base):
+    __tablename__ = "quiz_sessions"
 
-    id = Column(Integer, primary_key=True, default=1, index=True)
-    account_email = Column(String(255), nullable=False)
-    refresh_token = Column(String(1024), nullable=False)
-    created_at = Column(
+    id = Column(String(64), primary_key=True, index=True)
+    user_id = Column(
+        Integer,
+        ForeignKey("users.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+    )
+    status = Column(String(20), nullable=False, default="active", index=True)
+    started_at = Column(
         DateTime(timezone=True),
         server_default=func.now(),
         nullable=False,
     )
-    updated_at = Column(
-        DateTime(timezone=True),
-        server_default=func.now(),
-        onupdate=func.now(),
-        nullable=False,
-    )
+    finished_at = Column(DateTime(timezone=True), nullable=True)
 
 
 class LessonProgress(Base):

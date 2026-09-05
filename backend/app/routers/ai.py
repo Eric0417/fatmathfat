@@ -7,7 +7,8 @@ from sqlalchemy.orm import Session
 from app.auth import get_current_user
 from app.config import settings
 from app.database import get_db
-from app.models import PracticeProgress, QuizAttempt, User
+from app.models import PracticeProgress, QuizAttempt, QuizSession, User
+from app.quiz_bank import QUIZ_QUESTION_IDS
 from app.schemas import (
     AiChatRequest,
     AiChatResponse,
@@ -118,6 +119,7 @@ def _weak_topics(db: Session, user: User) -> list[str]:
 def ai_chat(
     body: AiChatRequest,
     current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
 ):
     message = body.message.strip()
     if not message:
@@ -126,7 +128,22 @@ def ai_chat(
             detail="請輸入問題。",
         )
     message = _redact_identifiers(message)
-    if body.quiz_active:
+    quiz_context_active = (
+        body.context.route == "/quiz"
+        or body.context.question_id in QUIZ_QUESTION_IDS
+    )
+    if body.quiz_session_id:
+        session = (
+            db.query(QuizSession)
+            .filter(
+                QuizSession.id == body.quiz_session_id,
+                QuizSession.user_id == current_user.id,
+                QuizSession.status == "active",
+            )
+            .first()
+        )
+        quiz_context_active = quiz_context_active or session is not None
+    if quiz_context_active:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="測驗進行中不可使用 AI 老師。",
@@ -135,7 +152,7 @@ def ai_chat(
     allow_answer = bool(
         body.context.answered
         and body.context.allow_answer
-        and not body.quiz_active
+        and not quiz_context_active
     )
     context = body.context.model_copy(update={"allow_answer": allow_answer})
     try:

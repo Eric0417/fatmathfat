@@ -18,7 +18,7 @@ interface ChatMessage {
 
 export function AiTeacherPanel() {
   const { apiFetch } = useAuth();
-  const { context, quizActive } = useAiTeacher();
+  const { context, quizActive, quizSessionId } = useAiTeacher();
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState('');
@@ -100,7 +100,7 @@ export function AiTeacherPanel() {
         body: JSON.stringify({
           message,
           context,
-          quiz_active: quizActive
+          quiz_session_id: quizSessionId
         })
       });
       startRevealing(response.message);

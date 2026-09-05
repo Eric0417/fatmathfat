@@ -1,6 +1,5 @@
 import smtplib
 import ssl
-import base64
 import logging
 import socket
 from email.message import EmailMessage
@@ -11,8 +10,6 @@ from email.utils import make_msgid
 import httpx
 
 from app.config import settings
-from app.database import SessionLocal
-from app.models import EmailCredential
 
 logger = logging.getLogger(__name__)
 _original_getaddrinfo = socket.getaddrinfo
@@ -57,105 +54,7 @@ def _build_plain_message(
 
 
 def _get_sender_email() -> str:
-    from_addr = settings.EMAIL_FROM.strip()
-    if from_addr:
-        return from_addr
-
-    db = SessionLocal()
-    try:
-        credential = (
-            db.query(EmailCredential)
-            .filter(EmailCredential.id == 1)
-            .first()
-        )
-        return credential.account_email.strip() if credential else ""
-    finally:
-        db.close()
-
-
-def _get_gmail_access_token() -> str | None:
-    refresh_token = settings.GOOGLE_REFRESH_TOKEN.strip()
-    if not refresh_token:
-        db = SessionLocal()
-        try:
-            credential = (
-                db.query(EmailCredential)
-                .filter(EmailCredential.id == 1)
-                .first()
-            )
-            refresh_token = credential.refresh_token if credential else ""
-        finally:
-            db.close()
-
-    if (
-        not settings.GOOGLE_CLIENT_ID
-        or not settings.GOOGLE_CLIENT_SECRET
-        or not refresh_token
-    ):
-        return None
-    try:
-        response = httpx.post(
-            "https://oauth2.googleapis.com/token",
-            data={
-                "client_id": settings.GOOGLE_CLIENT_ID,
-                "client_secret": settings.GOOGLE_CLIENT_SECRET,
-                "refresh_token": refresh_token,
-                "grant_type": "refresh_token",
-            },
-            timeout=settings.GMAIL_API_TIMEOUT_SECONDS,
-        )
-        if response.status_code != 200:
-            logger.warning(
-                "Google OAuth token error: %s %s",
-                response.status_code,
-                response.text[:300],
-            )
-            return None
-        return str(response.json().get("access_token") or "")
-    except Exception as exc:
-        logger.warning("Google OAuth token failed: %s", exc)
-        return None
-
-
-def _send_via_gmail_api(
-    to: str,
-    subject: str,
-    html_body: str,
-    text_body: str | None = None,
-    plain_only: bool = False,
-) -> bool:
-    from_addr = _get_sender_email()
-    access_token = _get_gmail_access_token()
-    if not from_addr or not access_token:
-        return False
-
-    message = (
-        _build_plain_message(from_addr, to, subject, text_body or "")
-        if plain_only
-        else _build_message(from_addr, to, subject, html_body, text_body)
-    )
-    raw_message = base64.urlsafe_b64encode(message.as_bytes()).decode("ascii")
-    try:
-        response = httpx.post(
-            "https://gmail.googleapis.com/gmail/v1/users/me/messages/send",
-            headers={
-                "Authorization": f"Bearer {access_token}",
-                "Content-Type": "application/json",
-            },
-            json={"raw": raw_message},
-            timeout=settings.GMAIL_API_TIMEOUT_SECONDS,
-        )
-        if response.status_code not in (200, 201):
-            logger.warning(
-                "Gmail API error: %s %s",
-                response.status_code,
-                response.text[:300],
-            )
-            return False
-        return True
-    except Exception as exc:
-        logger.warning("Gmail API send failed for %s: %s", to, exc)
-        return False
+    return settings.EMAIL_FROM.strip()
 
 
 def _send_via_resend(
@@ -164,10 +63,13 @@ def _send_via_resend(
     html_body: str,
     text_body: str | None = None,
     plain_only: bool = False,
+    sender_email: str | None = None,
 ) -> bool:
     api_key = settings.RESEND_API_KEY.strip()
-    from_addr = settings.RESEND_FROM.strip() or (
-        "onboarding@resend.dev" if api_key else settings.EMAIL_FROM.strip()
+    from_addr = (
+        (sender_email or "").strip()
+        or settings.RESEND_FROM.strip()
+        or ("onboarding@resend.dev" if api_key else settings.EMAIL_FROM.strip())
     )
     if not api_key or not from_addr:
         return False
@@ -212,7 +114,14 @@ def send_email(
     html_body: str,
     text_body: str | None = None,
     plain_only: bool = False,
+    sender_email: str | None = None,
+    sender_password: str | None = None,
 ) -> bool:
+    if sender_email is not None and not sender_email.strip():
+        return False
+    if sender_password is not None and not sender_password.strip():
+        return False
+
     if settings.RESEND_API_KEY:
         sent = _send_via_resend(
             to,
@@ -220,23 +129,15 @@ def send_email(
             html_body,
             text_body,
             plain_only,
+            sender_email,
         )
         if sent:
             return True
 
-    if settings.GOOGLE_CLIENT_ID and settings.GOOGLE_CLIENT_SECRET:
-        sent = _send_via_gmail_api(
-            to,
-            subject,
-            html_body,
-            text_body,
-            plain_only,
-        )
-        if sent:
-            return True
-
-    from_addr = settings.EMAIL_FROM.strip()
-    app_password = "".join(settings.GMAIL_APP_PASSWORD.split())
+    from_addr = (sender_email or settings.EMAIL_FROM).strip()
+    app_password = "".join(
+        (sender_password or settings.GMAIL_APP_PASSWORD).split()
+    )
 
     if not from_addr or not app_password:
         return False
@@ -291,6 +192,8 @@ def send_verification_email(
     to: str,
     code: str,
     plain_only: bool = False,
+    sender_email: str | None = None,
+    sender_password: str | None = None,
 ) -> bool:
     subject = "集合好好學 - 登入驗證碼"
     text = f"""集合好好學
@@ -306,4 +209,12 @@ def send_verification_email(
 </div>
 <p style="color:#5f6f7e;font-size:14px">驗證碼 5 分鐘後失效。如果這不是你發出的請求，請忽略此郵件。</p>
 </div>"""
-    return send_email(to, subject, html, text, plain_only=plain_only)
+    return send_email(
+        to,
+        subject,
+        html,
+        text,
+        plain_only=plain_only,
+        sender_email=sender_email,
+        sender_password=sender_password,
+    )

@@ -4,7 +4,7 @@ type: task
 status: active
 tags: [memory, tasks]
 created: 2026-09-02
-updated: 2026-09-05
+updated: 2026-09-06
 ---
 
 # 任務清單
@@ -41,7 +41,7 @@ updated: 2026-09-05
 | 前端登入與角色導覽 | done | `#/login`、路由保護、管理員 `#/admin` |
 | AI 生成練習 | done | 不保存題目，保存練習摘要 |
 | Render 全棧部署設定 | done | 新增 backend web service 與 PostgreSQL blueprint |
-| 郵件供應商支援 | done | Gmail SMTP 465 為基礎；Resend API 與 Gmail API 可選 |
+| 郵件供應商支援 | done | Gmail SMTP 465 與 Resend API；D-014 後移除 Gmail API OAuth 路徑 |
 | 驗證碼郵件格式 | done | 學生格式保留 multipart/alternative；非學生格式使用單一 `text/plain`，與診斷信一致 |
 | Render 線上 OTP 投遞驗證 | done | `eb7047b` live；寄件來源為 `bot012223333@gmail.com`，教師驗證碼 MIME 已確認為單一 `text/plain` |
 | AI 老師非測驗停用修正 | done | 離開測驗清除 context；後端只依 `quiz_active` 判斷 |
@@ -50,4 +50,9 @@ updated: 2026-09-05
 | 線上 OTP 寄送 | done | `0.5c-512mb`、Python 3.11.11、Gmail SMTP 465；`/api/auth/request-code` 回傳 200 |
 | Academic Blue 前端視覺同步 | done | Render 版改為學術藍風格；保留登入、API、AI、管理員與全棧互動 |
 | AI 老師回答互動強化 | done | 加入等待狀態、動態點點、逐字呈現、自動捲動與輸入停用效果 |
+| 移除公開 Google OAuth 端點 | done | 刪除 `google/authorize`、`google/callback` 與 Gmail API credential 覆寫 |
+| OTP 限流與安全 headers | done | IP、email、全域滑動視窗限流；CSP、frame、referrer、permissions、COOP |
+| 測驗伺服器 session | done | 新增 `quiz_sessions`、`/api/quiz/*` 與 server-side AI 測驗檢查 |
+| 伺服器計分 | done | `/api/progress/quiz` 只接受 answers，由 `quiz_bank.py` 計算分數與錯題 |
+| 安全硬化部署驗證 | done | pytest 21 項、Vitest 13 項、typecheck、build、Alembic upgrade |
 | 描述法論域資料模型 | pending | 若要支援描述法轉列舉法，需另存 `domain` |

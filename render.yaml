@@ -16,7 +16,7 @@ services:
       - key: JWT_SECRET
         generateValue: true
       - key: JWT_EXPIRE_MINUTES
-        value: "1440"
+        value: "60"
       - key: ADMIN_EMAILS
         value: "wongeric1417@gmail.com"
       - key: STUDENT_EMAIL_PATTERN
@@ -27,19 +27,13 @@ services:
         sync: false
       - key: GMAIL_APP_PASSWORD
         sync: false
+      - key: TEACHER_EMAIL_FROM
+        sync: false
+      - key: TEACHER_GMAIL_APP_PASSWORD
+        sync: false
       - key: SMTP_PORT
         value: "465"
       - key: SMTP_TIMEOUT_SECONDS
-        value: "10"
-      - key: GOOGLE_CLIENT_ID
-        sync: false
-      - key: GOOGLE_CLIENT_SECRET
-        sync: false
-      - key: GOOGLE_REFRESH_TOKEN
-        sync: false
-      - key: GOOGLE_REDIRECT_URI
-        value: "https://fatmathfat-api.onrender.com/api/auth/google/callback"
-      - key: GMAIL_API_TIMEOUT_SECONDS
         value: "10"
       - key: RESEND_API_KEY
         sync: false
@@ -59,6 +53,8 @@ services:
         value: "2400"
       - key: AI_DEFAULT_QUESTION_COUNT
         value: "5"
+      - key: QUIZ_SESSION_TTL_MINUTES
+        value: "120"
 
   - type: web
     name: fatmathfat
@@ -76,6 +72,21 @@ services:
       - path: /sw.js
         name: Cache-Control
         value: no-cache
+      - path: /manifest.webmanifest
+        name: Content-Type
+        value: application/manifest+json
+      - path: /*
+        name: Content-Security-Policy
+        value: "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self' https://fatmathfat-api.onrender.com; manifest-src 'self'; worker-src 'self'; object-src 'none'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'"
+      - path: /*
+        name: X-Frame-Options
+        value: DENY
+      - path: /*
+        name: Referrer-Policy
+        value: strict-origin-when-cross-origin
+      - path: /*
+        name: Permissions-Policy
+        value: "camera=(), microphone=(), geolocation=()"
     routes:
       - type: rewrite
         source: /*

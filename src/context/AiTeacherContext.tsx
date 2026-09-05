@@ -10,8 +10,10 @@ import type { AiQuestionContext } from '../types';
 interface AiTeacherContextValue {
   context: AiQuestionContext;
   quizActive: boolean;
+  quizSessionId: string | null;
   setContext: (context: AiQuestionContext) => void;
   setQuizActive: (active: boolean) => void;
+  setQuizSessionId: (sessionId: string | null) => void;
 }
 
 const AiTeacherContext = createContext<AiTeacherContextValue | null>(null);
@@ -24,15 +26,18 @@ export function AiTeacherProvider({ children }: { children: ReactNode }) {
     allow_answer: false
   });
   const [quizActive, setQuizActive] = useState(false);
+  const [quizSessionId, setQuizSessionId] = useState<string | null>(null);
 
   const value = useMemo(
     () => ({
       context,
       quizActive,
+      quizSessionId,
       setContext,
-      setQuizActive
+      setQuizActive,
+      setQuizSessionId
     }),
-    [context, quizActive]
+    [context, quizActive, quizSessionId]
   );
 
   return (

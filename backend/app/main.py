@@ -6,7 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.config import settings
 from app.database import Base, SessionLocal, engine
 from app.models import TeacherAllowlist
-from app.routers import admin, ai, auth, progress
+from app.routers import admin, ai, auth, progress, quiz
 
 
 def seed_admin_emails() -> None:
@@ -52,7 +52,23 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
+@app.middleware("http")
+async def add_security_headers(request, call_next):
+    response = await call_next(request)
+    response.headers.setdefault("X-Content-Type-Options", "nosniff")
+    response.headers.setdefault("X-Frame-Options", "DENY")
+    response.headers.setdefault("Referrer-Policy", "strict-origin-when-cross-origin")
+    response.headers.setdefault(
+        "Permissions-Policy",
+        "camera=(), microphone=(), geolocation=()",
+    )
+    response.headers.setdefault("Cross-Origin-Opener-Policy", "same-origin")
+    return response
+
+
 app.include_router(auth.router)
 app.include_router(progress.router)
 app.include_router(ai.router)
 app.include_router(admin.router)
+app.include_router(quiz.router)

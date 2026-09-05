@@ -168,6 +168,10 @@ export interface ProgressResponse {
   quiz_attempts: QuizAttemptResponse[];
 }
 
+export interface QuizSessionResponse {
+  quiz_session_id: string;
+}
+
 export interface AiQuestionContext {
   route: string;
   lesson_id?: string | null;

@@ -71,13 +71,9 @@ class QuizMistake(BaseModel):
 
 
 class QuizAttemptCreate(BaseModel):
-    id: str | None = None
-    score: int = Field(ge=0, le=100)
-    correct: int = Field(ge=0)
-    total: int = Field(ge=1)
+    quiz_session_id: str = Field(min_length=20, max_length=64)
+    answers: dict[str, str]
     duration_ms: int = Field(ge=0)
-    topic_scores: dict[str, dict[str, int]]
-    mistakes: list[QuizMistake] = []
     completed_at: datetime | None = None
 
 
@@ -140,7 +136,7 @@ class AiQuestionContext(BaseModel):
 class AiChatRequest(BaseModel):
     message: str = Field(min_length=1, max_length=500)
     context: AiQuestionContext = AiQuestionContext()
-    quiz_active: bool = False
+    quiz_session_id: str | None = Field(default=None, max_length=64)
 
 
 class AiChatResponse(BaseModel):
@@ -155,6 +151,19 @@ class AiGenerateRequest(BaseModel):
 
 class AiGenerateResponse(BaseModel):
     questions: list[dict[str, Any]]
+
+
+class QuizSessionResponse(BaseModel):
+    quiz_session_id: str
+
+
+class QuizSessionStatusResponse(BaseModel):
+    quiz_session_id: str
+    status: str
+
+
+class QuizSessionActionRequest(BaseModel):
+    quiz_session_id: str = Field(min_length=20, max_length=64)
 
 
 class MessageResponse(BaseModel):

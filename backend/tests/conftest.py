@@ -10,15 +10,20 @@ from fastapi.testclient import TestClient
 
 from app.database import Base, engine
 from app.main import app
+from app.rate_limit import global_otp_limiter, ip_otp_limiter, otp_email_limiter
 
 
 @pytest.fixture
 def client(monkeypatch):
     Base.metadata.drop_all(bind=engine)
     Base.metadata.create_all(bind=engine)
+    ip_otp_limiter.reset()
+    otp_email_limiter.reset()
+    global_otp_limiter.reset()
     monkeypatch.setattr(
         "app.routers.auth.send_verification_email",
-        lambda _to, _code, plain_only=False: True,
+        lambda _to, _code, plain_only=False, sender_email=None,
+        sender_password=None: True,
     )
     monkeypatch.setattr(
         "app.routers.auth.generate_verification_code",

@@ -13,6 +13,7 @@ import type { QuizQuestion } from '../types';
 interface QuestionRunnerProps {
   questions: QuizQuestion[];
   mode: 'practice' | 'quiz' | 'review';
+  quizSessionId?: string | null;
   onComplete?: (answers: Record<string, string>) => void;
   onBack?: () => void;
   backLabel?: string;
@@ -42,6 +43,7 @@ function QuestionData({ question }: { question: QuizQuestion }) {
 export function QuestionRunner({
   questions,
   mode,
+  quizSessionId = null,
   onComplete,
   onBack,
   backLabel
@@ -51,13 +53,14 @@ export function QuestionRunner({
   const [checked, setChecked] = useState(false);
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [finished, setFinished] = useState(false);
-  const { setContext, setQuizActive } = useAiTeacher();
+  const { setContext, setQuizActive, setQuizSessionId } = useAiTeacher();
   const question = questions[index];
   const isLast = index === questions.length - 1;
 
   useEffect(() => {
     const route = window.location.hash.replace(/^#/, '').split('?')[0];
     setQuizActive(mode === 'quiz' && !finished);
+    setQuizSessionId(mode === 'quiz' && !finished ? quizSessionId : null);
     const currentQuestion = finished ? null : question;
     setContext({
       route,
@@ -79,12 +82,15 @@ export function QuestionRunner({
     question,
     selected,
     setContext,
-    setQuizActive
+    setQuizActive,
+    setQuizSessionId,
+    quizSessionId
   ]);
 
   useEffect(() => {
     return () => {
       setQuizActive(false);
+      setQuizSessionId(null);
       setContext({
         route: '',
         choices: [],
@@ -93,7 +99,7 @@ export function QuestionRunner({
         allow_answer: false
       });
     };
-  }, [setContext, setQuizActive]);
+  }, [setContext, setQuizActive, setQuizSessionId]);
 
   if (finished) {
     return (

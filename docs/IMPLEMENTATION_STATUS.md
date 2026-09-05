@@ -4,7 +4,7 @@ type: note
 status: active
 tags: [memory, implementation-status, math-website]
 created: 2026-09-03
-updated: 2026-09-05
+updated: 2026-09-06
 ---
 
 # 集合好好學實作狀態
@@ -24,7 +24,7 @@ updated: 2026-09-05
 | Venn 圖 | 已完成 | 五種運算高亮、全集區域、元素位置、文字標籤與 `aria-label`。
 | 單元練習 | 已完成 | 8 個主題，每個主題至少 5 題；支援基礎、普通、挑戰難度。
 | 綜合練習 | 已完成 | `/practice` 預設可做跨主題練習，可另選單元。
-| 總測驗 | 已完成 | 12 題，涵蓋 8 個概念，完成後依概念顯示分數與建議重學內容。
+| 總測驗 | 已完成 | 12 題，涵蓋 8 個概念；使用伺服器 session，完成後由後端計分並顯示建議重學內容。
 | 錯題重做 | 已完成 | 測驗結果與學習結果頁均可重新練習最近錯題。
 | 學習數據後端 | 已完成 | PostgreSQL 保存測驗、完成單元、練習摘要、最後登入與最後活動。
 | 清除紀錄 | 已完成 | 二次確認、取消按鈕與指定提示文字。
@@ -37,6 +37,8 @@ updated: 2026-09-05
 | 離線模式 | 已完成 | PWA manifest 保留靜態快取；未登入或離線時回到登入頁。
 
 > 2026-09-05 更新：`@g.puiching.edu.mo` 與 `@puiching.edu.mo` 開放登入；學號格式為學生，其他學校網域信箱自動為老師，外部管理員仍使用白名單。非學生格式郵箱的驗證碼改為與診斷信一致的純文字單一格式，並已以 `bot012223333@gmail.com` 由 Render 線上寄出驗證。
+
+> 2026-09-06 更新：移除公開 Google OAuth 端點與 Gmail API credential 覆寫；OTP 增加 IP、email 與全局限流；測驗改為伺服器 session 並由後端計分；靜態站與 API 增加安全 headers，JWT 有效期降為 60 分鐘。
 
 ## 離線與連線
 
@@ -56,4 +58,4 @@ updated: 2026-09-05
 
 本版功能已推送為 GitHub `e643121` 並部署。Render static site `fatmathfat` 與 backend `fatmathfat-api` 均為 live；線上 bundle 已確認包含 7 個主題的新版例子與詳細說明。
 
-本次學校網域教師登入修正已完成本機驗證；本提交將推送至 GitHub `main` 並由 Render 部署。
+本次 D-014 安全硬化修改已完成本機驗證；下一步推送至 GitHub `main` 並由 Render 部署。

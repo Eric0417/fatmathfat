@@ -277,7 +277,7 @@ try {
   await desktopPage.locator('.ai-teacher__input textarea').fill('請解釋交集。');
   await desktopPage.locator('.ai-teacher__send').click();
   await desktopPage.getByText('AI 測試請求成功', { exact: true }).waitFor();
-  assert(aiPayload && aiPayload.quiz_active === false, 'AI request was still quiz active');
+  assert(aiPayload && aiPayload.quiz_session_id === null, 'AI request was still quiz active');
   assert(
     !(aiPayload.context.route === '/quiz' && aiPayload.context.question_id),
     'stale quiz context was sent to AI teacher'

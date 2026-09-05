@@ -2,19 +2,26 @@ from tests.conftest import auth_headers
 
 
 def test_ai_chat_rejects_quiz_active(client, student_token):
+    started = client.post(
+        "/api/quiz/start",
+        headers=auth_headers(student_token),
+    )
+    assert started.status_code == 201
+    quiz_session_id = started.json()["quiz_session_id"]
+
     response = client.post(
         "/api/ai/chat",
         headers=auth_headers(student_token),
         json={
             "message": "請告訴我答案",
             "context": {"route": "/quiz", "question_id": "q1"},
-            "quiz_active": True,
+            "quiz_session_id": quiz_session_id,
         },
     )
     assert response.status_code == 403
 
 
-def test_ai_chat_allows_stale_quiz_context_when_quiz_is_inactive(
+def test_ai_chat_rejects_quiz_question_context_without_session(
     client,
     student_token,
     monkeypatch,
@@ -29,11 +36,9 @@ def test_ai_chat_allows_stale_quiz_context_when_quiz_is_inactive(
         json={
             "message": "集合的交集是什麼？",
             "context": {"route": "/quiz", "question_id": "quiz-q1"},
-            "quiz_active": False,
         },
     )
-    assert response.status_code == 200
-    assert response.json()["message"] == "可以繼續問集合概念。"
+    assert response.status_code == 403
 
 
 def test_ai_chat_returns_message(client, student_token, monkeypatch):

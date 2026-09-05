@@ -4,7 +4,7 @@ type: handoff
 status: active
 tags: [memory, handoff]
 created: 2026-09-02
-updated: 2026-09-05
+updated: 2026-09-06
 ---
 
 # 交接與目前狀態
@@ -57,10 +57,15 @@ updated: 2026-09-05
 - 修正正式驗證碼郵件格式：診斷純文字信可送達，非學生格式郵箱改為與診斷信一致的單一 `text/plain`；學生格式郵箱保留 multipart/alternative。
 - 通過後端 pytest 20 項、前端 Vitest 13 項、typecheck 與 production build。
 - 已部署 `eb7047b` 至 Render；寄件來源為 `bot012223333@gmail.com`，`imwong@g.puiching.edu.mo` 驗證碼郵件已確認由 Render egress 寄出，MIME 為單一 `text/plain`。
+- 已移除公開 Google OAuth `authorize` / `callback` 端點與 Gmail API credential 覆寫路徑；目前寄件只保留 Gmail SMTP 與 Resend API。
+- 已為 OTP 加入 IP、email 與全局限流，並為靜態站與 API 加入 CSP、X-Frame-Options、Referrer-Policy、Permissions-Policy、COOP 等安全 headers。
+- 已把測驗改為伺服器 session，`/api/quiz/*` 負責建立、結束與取消；`/api/ai/chat` 不再信任客戶端 `quiz_active`，而會檢查 active session 與 quiz question context。
+- 已把 `/api/progress/quiz` 改為只接受 `answers` 與 `quiz_session_id`，由後端 `quiz_bank.py` 重新計算分數、主題成績與錯題。
+- 通過後端 pytest 21 項、前端 Vitest 13 項、typecheck、production build 與 Alembic upgrade 驗證。
 
 ## 進行中
 
-- 目前無進行中的程式修改；AI 診斷已完成，尚未決定是否實作錯誤分類日誌、重試或 streaming。非學生格式郵箱已部署為 plain text，寄件來源為 `bot012223333@gmail.com`；最新驗證碼 `620284` 已由線上寄出。
+- 準備將 D-014 安全硬化修改推送到 GitHub `main` 並由 Render 自動部署。
 
 ## 待辦
 
@@ -68,6 +73,7 @@ updated: 2026-09-05
 - 若要支援描述法轉列舉法，需另存論域（如 `ℤ`、`ℕ`）並建立對應題型。
 - 若要支援作業派發、即時在線狀態、AI 對話審查或 AI 題目入庫，需另做資料模型與管理流程。
 - 若要支援描述法轉列舉法的實際論域資料模型，需建立 domain 資料結構。
+- JWT 目前仍存於 `localStorage`；若要進一步改用 HttpOnly cookie 與 server-side revocation，需另做前端 `credentials` 流程與 CSRF 防護。
 
 ## 給下一個 agent 的提示
 
@@ -76,9 +82,11 @@ updated: 2026-09-05
 - 網站需要連線；PWA 靜態資源仍可快取，但未登入或離線時顯示登入頁。
 - 目前視覺決策是 D-010「使用 Academic Blue 學術視覺並部署至 Render」；後續視覺調整集中在 `src/styles.css`，不要改回紫色、玻璃或霓虹風格。
 - AI 老師目前為前端呈現層強化，決策與範圍記錄為 D-011；DeepSeek 後端與 API 契約未改。
+- AI 測驗保護已由 D-014 改為伺服器 quiz session；D-009 已封存。
 - 學校網域教師登入規則記錄為 D-012；正式教師郵箱為 `@puiching.edu.mo`，本次修正包含後端、登入提示與回歸測試。
 - 後端路由在 `backend/app/routers/`，AI 服務在 `backend/app/services/`，資料庫 migration 在 `backend/alembic/`。
 - 前端登入與 API client 在 `src/context/AuthContext.tsx` 與 `src/lib/api.ts`；AI 面板在 `src/components/AiTeacherPanel.tsx`。
 - 重大決策已記進 `DECISIONS.md`；結構變更後需重新執行 CBM index 與 ADR。
 - 原本的 `math_website` 仍是未初始化 Git 的開發目錄；本期實作與部署修改在 `math_website_render`。
 - 本次 Academic Blue 前端改版將推送到 GitHub `main`，由 Render 自動部署 `fatmathfat` static site；後端服務不被修改。
+- 新測驗流程：前端先呼叫 `POST /api/quiz/start`，完成時以 `quiz_session_id` 與 `answers` 呼叫 `POST /api/progress/quiz`；後端計算分數並標記 session finished。

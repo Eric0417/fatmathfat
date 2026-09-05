@@ -1,10 +1,8 @@
 from datetime import timedelta
 import secrets
-from urllib.parse import urlencode
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Request, status
 from sqlalchemy.orm import Session
-import httpx
 
 from app.auth import (
     create_access_token,
@@ -19,7 +17,8 @@ from app.auth import (
 )
 from app.config import settings
 from app.database import get_db
-from app.models import AuthCode, EmailCredential, TeacherAllowlist, User
+from app.models import AuthCode, TeacherAllowlist, User
+from app.rate_limit import global_otp_limiter, ip_otp_limiter, otp_email_limiter
 from app.schemas import (
     MessageResponse,
     RequestCodeRequest,
@@ -43,115 +42,18 @@ def _allowed_email(db: Session, email: str) -> bool:
     )
 
 
-@router.get("/google/authorize")
-def google_authorize():
-    if (
-        not settings.GOOGLE_CLIENT_ID
-        or not settings.GOOGLE_CLIENT_SECRET
-        or not settings.GOOGLE_REDIRECT_URI
-    ):
-        raise HTTPException(
-            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail="Google OAuth 尚未設定。",
-        )
-
-    params = {
-        "client_id": settings.GOOGLE_CLIENT_ID,
-        "redirect_uri": settings.GOOGLE_REDIRECT_URI,
-        "response_type": "code",
-        "scope": "https://www.googleapis.com/auth/gmail.send",
-        "access_type": "offline",
-        "prompt": "consent",
-    }
-    return {
-        "authorization_url": (
-            "https://accounts.google.com/o/oauth2/v2/auth?"
-            + urlencode(params)
-        )
-    }
-
-
-@router.get("/google/callback")
-def google_callback(
-    db: Session = Depends(get_db),
-    code: str = "",
-    error: str | None = None,
-):
-    if error:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Google 授權失敗：{error}",
-        )
-    if not code:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Google 未回傳授權碼。",
-        )
-    if not settings.GOOGLE_CLIENT_ID or not settings.GOOGLE_CLIENT_SECRET:
-        raise HTTPException(
-            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail="Google OAuth 尚未設定。",
-        )
-
-    token_response = httpx.post(
-        "https://oauth2.googleapis.com/token",
-        data={
-            "client_id": settings.GOOGLE_CLIENT_ID,
-            "client_secret": settings.GOOGLE_CLIENT_SECRET,
-            "code": code,
-            "grant_type": "authorization_code",
-            "redirect_uri": settings.GOOGLE_REDIRECT_URI,
-        },
-        timeout=settings.GMAIL_API_TIMEOUT_SECONDS,
-    )
-    if token_response.status_code != 200:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Google 驗證碼交換失敗。",
-        )
-    token_payload = token_response.json()
-    refresh_token = token_payload.get("refresh_token")
-    access_token = token_payload.get("access_token")
-    if not refresh_token:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Google 未提供 refresh token，請重新授權。",
-        )
-
-    profile = httpx.get(
-        "https://gmail.googleapis.com/gmail/v1/users/me/profile",
-        headers={"Authorization": f"Bearer {access_token}"},
-        timeout=settings.GMAIL_API_TIMEOUT_SECONDS,
-    )
-    account_email = settings.EMAIL_FROM.strip()
-    if profile.status_code == 200:
-        account_email = profile.json().get("emailAddress", account_email)
-
-    credential = (
-        db.query(EmailCredential)
-        .filter(EmailCredential.id == 1)
-        .first()
-    )
-    if credential is None:
-        credential = EmailCredential(
-            id=1,
-            account_email=account_email,
-            refresh_token=refresh_token,
-        )
-        db.add(credential)
-    else:
-        credential.account_email = account_email
-        credential.refresh_token = refresh_token
-    db.commit()
-    return {
-        "message": "Google Gmail 已授權。",
-        "account_email": account_email,
-    }
-
-
 @router.post("/request-code", response_model=MessageResponse)
-def request_code(body: RequestCodeRequest, db: Session = Depends(get_db)):
+def request_code(
+    request: Request,
+    body: RequestCodeRequest,
+    db: Session = Depends(get_db),
+):
     email = normalize_email(body.email)
+    client_ip = request.client.host if request.client else "unknown"
+    ip_otp_limiter.check_and_record(client_ip)
+    global_otp_limiter.check_and_record("global")
+    otp_email_limiter.check_and_record(email)
+
     if not _allowed_email(db, email):
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
@@ -196,10 +98,17 @@ def request_code(body: RequestCodeRequest, db: Session = Depends(get_db)):
         )
     db.commit()
 
+    is_student = matches_student_email(email)
     if not send_verification_email(
         email,
         code,
-        plain_only=not matches_student_email(email),
+        plain_only=not is_student,
+        sender_email=(
+            None if is_student else settings.TEACHER_EMAIL_FROM
+        ),
+        sender_password=(
+            None if is_student else settings.TEACHER_GMAIL_APP_PASSWORD
+        ),
     ):
         stored = (
             db.query(AuthCode)

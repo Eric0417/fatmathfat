@@ -1,5 +1,3 @@
-from datetime import datetime
-
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
@@ -9,8 +7,10 @@ from app.models import (
     LessonProgress,
     PracticeProgress,
     QuizAttempt,
+    QuizSession,
     User,
 )
+from app.quiz_bank import score_quiz_answers
 from app.schemas import (
     LessonProgressEntry,
     LessonProgressRequest,
@@ -128,21 +128,41 @@ def save_quiz(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
-    completed_at = body.completed_at or utc_now()
-    if isinstance(completed_at, datetime) and completed_at.tzinfo is None:
-        completed_at = completed_at.replace(tzinfo=utc_now().tzinfo)
+    session = (
+        db.query(QuizSession)
+        .filter(
+            QuizSession.id == body.quiz_session_id,
+            QuizSession.user_id == current_user.id,
+        )
+        .first()
+    )
+    if session is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="找不到這個測驗 session。",
+        )
+    if session.status not in {"active", "finished"}:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="這個測驗 session 已取消。",
+        )
+
+    scored = score_quiz_answers(body.answers)
+    completed_at = utc_now()
 
     attempt = QuizAttempt(
         user_id=current_user.id,
         completed_at=completed_at,
-        score=body.score,
-        correct=body.correct,
-        total=body.total,
+        score=scored["score"],
+        correct=scored["correct"],
+        total=scored["total"],
         duration_ms=body.duration_ms,
-        topic_scores=body.topic_scores,
-        mistakes=[item.model_dump() for item in body.mistakes],
+        topic_scores=scored["topic_scores"],
+        mistakes=scored["mistakes"],
     )
     db.add(attempt)
+    session.status = "finished"
+    session.finished_at = completed_at
     db.commit()
     db.refresh(attempt)
     return attempt

@@ -4,7 +4,7 @@ type: decision
 status: active
 tags: [memory, decisions]
 created: 2026-09-02
-updated: 2026-09-05
+updated: 2026-09-06
 ---
 
 # 決策紀錄
@@ -113,11 +113,11 @@ updated: 2026-09-05
 
 **影響：** Render 需設定 `EMAIL_FROM`、`GMAIL_APP_PASSWORD`，並使用 `SMTP_PORT=465`；`GOOGLE_CLIENT_ID` 不是寄送驗證碼的必要條件。線上服務需使用 Python 3.11.11 環境變數。
 
-**目前狀態：** `fatmathfat-api` 已升級至 `0.5c-512mb`，Python 3.11.11 與 Gmail SMTP 465 已部署；線上 `POST /api/auth/request-code` 回傳 `200`，Gmail SMTP 寄送驗證碼通過。
+**目前狀態：** `fatmathfat-api` 已升級至 `0.5c-512mb`，Python 3.11.11 與 Gmail SMTP 465 已部署；D-014 已移除公開 Gmail OAuth 授權流程，寄件只保留 Gmail SMTP 與 Resend API。
 
 ## D-009 AI 測驗停用狀態以明確旗標為準
 
-**狀態：** active
+**狀態：** archived
 
 **決定：** 後端只在 `AiChatRequest.quiz_active=true` 時拒絕 AI，不能從 UI 殘留的 `context.route=/quiz` 與 `question_id` 推斷測驗中。前端離開 `QuestionRunner` 時同時清除 `quizActive` 與 AI context。
 
@@ -126,6 +126,8 @@ updated: 2026-09-05
 **替代方案：** 只在前端清 context，不修改後端──仍可能因其他呼叫或舊請求送出不完整狀態；只改後端不清理前端──較易留下錯誤展示。
 
 **影響：** AI 測驗保護由明確的請求旗標負責；`do not answer during quiz` 的系統提示仍保留。
+
+**過時因為：** D-014 改為伺服器測驗 session；後端不再信任客戶端 `quiz_active`。
 
 ## D-010 使用 Academic Blue 學術視覺並部署至 Render
 
@@ -176,3 +178,15 @@ updated: 2026-09-05
 **影響：** 修改 `backend/app/services/emailer.py`、`backend/app/routers/auth.py` 與測試；無資料庫 migration。教師/管理員郵件使用純文字，學生郵件維持原格式。
 
 **目前狀態：** `eb7047b` 已部署至 Render；寄件來源為 `bot012223333@gmail.com`，教師驗證碼 MIME 已確認是單一 `text/plain`。
+
+## D-014 採用伺服器測驗 session 與安全硬化
+
+**狀態：** active
+
+**決定：** 移除公開 Google OAuth authorize/callback 端點與 Gmail API credential 覆寫路徑；OTP 增加 IP、email 與全局限流；測驗改為伺服器 session，並由後端根據固定題庫重新計算測驗分數；前端與 API 增加安全 headers，JWT 有效期降為 60 分鐘。
+
+**理由：** PentAGI 安全評估發現公開 OAuth callback 可能覆寫寄件身份、`quiz_active` 可由客戶端偽造、OTP 可被濫用，且測驗分數由客戶端提交。伺服器 session 與後端計分可消除最直接的身份與資料完整性風險。
+
+**替代方案：** 僅在前端隱藏 AI 按鈕或維持客戶端分數——無法阻止修改請求；保留 Gmail OAuth——持續暴露高風險 callback；改用完整 HttpOnly cookie session——改動較大，留待下一輪。
+
+**影響：** 新增 `quiz_sessions` migration、`/api/quiz/*` 路由、`quiz_bank.py` 與 `rate_limit.py`；前端 `QuizPage`、`QuestionRunner`、`AiTeacherContext` 與 `AiTeacherPanel` 改用 `quiz_session_id`；`/api/progress/quiz` 只接受 answers 並由後端計分。
