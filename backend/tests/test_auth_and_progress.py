@@ -38,28 +38,31 @@ def test_student_login_and_progress(client, student_token):
 
 
 def test_any_school_domain_email_can_login_as_teacher(client):
-    email = "imwong@g.puiching.edu.mo"
-    request = client.post("/api/auth/request-code", json={"email": email})
-    assert request.status_code == 200
+    for email in (
+        "imwong@g.puiching.edu.mo",
+        "kkf@puiching.edu.mo",
+    ):
+        request = client.post("/api/auth/request-code", json={"email": email})
+        assert request.status_code == 200
 
-    response = client.post(
-        "/api/auth/verify-code",
-        json={"email": email, "code": "123456"},
-    )
-    assert response.status_code == 200
+        response = client.post(
+            "/api/auth/verify-code",
+            json={"email": email, "code": "123456"},
+        )
+        assert response.status_code == 200
 
-    me = client.get(
-        "/api/auth/me",
-        headers=auth_headers(response.json()["access_token"]),
-    )
-    assert me.status_code == 200
-    assert me.json()["role"] == "teacher"
+        me = client.get(
+            "/api/auth/me",
+            headers=auth_headers(response.json()["access_token"]),
+        )
+        assert me.status_code == 200
+        assert me.json()["role"] == "teacher"
 
-    admin = client.get(
-        "/api/admin/students",
-        headers=auth_headers(response.json()["access_token"]),
-    )
-    assert admin.status_code == 200
+        admin = client.get(
+            "/api/admin/students",
+            headers=auth_headers(response.json()["access_token"]),
+        )
+        assert admin.status_code == 200
 
 
 def test_non_school_email_is_rejected(client):

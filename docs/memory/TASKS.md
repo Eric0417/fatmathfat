@@ -35,13 +35,14 @@ updated: 2026-09-05
 | 頁尾與無障礙 | done | `developed by Eric Wong`、導覽標籤、離線提示 |
 | 離線重載驗證 | done | 新增 `test:offline` 並通過 production preview 驗證 |
 | FastAPI 後端與資料模型 | done | PostgreSQL、Alembic、OTP、JWT、學習數據與管理員 API |
-| 學校郵箱與角色規則 | done | 學號格式為學生；同網域其他信箱自動為老師；外部管理員使用白名單 |
-| 學校網域教師自動登入 | done | 未加入白名單的 `@g.puiching.edu.mo` 也能登入並取得老師權限 |
+| 學校郵箱與角色規則 | done | `@g.puiching.edu.mo` 學號為學生；`@puiching.edu.mo` 與 `@g.puiching.edu.mo` 非學號信箱自動為老師；外部管理員使用白名單 |
+| 學校網域教師自動登入 | done | `@g.puiching.edu.mo` 非學號信箱與正式 `@puiching.edu.mo` 教師郵箱都能登入並取得老師權限 |
 | DeepSeek AI 老師 | done | 全站面板、測驗中停用、依弱點生成練習、題目驗證 |
 | 前端登入與角色導覽 | done | `#/login`、路由保護、管理員 `#/admin` |
 | AI 生成練習 | done | 不保存題目，保存練習摘要 |
 | Render 全棧部署設定 | done | 新增 backend web service 與 PostgreSQL blueprint |
 | 郵件供應商支援 | done | Gmail SMTP 465 為基礎；Resend API 與 Gmail API 可選 |
+| 驗證碼郵件格式 | done | plain text + HTML multipart/alternative；對教師網域降低垃圾郵件誤判 |
 | AI 老師非測驗停用修正 | done | 離開測驗清除 context；後端只依 `quiz_active` 判斷 |
 | 7 主題課程教材擴充 | done | 每主題 3+ 例子、4+ 詳細說明、2+ 常見錯誤 |
 | 後端與瀏覽器測試 | done | pytest、Vitest、Playwright 與離線登入驗證 |

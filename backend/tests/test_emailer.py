@@ -104,3 +104,26 @@ def test_gmail_smtp_uses_ssl_when_oauth_secret_is_missing(monkeypatch):
 
     assert send_email("student@example.com", "Test", "<p>Test</p>") is True
     assert calls["args"][1] == 465
+
+
+def test_verification_email_includes_plain_text_alternative(monkeypatch):
+    captured = {}
+
+    def fake_send(to, subject, html_body, text_body=None):
+        captured.update(
+            {
+                "to": to,
+                "subject": subject,
+                "html_body": html_body,
+                "text_body": text_body,
+            }
+        )
+        return True
+
+    monkeypatch.setattr(emailer, "send_email", fake_send)
+
+    assert emailer.send_verification_email("teacher@example.com", "123456") is True
+    assert captured["to"] == "teacher@example.com"
+    assert captured["subject"] == "集合好好學 - 登入驗證碼"
+    assert "你的登入驗證碼是：123456" in captured["text_body"]
+    assert "你的登入驗證碼是：" in captured["html_body"]

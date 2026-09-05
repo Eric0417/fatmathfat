@@ -22,7 +22,8 @@ updated: 2026-09-05
 | 圖形 | SVG/CSS Venn 圖 | 小、容易離線、可靜態高亮 |
 | 後端 | FastAPI + SQLAlchemy + Alembic | 提供認證、學習數據與 AI proxy |
 | 儲存 | PostgreSQL | 保存帳號、進度、測驗與管理員白名單 |
-| 認證 | Email OTP + JWT | 學校網域開放登入；學號格式為學生，其他同網域信箱自動為老師；外部管理員使用白名單 |
+| 認證 | Email OTP + JWT | `@g.puiching.edu.mo` 學號為學生，`@puiching.edu.mo` 教師郵箱與 `@g.puiching.edu.mo` 非學號信箱自動為老師；外部管理員使用白名單 |
+| 郵件 | Gmail SMTP 465 + multipart/alternative | 驗證碼同時提供 plain text 與 HTML，降低教師端 Google Workspace 垃圾郵件/Quarantine 誤判 |
 | AI | DeepSeek `deepseek-v4-flash` | 答題引導與依弱點生成練習 |
 | 測試 | Vitest + pytest + Playwright Core | 覆蓋邏輯、API、登入與瀏覽器流程 |
 
@@ -50,7 +51,7 @@ updated: 2026-09-05
 
 - 元素限定為有限整數。
 - 主要處理 `∈`、`∉`、`⊆`、`⊊`、`=`、`∩`、`∪`、差集、補集。
-- 已包含學校網域登入、同網域老師自動登入、學生／管理員角色、學習數據同步與 AI 老師。
+- 已包含學校網域登入、正式教師網域自動登入、學生／管理員角色、學習數據同步與 AI 老師。
 - 不包含作業派發、排行、多人連線與複雜動畫；AI 對話與生成題目不持久化。
 - 補集、差集、反例與描述法轉換屬於課程內容；已有基礎教材與題型。
 - 測驗、課程完成度、練習摘要與最後活動以後端為準；舊版 `localStorage` 資料保留但不遷移。

@@ -14,7 +14,9 @@ from app.models import TeacherAllowlist, User
 
 
 ALGORITHM = "HS256"
-SCHOOL_EMAIL_DOMAIN = "g.puiching.edu.mo"
+STUDENT_EMAIL_DOMAIN = "g.puiching.edu.mo"
+TEACHER_EMAIL_DOMAIN = "puiching.edu.mo"
+SCHOOL_EMAIL_DOMAINS = frozenset({STUDENT_EMAIL_DOMAIN, TEACHER_EMAIL_DOMAIN})
 
 
 def utc_now() -> datetime:
@@ -28,13 +30,13 @@ def normalize_email(email: str) -> str:
 def matches_student_email(email: str) -> bool:
     local = email.partition("@")[0]
     return (
-        matches_school_email(email)
+        email.partition("@")[2] == STUDENT_EMAIL_DOMAIN
         and re.fullmatch(settings.STUDENT_EMAIL_PATTERN, local) is not None
     )
 
 
 def matches_school_email(email: str) -> bool:
-    return email.partition("@")[2] == SCHOOL_EMAIL_DOMAIN
+    return email.partition("@")[2] in SCHOOL_EMAIL_DOMAINS
 
 
 def generate_verification_code() -> str:

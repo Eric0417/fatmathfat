@@ -155,10 +155,22 @@ updated: 2026-09-05
 
 **狀態：** active
 
-**決定：** `@g.puiching.edu.mo` 網域開放登入。符合學號格式者維持學生角色，同網域其他信箱自動以老師身分登入；外部管理員仍以 `ADMIN_EMAILS` 與後台白名單授權。
+**決定：** `@g.puiching.edu.mo` 與 `@puiching.edu.mo` 網域開放登入。符合學號格式者維持學生角色，`@puiching.edu.mo` 教師郵箱及其他學校網域非學號信箱自動以老師身分登入；外部管理員仍以 `ADMIN_EMAILS` 與後台白名單授權。
 
-**理由：** 老師的學校 Gmail 因未先加入白名單而無法登入。學校網域本身已是清楚的學校成員信任邊界，不需逐人手動新增。
+**理由：** 學校同時存在 `@g.puiching.edu.mo` 教師帳號與 `@puiching.edu.mo` 行政/教師郵箱。原本只允許 `g.` 子網域，會讓根網域教師郵箱在寄送驗證碼前就被拒絕；學校網域本身已是清楚的學校成員信任邊界，不需逐人手動新增。
 
 **替代方案：** 繼續由管理員逐一新增老師信箱。會增加管理者負擔，也直接造成目前的老師無法登入。
 
-**影響：** 修改 `backend/app/auth.py` 與 `backend/app/routers/auth.py`；無資料庫 migration。學號信箱角色不變，其他同網域信箱擁有老師權限。
+**影響：** 修改 `backend/app/auth.py`、登入頁提示與相關文件；無資料庫 migration。學號信箱角色不變，`@puiching.edu.mo` 教師郵箱擁有老師權限，既有 `@g.puiching.edu.mo` 非學號信箱仍保留老師權限。
+
+## D-013 驗證碼郵件改用 multipart/alternative
+
+**狀態：** active
+
+**決定：** 驗證碼郵件改用互斥顯示的 multipart/alternative，同時包含 plain text 與 HTML；Gmail SMTP、Gmail API 與 Resend 路徑都保留文字版。
+
+**理由：** 教師信箱的純文字診斷信可送達，但只有 HTML 的正式驗證碼郵件被認為可能被 Google Workspace 垃圾郵件或 Quarantine 政策攔截；文字版可讓收件端取得可讀的替代內容。
+
+**替代方案：** 只保留 HTML——維持原狀但無法排除教師端格式誤判；改為只寄 plain text——會失去品牌與版面。
+
+**影響：** 修改 `backend/app/services/emailer.py` 與 `backend/tests/test_emailer.py`；無資料庫 migration。郵件內容與驗證碼流程不變。

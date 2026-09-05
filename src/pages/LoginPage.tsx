@@ -182,7 +182,7 @@ export function LoginPage() {
         )}
 
         <p className="auth-card__footnote">
-          學生郵箱格式為 7 位數字-1 位數字，管理員使用白名單郵箱。
+          學生使用 7 位數字-1 位數字的學校郵箱；教師使用 @puiching.edu.mo 學校郵箱。
         </p>
       </div>
     </div>

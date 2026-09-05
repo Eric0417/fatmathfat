@@ -22,12 +22,20 @@ def _ipv4_getaddrinfo(host, port, *args, **kwargs):
     return ipv4 or results
 
 
-def _build_message(from_addr: str, to: str, subject: str, html_body: str) -> MIMEMultipart:
+def _build_message(
+    from_addr: str,
+    to: str,
+    subject: str,
+    html_body: str,
+    text_body: str | None = None,
+) -> MIMEMultipart:
     msg = MIMEMultipart("alternative")
     msg["Subject"] = subject
     msg["From"] = from_addr
     msg["To"] = to
-    msg.attach(MIMEText(html_body, "html"))
+    if text_body:
+        msg.attach(MIMEText(text_body, "plain", "utf-8"))
+    msg.attach(MIMEText(html_body, "html", "utf-8"))
     return msg
 
 
@@ -92,13 +100,18 @@ def _get_gmail_access_token() -> str | None:
         return None
 
 
-def _send_via_gmail_api(to: str, subject: str, html_body: str) -> bool:
+def _send_via_gmail_api(
+    to: str,
+    subject: str,
+    html_body: str,
+    text_body: str | None = None,
+) -> bool:
     from_addr = _get_sender_email()
     access_token = _get_gmail_access_token()
     if not from_addr or not access_token:
         return False
 
-    message = _build_message(from_addr, to, subject, html_body)
+    message = _build_message(from_addr, to, subject, html_body, text_body)
     raw_message = base64.urlsafe_b64encode(message.as_bytes()).decode("ascii")
     try:
         response = httpx.post(
@@ -123,7 +136,12 @@ def _send_via_gmail_api(to: str, subject: str, html_body: str) -> bool:
         return False
 
 
-def _send_via_resend(to: str, subject: str, html_body: str) -> bool:
+def _send_via_resend(
+    to: str,
+    subject: str,
+    html_body: str,
+    text_body: str | None = None,
+) -> bool:
     api_key = settings.RESEND_API_KEY.strip()
     from_addr = settings.RESEND_FROM.strip() or (
         "onboarding@resend.dev" if api_key else settings.EMAIL_FROM.strip()
@@ -132,18 +150,21 @@ def _send_via_resend(to: str, subject: str, html_body: str) -> bool:
         return False
 
     try:
+        body = {
+            "from": from_addr,
+            "to": [to],
+            "subject": subject,
+            "html": html_body,
+        }
+        if text_body:
+            body["text"] = text_body
         response = httpx.post(
             "https://api.resend.com/emails",
             headers={
                 "Authorization": f"Bearer {api_key}",
                 "Content-Type": "application/json",
             },
-            json={
-                "from": from_addr,
-                "to": [to],
-                "subject": subject,
-                "html": html_body,
-            },
+            json=body,
             timeout=settings.RESEND_TIMEOUT_SECONDS,
         )
         if response.status_code not in (200, 201):
@@ -159,14 +180,19 @@ def _send_via_resend(to: str, subject: str, html_body: str) -> bool:
         return False
 
 
-def send_email(to: str, subject: str, html_body: str) -> bool:
+def send_email(
+    to: str,
+    subject: str,
+    html_body: str,
+    text_body: str | None = None,
+) -> bool:
     if settings.RESEND_API_KEY:
-        sent = _send_via_resend(to, subject, html_body)
+        sent = _send_via_resend(to, subject, html_body, text_body)
         if sent:
             return True
 
     if settings.GOOGLE_CLIENT_ID and settings.GOOGLE_CLIENT_SECRET:
-        sent = _send_via_gmail_api(to, subject, html_body)
+        sent = _send_via_gmail_api(to, subject, html_body, text_body)
         if sent:
             return True
 
@@ -176,7 +202,7 @@ def send_email(to: str, subject: str, html_body: str) -> bool:
     if not from_addr or not app_password:
         return False
 
-    msg = _build_message(from_addr, to, subject, html_body)
+    msg = _build_message(from_addr, to, subject, html_body, text_body)
 
     original_getaddrinfo = socket.getaddrinfo
     socket.getaddrinfo = _ipv4_getaddrinfo
@@ -220,6 +246,11 @@ def send_email(to: str, subject: str, html_body: str) -> bool:
 
 def send_verification_email(to: str, code: str) -> bool:
     subject = "集合好好學 - 登入驗證碼"
+    text = f"""集合好好學
+
+你的登入驗證碼是：{code}
+
+驗證碼 5 分鐘後失效。如果這不是你發出的請求，請忽略此郵件。"""
     html = f"""<div style="max-width:480px;margin:0 auto;padding:24px;font-family:sans-serif">
 <h2 style="color:#183153">集合好好學</h2>
 <p>你的登入驗證碼是：</p>
@@ -228,4 +259,4 @@ def send_verification_email(to: str, code: str) -> bool:
 </div>
 <p style="color:#5f6f7e;font-size:14px">驗證碼 5 分鐘後失效。如果這不是你發出的請求，請忽略此郵件。</p>
 </div>"""
-    return send_email(to, subject, html)
+    return send_email(to, subject, html, text)
