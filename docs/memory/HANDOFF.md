@@ -72,7 +72,7 @@ updated: 2026-09-05
 ## 給下一個 agent 的提示
 
 - 先讀 `CONVENTIONS.md`，再讀本檔。
-- 任何結構性變更都要重新索引 graph；目前 index 已反映新程式碼（700 nodes / 1976 edges），且 D-012、D-013 已同步 CBM。
+- 任何結構性變更都要重新索引 graph；目前 index 已反映新程式碼（700 nodes / 1997 edges），且 D-012、D-013 已同步 CBM。
 - 網站需要連線；PWA 靜態資源仍可快取，但未登入或離線時顯示登入頁。
 - 目前視覺決策是 D-010「使用 Academic Blue 學術視覺並部署至 Render」；後續視覺調整集中在 `src/styles.css`，不要改回紫色、玻璃或霓虹風格。
 - AI 老師目前為前端呈現層強化，決策與範圍記錄為 D-011；DeepSeek 後端與 API 契約未改。
