@@ -48,7 +48,7 @@ updated: 2026-09-05
 - 非學校網域且未加入白名單的郵箱仍會被拒絕；外部管理員白名單維持。
 - OTP 取得、驗證、過期、次數限制與管理員角色。
 - 學生格式使用 multipart/alternative；非學生格式使用單一 `text/plain`，並以測試確認路由與 MIME 格式。
-- 線上 Render API 以 `wongeric1417@gmail.com` 對教師地址寄出後，Gmail Sent Mail 已確認 `text/plain` 單一 MIME 與自訂 `Message-ID`。
+- 線上 Render API 以 `bot012223333@gmail.com` 對教師地址寄出後，Gmail Sent Mail 已確認 `text/plain` 單一 MIME 與自訂 `Message-ID`。
 - Resend API 優先使用；Gmail API 在 `EMAIL_FROM` 為空時讀取 OAuth 授權後儲存的寄件郵箱。
 - Gmail SMTP 465 / SSL 在沒有 Google Client Secret 時仍可寄送。
 - 管理員 API 權限、管理員新增／移除。

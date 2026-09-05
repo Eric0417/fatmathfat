@@ -175,4 +175,4 @@ updated: 2026-09-05
 
 **影響：** 修改 `backend/app/services/emailer.py`、`backend/app/routers/auth.py` 與測試；無資料庫 migration。教師/管理員郵件使用純文字，學生郵件維持原格式。
 
-**目前狀態：** `eb7047b` 已部署至 Render；線上寄件來源切換為 `wongeric1417@gmail.com`，教師驗證碼 MIME 已確認是單一 `text/plain`。
+**目前狀態：** `eb7047b` 已部署至 Render；寄件來源為 `bot012223333@gmail.com`，教師驗證碼 MIME 已確認是單一 `text/plain`。

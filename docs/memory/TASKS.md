@@ -43,7 +43,7 @@ updated: 2026-09-05
 | Render 全棧部署設定 | done | 新增 backend web service 與 PostgreSQL blueprint |
 | 郵件供應商支援 | done | Gmail SMTP 465 為基礎；Resend API 與 Gmail API 可選 |
 | 驗證碼郵件格式 | done | 學生格式保留 multipart/alternative；非學生格式使用單一 `text/plain`，與診斷信一致 |
-| Render 線上 OTP 投遞驗證 | done | `eb7047b` live；寄件來源為 `wongeric1417@gmail.com`，教師驗證碼 MIME 已確認為單一 `text/plain` |
+| Render 線上 OTP 投遞驗證 | done | `eb7047b` live；寄件來源為 `bot012223333@gmail.com`，教師驗證碼 MIME 已確認為單一 `text/plain` |
 | AI 老師非測驗停用修正 | done | 離開測驗清除 context；後端只依 `quiz_active` 判斷 |
 | 7 主題課程教材擴充 | done | 每主題 3+ 例子、4+ 詳細說明、2+ 常見錯誤 |
 | 後端與瀏覽器測試 | done | pytest、Vitest、Playwright 與離線登入驗證 |
