@@ -67,11 +67,11 @@ updated: 2026-09-06
 - 修正 320px 課程頁因 grid 子項目 min-content 造成的 74px 橫向溢出，並把單元清單改為 820px 以下的水平 snap 清單。
 - 手機 AI 老師面板移到底部導覽上方、加入安全區域留白與 70dvh 高度上限，避免浮層遮住操作。
 - 擴充 `browser-verify.mjs`：新增 320px 手機、iPad 1024px 橫向、登入頁、AI 面板位置、底部導覽尺寸與手機集合操作／練習回饋驗證。
-- 建立 GitHub branch `feat/mobile-tablet-optimization`，準備推送至 GitHub 並在驗證後部署 Render。
+- 建立 GitHub branch `feat/mobile-tablet-optimization` 並推送至 `Eric0417/fatmathfat`；合併至 `main` 後，Render static site deploy `dep-dae6mlu7bikc73d54440` 已 live。
 
 ## 進行中
 
-- 目前正在驗證與發布 `feat/mobile-tablet-optimization`；推送 GitHub 後會合併至 `main`，再由 Render static site `fatmathfat` 自動部署。
+- 目前無進行中的功能開發。
 
 ## 待辦
 
@@ -84,7 +84,7 @@ updated: 2026-09-06
 ## 給下一個 agent 的提示
 
 - 先讀 `CONVENTIONS.md`，再讀本檔。
-- 任何結構性變更都要重新索引 graph；目前 index 已反映新程式碼（700 nodes / 1997 edges），且 D-012、D-013 已同步 CBM。
+- 任何結構性變更都要重新索引 graph；目前 index 已反映本次手機／平板改版（739 nodes / 2144 edges），且 D-012、D-013、D-015 已同步 CBM。
 - 網站需要連線；PWA 靜態資源仍可快取，但未登入或離線時顯示登入頁。
 - 目前視覺決策是 D-010「使用 Academic Blue 學術視覺並部署至 Render」；後續視覺調整集中在 `src/styles.css`，不要改回紫色、玻璃或霓虹風格。
 - AI 老師目前為前端呈現層強化，決策與範圍記錄為 D-011；DeepSeek 後端與 API 契約未改。
