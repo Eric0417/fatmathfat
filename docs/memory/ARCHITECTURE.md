@@ -4,7 +4,7 @@ type: note
 status: active
 tags: [memory, architecture]
 created: 2026-09-02
-updated: 2026-09-05
+updated: 2026-09-06
 ---
 
 # 架構
@@ -42,7 +42,9 @@ updated: 2026-09-05
 ## 視覺與互動設計
 
 - 目前使用 Academic Blue：淺灰白頁面、白色卡片、深藏青左側導覽、學院藍主色與低飽和陶土色強調。
-- 桌面使用左側導覽，平板與手機切換為頂部導覽；卡片使用輕度陰影、細邊框與 10px 至 14px 圓角。
+- 桌面使用左側導覽，1180px 以下切換為頂部導覽；620px 以下切換為固定底部導覽，teacher 會增加「管理」入口。
+- 820px 以下單元清單改為水平 snap 清單；手機 AI 老師面板位於底部導覽上方並保留安全區域。
+- 卡片使用輕度陰影、細邊框與 10px 至 14px 圓角。
 - Venn 圖使用低飽和 A/B/交集色，保留 SVG 高亮與拖放區。
 - 樣式集中在 `src/styles.css`；`backend/`、`render.yaml` 與 API 契約不變。
 - AI 老師前端使用等待狀態、動態點點、逐字回覆與自動捲動；後端 `/api/ai/chat` 契約與 DeepSeek 服務不變。

@@ -55,6 +55,12 @@ export function AppShell({ route, children }: AppShellProps) {
     if (item.match === '/') return route === '/' || route === '';
     return route.startsWith(item.match);
   };
+  const itemsForRole = [
+    ...navItems,
+    ...(user?.role === 'teacher'
+      ? [{ href: '#/admin', label: '管理', icon: ShieldCheck, match: '/admin' }]
+      : [])
+  ];
 
   return (
     <div className="app-shell">
@@ -70,7 +76,7 @@ export function AppShell({ route, children }: AppShellProps) {
             </span>
           </a>
           <nav className="main-nav" aria-label="主要導覽">
-            {[...navItems, ...(user?.role === 'teacher' ? [{ href: '#/admin', label: '管理', icon: ShieldCheck, match: '/admin' }] : [])].map((item) => {
+            {itemsForRole.map((item) => {
               const Icon = item.icon;
               return (
                 <a
@@ -93,8 +99,38 @@ export function AppShell({ route, children }: AppShellProps) {
               </button>
             </div>
           </nav>
+          <button
+            className="mobile-account-logout"
+            type="button"
+            onClick={logout}
+            aria-label="登出"
+          >
+            <LogOut size={18} aria-hidden="true" />
+            <span>登出</span>
+          </button>
         </div>
       </header>
+
+      <nav
+        className={`mobile-nav${user?.role === 'teacher' ? ' mobile-nav--teacher' : ''}`}
+        aria-label="手機主要導覽"
+      >
+        {itemsForRole.map((item) => {
+          const Icon = item.icon;
+          return (
+            <a
+              key={item.match}
+              className="mobile-nav__link"
+              href={item.href}
+              aria-current={isActive(item) ? 'page' : undefined}
+              aria-label={item.label}
+            >
+              <Icon size={20} strokeWidth={2} aria-hidden="true" />
+              <span>{item.label}</span>
+            </a>
+          );
+        })}
+      </nav>
 
       {!isOnline && (
         <div className="offline-banner" role="status" aria-live="polite">

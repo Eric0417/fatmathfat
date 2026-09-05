@@ -190,3 +190,15 @@ updated: 2026-09-06
 **替代方案：** 僅在前端隱藏 AI 按鈕或維持客戶端分數——無法阻止修改請求；保留 Gmail OAuth——持續暴露高風險 callback；改用完整 HttpOnly cookie session——改動較大，留待下一輪。
 
 **影響：** 新增 `quiz_sessions` migration、`/api/quiz/*` 路由、`quiz_bank.py` 與 `rate_limit.py`；前端 `QuizPage`、`QuestionRunner`、`AiTeacherContext` 與 `AiTeacherPanel` 改用 `quiz_session_id`；`/api/progress/quiz` 只接受 answers 並由後端計分。
+
+## D-015 手機與平板採用觸控優先的響應式介面
+
+**狀態：** active
+
+**決定：** 手機改用固定底部導覽，標籤與圖示同時顯示並維持至少 44px 點擊區；平板橫向與小尺寸桌面在 1180px 以下改用頂部導覽，避免左側欄過度壓縮內容。課程單元清單在 820px 以下改成可橫向捲動的 snap 清單；集合工具改掉固定最小欄寬，避免 iPad 橫向溢出。AI 老師面板在手機上移到底部導覽上方，並加入安全區域留白。
+
+**理由：** 原本 320px 手機的導覽會折成兩列、課程頁橫向溢出 74px，iPad 橫向集合工具溢出 191px；純靠既有斷點不足以處理教師多一個「管理」入口與觸控操作。底部導覽符合手機慣用操作，水平 unit rail 能讓學生先看到教材，而不是先滑過七個單元。
+
+**替代方案：** 只縮小字體與隱藏標籤，或繼續使用頂部 icon 導覽。前者無法解決 7 個入口與長內容；後者在手機上缺少可發現性，且 320px 仍可能折行。
+
+**影響：** `AppShell` 新增手機導覽與手機登出，`src/styles.css` 新增 touch-first refinement；瀏覽器驗證加入 320px、1024px、登入頁、AI 面板與手機集合操作。後端、資料模型、API、`render.yaml` 與 PWA 設定不變。

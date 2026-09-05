@@ -314,6 +314,13 @@ try {
     fullPage: true
   });
   assert((await overflow(mobilePage)).overflow === 0, 'mobile explorer has horizontal overflow');
+  await mobilePage.getByRole('button', { name: /元素 7/ }).click();
+  await mobilePage.getByRole('button', { name: '加入 A' }).click();
+  await mobilePage.getByRole('button', { name: '復原' }).click();
+  assert(
+    (await mobilePage.locator('[aria-label*="元素 7，目前在 U 中但不屬於 A 或 B"]').count()) === 1,
+    'mobile explorer assignment did not work'
+  );
 
   await load(mobilePage, '/practice/membership');
   await mobilePage.screenshot({
@@ -321,7 +328,148 @@ try {
     fullPage: true
   });
   assert((await overflow(mobilePage)).overflow === 0, 'mobile practice has horizontal overflow');
+  await mobilePage.locator('.choice-button').first().click();
+  assert(
+    (await mobilePage.locator('.feedback').count()) === 1,
+    'mobile practice feedback did not render'
+  );
 
+  const smallMobile = await browser.newContext({
+    viewport: { width: 320, height: 568 },
+    deviceScaleFactor: 1,
+    isMobile: true,
+    hasTouch: true
+  });
+  const smallMobilePage = await smallMobile.newPage();
+  const smallMobileErrors = [];
+  smallMobilePage.on('console', (message) => {
+    if (message.type() === 'error' || message.type() === 'warning') {
+      smallMobileErrors.push(`${message.type()}: ${message.text()}`);
+    }
+  });
+  smallMobilePage.on('pageerror', (error) => {
+    smallMobileErrors.push(`pageerror: ${error.message}`);
+  });
+
+  await prepare(smallMobilePage);
+  assert(
+    await smallMobilePage.locator('.mobile-nav').isVisible(),
+    'small phone bottom navigation is not visible'
+  );
+  assert(
+    !(await smallMobilePage.locator('.main-nav').isVisible()),
+    'small phone still shows the top navigation'
+  );
+  const firstMobileTarget = await smallMobilePage
+    .locator('.mobile-nav__link')
+    .first()
+    .boundingBox();
+  assert(
+    firstMobileTarget && firstMobileTarget.width >= 44 && firstMobileTarget.height >= 44,
+    'small phone navigation target is below the 44px touch size'
+  );
+  const smallHeaderBox = await smallMobilePage.locator('.app-header').boundingBox();
+  assert(
+    smallHeaderBox && smallHeaderBox.height <= 88,
+    'small phone header wraps into multiple rows'
+  );
+
+  await load(smallMobilePage, '/lessons/membership');
+  assert(
+    (await overflow(smallMobilePage)).overflow === 0,
+    'small phone lesson has horizontal overflow'
+  );
+  await load(smallMobilePage, '/explorer');
+  assert(
+    (await overflow(smallMobilePage)).overflow === 0,
+    'small phone explorer has horizontal overflow'
+  );
+  await load(smallMobilePage, '/admin');
+  assert(
+    (await overflow(smallMobilePage)).overflow === 0,
+    'small phone admin has horizontal overflow'
+  );
+
+  await load(smallMobilePage, '/');
+  await smallMobilePage.getByRole('button', { name: '開啟 AI 老師' }).click();
+  await smallMobilePage.locator('.ai-teacher__panel').waitFor();
+  await smallMobilePage.waitForTimeout(100);
+  const aiPanelBox = await smallMobilePage.locator('.ai-teacher__panel').boundingBox();
+  const mobileNavBox = await smallMobilePage.locator('.mobile-nav').boundingBox();
+  assert(aiPanelBox && mobileNavBox, 'mobile AI teacher panel is not visible');
+  assert(
+    aiPanelBox.y + aiPanelBox.height <= mobileNavBox.y + 1,
+    'mobile AI teacher panel overlaps the bottom navigation'
+  );
+  assert(
+    smallMobileErrors.length === 0,
+    `small phone console issues: ${smallMobileErrors.join('\n')}`
+  );
+
+  const loginMobile = await browser.newContext({
+    viewport: { width: 320, height: 568 },
+    deviceScaleFactor: 1,
+    isMobile: true,
+    hasTouch: true
+  });
+  const loginMobilePage = await loginMobile.newPage();
+  await load(loginMobilePage, '/login');
+  assert(
+    (await loginMobilePage.getByRole('heading', { name: '登入' }).count()) === 1,
+    'mobile login page did not render'
+  );
+  const loginCardBox = await loginMobilePage.locator('.auth-card').boundingBox();
+  assert(
+    loginCardBox && loginCardBox.x >= 0 && loginCardBox.x + loginCardBox.width <= 320,
+    'mobile login card extends outside the viewport'
+  );
+  assert(
+    (await overflow(loginMobilePage)).overflow === 0,
+    'mobile login has horizontal overflow'
+  );
+  await loginMobile.close();
+
+  const tablet = await browser.newContext({
+    viewport: { width: 1024, height: 768 },
+    deviceScaleFactor: 1,
+    isMobile: false,
+    hasTouch: true
+  });
+  const tabletPage = await tablet.newPage();
+  await prepare(tabletPage);
+  assert(
+    await tabletPage.locator('.main-nav').isVisible(),
+    'tablet landscape top navigation is not visible'
+  );
+  assert(
+    !(await tabletPage.locator('.mobile-nav').isVisible()),
+    'tablet landscape incorrectly shows the bottom navigation'
+  );
+  const tabletShellDisplay = await tabletPage.evaluate(
+    () => getComputedStyle(document.querySelector('.app-shell')).display
+  );
+  assert(
+    tabletShellDisplay === 'block',
+    'tablet landscape still reserves the desktop sidebar'
+  );
+  const tabletHeaderBox = await tabletPage.locator('.app-header').boundingBox();
+  assert(
+    tabletHeaderBox && tabletHeaderBox.height <= 88,
+    'tablet landscape header wraps into multiple rows'
+  );
+  await load(tabletPage, '/explorer');
+  assert(
+    (await overflow(tabletPage)).overflow === 0,
+    'tablet landscape explorer has horizontal overflow'
+  );
+  await load(tabletPage, '/admin');
+  assert(
+    (await overflow(tabletPage)).overflow === 0,
+    'tablet landscape admin has horizontal overflow'
+  );
+
+  await tablet.close();
+  await smallMobile.close();
   await desktop.close();
   await mobile.close();
   console.log('browser verification passed');

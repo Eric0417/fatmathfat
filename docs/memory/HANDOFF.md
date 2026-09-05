@@ -62,11 +62,16 @@ updated: 2026-09-06
 - 已把測驗改為伺服器 session，`/api/quiz/*` 負責建立、結束與取消；`/api/ai/chat` 不再信任客戶端 `quiz_active`，而會檢查 active session 與 quiz question context。
 - 已把 `/api/progress/quiz` 改為只接受 `answers` 與 `quiz_session_id`，由後端 `quiz_bank.py` 重新計算分數、主題成績與錯題。
 - 通過後端 pytest 21 項、前端 Vitest 13 項、typecheck、production build 與 Alembic upgrade 驗證。
+- 新增手機固定底部導覽：320px 至 620px 使用圖示加標籤、至少 44px 點擊區、teacher 顯示管理入口；頂部只保留品牌與登出。
+- 將平板與小尺寸桌面的頂部導覽斷點從 920px 提高到 1180px，修正 iPad 橫向集合工具因三欄最小寬度造成的 191px 橫向溢出。
+- 修正 320px 課程頁因 grid 子項目 min-content 造成的 74px 橫向溢出，並把單元清單改為 820px 以下的水平 snap 清單。
+- 手機 AI 老師面板移到底部導覽上方、加入安全區域留白與 70dvh 高度上限，避免浮層遮住操作。
+- 擴充 `browser-verify.mjs`：新增 320px 手機、iPad 1024px 橫向、登入頁、AI 面板位置、底部導覽尺寸與手機集合操作／練習回饋驗證。
+- 建立 GitHub branch `feat/mobile-tablet-optimization`，準備推送至 GitHub 並在驗證後部署 Render。
 
 ## 進行中
 
-- 已推送 D-014 安全硬化修改 `47b194d` 至 GitHub `main`；Render web service deploy `dep-dae5r5e7bikc7386pfc0` 狀態為 `live`。
-- 已透過 Render API 直接同步靜態站 headers，並將 `JWT_EXPIRE_MINUTES=60`、`QUIZ_SESSION_TTL_MINUTES=120` 套用到 `fatmathfat-api`。
+- 目前正在驗證與發布 `feat/mobile-tablet-optimization`；推送 GitHub 後會合併至 `main`，再由 Render static site `fatmathfat` 自動部署。
 
 ## 待辦
 
@@ -87,6 +92,8 @@ updated: 2026-09-06
 - 學校網域教師登入規則記錄為 D-012；正式教師郵箱為 `@puiching.edu.mo`，本次修正包含後端、登入提示與回歸測試。
 - 後端路由在 `backend/app/routers/`，AI 服務在 `backend/app/services/`，資料庫 migration 在 `backend/alembic/`。
 - 前端登入與 API client 在 `src/context/AuthContext.tsx` 與 `src/lib/api.ts`；AI 面板在 `src/components/AiTeacherPanel.tsx`。
+- 手機導覽與手機登出都在 `src/components/AppShell.tsx`；相關 breakpoint、底部安全區域與 AI 浮層定位集中在 `src/styles.css` 末尾的 `Touch-first mobile and tablet refinements`。
+- `browser-verify.mjs` 的 responsive assertions 依賴 `TEST_TOKEN` 的 teacher 權限；執行前需先啟動本地前後端。
 - 重大決策已記進 `DECISIONS.md`；結構變更後需重新執行 CBM index 與 ADR。
 - 原本的 `math_website` 仍是未初始化 Git 的開發目錄；本期實作與部署修改在 `math_website_render`。
 - 本次 Academic Blue 前端改版將推送到 GitHub `main`，由 Render 自動部署 `fatmathfat` static site；後端服務不被修改。
