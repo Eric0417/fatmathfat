@@ -99,7 +99,7 @@ npm run test:offline
 
 ## 連線與登入
 
-符合 `7 位數字-1 位數字@g.puiching.edu.mo` 的學校信箱會以學生身分登入；`@puiching.edu.mo` 教師郵箱及其他 `@g.puiching.edu.mo` 非學號信箱會自動以老師身分登入。學生使用的驗證碼郵件保留 HTML，教師等非學生格式郵箱使用與診斷信一致的純文字格式。外部管理員仍需透過 `ADMIN_EMAILS` 或後台白名單授權。網站需要連線才能登入、同步學習紀錄與使用 AI 老師。Service Worker 只快取靜態資源，登入後若離線會回到登入頁。
+符合 `7 位數字-1 位數字@g.puiching.edu.mo` 的學校信箱會以學生身分登入；`@puiching.edu.mo` 教師郵箱及其他 `@g.puiching.edu.mo` 非學號信箱會自動以老師身分登入。學生使用的驗證碼郵件保留 HTML，教師等非學生格式郵箱使用與診斷信一致的單一 `text/plain`；線上寄件來源使用 `wongeric1417@gmail.com`。外部管理員仍需透過 `ADMIN_EMAILS` 或後台白名單授權。網站需要連線才能登入、同步學習紀錄與使用 AI 老師。Service Worker 只快取靜態資源，登入後若離線會回到登入頁。
 
 ## 部署
 
