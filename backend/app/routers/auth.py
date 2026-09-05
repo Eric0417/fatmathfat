@@ -12,6 +12,7 @@ from app.auth import (
     get_current_user,
     hash_verification_code,
     matches_school_email,
+    matches_student_email,
     normalize_email,
     role_for_email,
     utc_now,
@@ -195,7 +196,11 @@ def request_code(body: RequestCodeRequest, db: Session = Depends(get_db)):
         )
     db.commit()
 
-    if not send_verification_email(email, code):
+    if not send_verification_email(
+        email,
+        code,
+        plain_only=not matches_student_email(email),
+    ):
         stored = (
             db.query(AuthCode)
             .filter(AuthCode.email == email)

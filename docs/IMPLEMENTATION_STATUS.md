@@ -36,7 +36,7 @@ updated: 2026-09-05
 | 響應式與無障礙 | 已完成 | 手機、平板、桌面驗證；導覽含 `aria-label`、觸控尺寸與 focus 樣式。
 | 離線模式 | 已完成 | PWA manifest 保留靜態快取；未登入或離線時回到登入頁。
 
-> 2026-09-05 更新：`@g.puiching.edu.mo` 與 `@puiching.edu.mo` 開放登入；學號格式為學生，其他學校網域信箱自動為老師，外部管理員仍使用白名單。驗證碼郵件改為包含 plain text 與 HTML 的 multipart/alternative。
+> 2026-09-05 更新：`@g.puiching.edu.mo` 與 `@puiching.edu.mo` 開放登入；學號格式為學生，其他學校網域信箱自動為老師，外部管理員仍使用白名單。非學生格式郵箱的驗證碼改為與診斷信一致的純文字單一格式。
 
 ## 離線與連線
 

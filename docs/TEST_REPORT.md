@@ -47,7 +47,7 @@ updated: 2026-09-05
 - `@g.puiching.edu.mo` 與 `@puiching.edu.mo` 信箱皆可登入；學號格式保留學生角色，其他學校網域信箱自動為老師。
 - 非學校網域且未加入白名單的郵箱仍會被拒絕；外部管理員白名單維持。
 - OTP 取得、驗證、過期、次數限制與管理員角色。
-- 驗證碼郵件包含 plain text 與 HTML alternative，並以測試確認兩種內容都傳入寄件函式。
+- 學生格式使用 multipart/alternative；非學生格式使用單一 `text/plain`，並以測試確認路由與 MIME 格式。
 - Resend API 優先使用；Gmail API 在 `EMAIL_FROM` 為空時讀取 OAuth 授權後儲存的寄件郵箱。
 - Gmail SMTP 465 / SSL 在沒有 Google Client Secret 時仍可寄送。
 - 管理員 API 權限、管理員新增／移除。

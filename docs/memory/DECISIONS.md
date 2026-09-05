@@ -163,14 +163,14 @@ updated: 2026-09-05
 
 **影響：** 修改 `backend/app/auth.py`、登入頁提示與相關文件；無資料庫 migration。學號信箱角色不變，`@puiching.edu.mo` 教師郵箱擁有老師權限，既有 `@g.puiching.edu.mo` 非學號信箱仍保留老師權限。
 
-## D-013 驗證碼郵件改用 multipart/alternative
+## D-013 非學生格式郵箱改用診斷信相同的 text/plain 寄送
 
 **狀態：** active
 
-**決定：** 驗證碼郵件改用互斥顯示的 multipart/alternative，同時包含 plain text 與 HTML；Gmail SMTP、Gmail API 與 Resend 路徑都保留文字版。
+**決定：** 符合學生格式的郵箱保留 multipart/alternative；其他非學生格式郵箱使用單一 `text/plain` 郵件，和可成功送達的診斷信完全相同。Gmail SMTP、Gmail API 與 Resend 路徑都支援 plain-only。
 
-**理由：** 教師信箱的純文字診斷信可送達，但只有 HTML 的正式驗證碼郵件被認為可能被 Google Workspace 垃圾郵件或 Quarantine 政策攔截；文字版可讓收件端取得可讀的替代內容。
+**理由：** 實際驗證顯示教師信箱能收到純文字診斷信，但 multipart/alternative 的正式驗證碼郵件仍未送達；因此非學生格式郵箱必須完全改用 plain text，不能只附加文字版。
 
-**替代方案：** 只保留 HTML——維持原狀但無法排除教師端格式誤判；改為只寄 plain text——會失去品牌與版面。
+**替代方案：** 只保留 multipart/alternative——已在線上驗證無效；全部改為 plain text——會改變學生郵件格式，且不符合「只針對非學生格式」的需求。
 
-**影響：** 修改 `backend/app/services/emailer.py` 與 `backend/tests/test_emailer.py`；無資料庫 migration。郵件內容與驗證碼流程不變。
+**影響：** 修改 `backend/app/services/emailer.py`、`backend/app/routers/auth.py` 與測試；無資料庫 migration。教師/管理員郵件使用純文字，學生郵件維持原格式。

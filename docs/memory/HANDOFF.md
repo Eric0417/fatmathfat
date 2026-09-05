@@ -54,12 +54,12 @@ updated: 2026-09-05
 - 已新增 `AiTeacherPanel.test.tsx`，以 jsdom 與真實 Chrome mock API 驗證等待狀態、停用狀態與回覆呈現。
 - 調整學校網域登入規則：`@g.puiching.edu.mo` 與 `@puiching.edu.mo` 都可登入，非學號格式自動以老師身分登入；外部管理員與白名單邏輯維持。
 - 修正正式教師網域登入問題：學校官網教師郵箱使用 `@puiching.edu.mo`，此前程式只允許 `@g.puiching.edu.mo`，因此這類郵箱會在寄送驗證碼前被拒絕。
-- 修正正式驗證碼郵件格式：診斷純文字信可送達，正式信改為 plain text + HTML multipart/alternative；Gmail SMTP、Gmail API 與 Resend 路徑同步保留文字版。
-- 通過後端 pytest 15 項、前端 Vitest 13 項、typecheck 與 production build。
+- 修正正式驗證碼郵件格式：診斷純文字信可送達，非學生格式郵箱改為與診斷信一致的單一 `text/plain`；學生格式郵箱保留 multipart/alternative。
+- 通過後端 pytest 20 項、前端 Vitest 13 項、typecheck 與 production build。
 
 ## 進行中
 
-- 目前無進行中的程式修改；AI 診斷已完成，尚未決定是否實作錯誤分類日誌、重試或 streaming。`imwong@g.puiching.edu.mo` 的正式驗證碼郵件格式已調整，等待部署後做線上投遞確認。
+- 目前無進行中的程式修改；AI 診斷已完成，尚未決定是否實作錯誤分類日誌、重試或 streaming。非學生格式郵箱已改用 plain text，等待部署後做線上投遞確認。
 
 ## 待辦
 
@@ -71,7 +71,7 @@ updated: 2026-09-05
 ## 給下一個 agent 的提示
 
 - 先讀 `CONVENTIONS.md`，再讀本檔。
-- 任何結構性變更都要重新索引 graph；目前 index 已反映新程式碼（694 nodes / 1944 edges），且 D-012、D-013 已同步 CBM。
+- 任何結構性變更都要重新索引 graph；目前 index 已反映新程式碼（700 nodes / 1976 edges），且 D-012、D-013 已同步 CBM。
 - 網站需要連線；PWA 靜態資源仍可快取，但未登入或離線時顯示登入頁。
 - 目前視覺決策是 D-010「使用 Academic Blue 學術視覺並部署至 Render」；後續視覺調整集中在 `src/styles.css`，不要改回紫色、玻璃或霓虹風格。
 - AI 老師目前為前端呈現層強化，決策與範圍記錄為 D-011；DeepSeek 後端與 API 契約未改。

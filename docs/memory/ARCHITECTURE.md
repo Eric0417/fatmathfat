@@ -23,7 +23,7 @@ updated: 2026-09-05
 | 後端 | FastAPI + SQLAlchemy + Alembic | 提供認證、學習數據與 AI proxy |
 | 儲存 | PostgreSQL | 保存帳號、進度、測驗與管理員白名單 |
 | 認證 | Email OTP + JWT | `@g.puiching.edu.mo` 學號為學生，`@puiching.edu.mo` 教師郵箱與 `@g.puiching.edu.mo` 非學號信箱自動為老師；外部管理員使用白名單 |
-| 郵件 | Gmail SMTP 465 + multipart/alternative | 驗證碼同時提供 plain text 與 HTML，降低教師端 Google Workspace 垃圾郵件/Quarantine 誤判 |
+| 郵件 | Gmail SMTP 465 | 學生驗證碼使用 multipart/alternative；非學生格式郵箱使用單一 text/plain，與可送達的診斷信一致 |
 | AI | DeepSeek `deepseek-v4-flash` | 答題引導與依弱點生成練習 |
 | 測試 | Vitest + pytest + Playwright Core | 覆蓋邏輯、API、登入與瀏覽器流程 |
 

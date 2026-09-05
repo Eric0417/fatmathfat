@@ -18,7 +18,7 @@ def client(monkeypatch):
     Base.metadata.create_all(bind=engine)
     monkeypatch.setattr(
         "app.routers.auth.send_verification_email",
-        lambda _to, _code: True,
+        lambda _to, _code, plain_only=False: True,
     )
     monkeypatch.setattr(
         "app.routers.auth.generate_verification_code",

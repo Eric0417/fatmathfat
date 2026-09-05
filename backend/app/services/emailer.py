@@ -3,8 +3,10 @@ import ssl
 import base64
 import logging
 import socket
+from email.message import EmailMessage
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+from email.utils import make_msgid
 
 import httpx
 
@@ -36,6 +38,21 @@ def _build_message(
     if text_body:
         msg.attach(MIMEText(text_body, "plain", "utf-8"))
     msg.attach(MIMEText(html_body, "html", "utf-8"))
+    return msg
+
+
+def _build_plain_message(
+    from_addr: str,
+    to: str,
+    subject: str,
+    text_body: str,
+) -> EmailMessage:
+    msg = EmailMessage()
+    msg["Subject"] = subject
+    msg["From"] = from_addr
+    msg["To"] = to
+    msg["Message-ID"] = make_msgid(domain="fatmathfat.onrender.com")
+    msg.set_content(text_body)
     return msg
 
 
@@ -105,13 +122,18 @@ def _send_via_gmail_api(
     subject: str,
     html_body: str,
     text_body: str | None = None,
+    plain_only: bool = False,
 ) -> bool:
     from_addr = _get_sender_email()
     access_token = _get_gmail_access_token()
     if not from_addr or not access_token:
         return False
 
-    message = _build_message(from_addr, to, subject, html_body, text_body)
+    message = (
+        _build_plain_message(from_addr, to, subject, text_body or "")
+        if plain_only
+        else _build_message(from_addr, to, subject, html_body, text_body)
+    )
     raw_message = base64.urlsafe_b64encode(message.as_bytes()).decode("ascii")
     try:
         response = httpx.post(
@@ -141,6 +163,7 @@ def _send_via_resend(
     subject: str,
     html_body: str,
     text_body: str | None = None,
+    plain_only: bool = False,
 ) -> bool:
     api_key = settings.RESEND_API_KEY.strip()
     from_addr = settings.RESEND_FROM.strip() or (
@@ -154,10 +177,13 @@ def _send_via_resend(
             "from": from_addr,
             "to": [to],
             "subject": subject,
-            "html": html_body,
         }
-        if text_body:
+        if plain_only:
             body["text"] = text_body
+        else:
+            body["html"] = html_body
+            if text_body:
+                body["text"] = text_body
         response = httpx.post(
             "https://api.resend.com/emails",
             headers={
@@ -185,14 +211,27 @@ def send_email(
     subject: str,
     html_body: str,
     text_body: str | None = None,
+    plain_only: bool = False,
 ) -> bool:
     if settings.RESEND_API_KEY:
-        sent = _send_via_resend(to, subject, html_body, text_body)
+        sent = _send_via_resend(
+            to,
+            subject,
+            html_body,
+            text_body,
+            plain_only,
+        )
         if sent:
             return True
 
     if settings.GOOGLE_CLIENT_ID and settings.GOOGLE_CLIENT_SECRET:
-        sent = _send_via_gmail_api(to, subject, html_body, text_body)
+        sent = _send_via_gmail_api(
+            to,
+            subject,
+            html_body,
+            text_body,
+            plain_only,
+        )
         if sent:
             return True
 
@@ -202,7 +241,11 @@ def send_email(
     if not from_addr or not app_password:
         return False
 
-    msg = _build_message(from_addr, to, subject, html_body, text_body)
+    msg = (
+        _build_plain_message(from_addr, to, subject, text_body or "")
+        if plain_only
+        else _build_message(from_addr, to, subject, html_body, text_body)
+    )
 
     original_getaddrinfo = socket.getaddrinfo
     socket.getaddrinfo = _ipv4_getaddrinfo
@@ -244,7 +287,11 @@ def send_email(
         socket.getaddrinfo = original_getaddrinfo
 
 
-def send_verification_email(to: str, code: str) -> bool:
+def send_verification_email(
+    to: str,
+    code: str,
+    plain_only: bool = False,
+) -> bool:
     subject = "集合好好學 - 登入驗證碼"
     text = f"""集合好好學
 
@@ -259,4 +306,4 @@ def send_verification_email(to: str, code: str) -> bool:
 </div>
 <p style="color:#5f6f7e;font-size:14px">驗證碼 5 分鐘後失效。如果這不是你發出的請求，請忽略此郵件。</p>
 </div>"""
-    return send_email(to, subject, html, text)
+    return send_email(to, subject, html, text, plain_only=plain_only)

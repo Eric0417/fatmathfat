@@ -37,6 +37,48 @@ def test_student_login_and_progress(client, student_token):
     assert quiz.json()["score"] == 80
 
 
+def test_teacher_request_code_uses_plain_email(client, monkeypatch):
+    calls = []
+
+    def fake_send(to, code, plain_only=False):
+        calls.append((to, code, plain_only))
+        return True
+
+    monkeypatch.setattr(
+        "app.routers.auth.send_verification_email",
+        fake_send,
+    )
+
+    response = client.post(
+        "/api/auth/request-code",
+        json={"email": "imwong@g.puiching.edu.mo"},
+    )
+
+    assert response.status_code == 200
+    assert calls[-1][2] is True
+
+
+def test_student_request_code_keeps_html_email(client, monkeypatch):
+    calls = []
+
+    def fake_send(to, code, plain_only=False):
+        calls.append((to, code, plain_only))
+        return True
+
+    monkeypatch.setattr(
+        "app.routers.auth.send_verification_email",
+        fake_send,
+    )
+
+    response = client.post(
+        "/api/auth/request-code",
+        json={"email": "1234567-1@g.puiching.edu.mo"},
+    )
+
+    assert response.status_code == 200
+    assert calls[-1][2] is False
+
+
 def test_any_school_domain_email_can_login_as_teacher(client):
     for email in (
         "imwong@g.puiching.edu.mo",
