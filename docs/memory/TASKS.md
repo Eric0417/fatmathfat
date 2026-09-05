@@ -35,7 +35,8 @@ updated: 2026-09-05
 | 頁尾與無障礙 | done | `developed by Eric Wong`、導覽標籤、離線提示 |
 | 離線重載驗證 | done | 新增 `test:offline` 並通過 production preview 驗證 |
 | FastAPI 後端與資料模型 | done | PostgreSQL、Alembic、OTP、JWT、學習數據與管理員 API |
-| 學校郵箱與角色規則 | done | 學生 `7位-1位`，預設管理員與後台新增管理員 |
+| 學校郵箱與角色規則 | done | 學號格式為學生；同網域其他信箱自動為老師；外部管理員使用白名單 |
+| 學校網域教師自動登入 | done | 未加入白名單的 `@g.puiching.edu.mo` 也能登入並取得老師權限 |
 | DeepSeek AI 老師 | done | 全站面板、測驗中停用、依弱點生成練習、題目驗證 |
 | 前端登入與角色導覽 | done | `#/login`、路由保護、管理員 `#/admin` |
 | AI 生成練習 | done | 不保存題目，保存練習摘要 |

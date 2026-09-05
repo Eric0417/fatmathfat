@@ -11,7 +11,7 @@ from app.auth import (
     generate_verification_code,
     get_current_user,
     hash_verification_code,
-    matches_student_email,
+    matches_school_email,
     normalize_email,
     role_for_email,
     utc_now,
@@ -32,7 +32,7 @@ router = APIRouter(prefix="/api/auth", tags=["auth"])
 
 
 def _allowed_email(db: Session, email: str) -> bool:
-    if matches_student_email(email):
+    if matches_school_email(email):
         return True
     return (
         db.query(TeacherAllowlist)

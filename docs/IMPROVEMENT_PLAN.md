@@ -4,7 +4,7 @@ type: note
 status: active
 tags: [memory, improvement-plan, math-website]
 created: 2026-09-03
-updated: 2026-09-04
+updated: 2026-09-05
 ---
 
 # 集合好好學改善計畫
@@ -39,7 +39,7 @@ updated: 2026-09-04
 - 基礎練習與綜合測驗：目前共用 14 筆題目，綜合測驗取 12 題。
 - 測驗結果：依概念分類、錯題類型，並寫入 PostgreSQL。
 - 課程完成狀態：手動標記完成，保存於後端。
-- 登入與教師管理：學校郵箱 OTP、管理員白名單、學生學習數據。
+- 登入與教師管理：學校郵箱 OTP、同網域老師自動登入、外部管理員白名單、學生學習數據。
 - AI 老師：全站浮動面板、依弱點生成練習、測驗中停用。
 - PWA：manifest、service worker、離線回到登入頁。
 

@@ -4,7 +4,7 @@ type: note
 status: active
 tags: [memory, test-report, math-website]
 created: 2026-09-03
-updated: 2026-09-04
+updated: 2026-09-05
 ---
 
 # 集合好好學測試報告
@@ -18,9 +18,9 @@ updated: 2026-09-04
 | 指令 | 結果 | 說明 |
 |------|------|------|
 | `npm run typecheck` | 通過 | `tsc -b`，無 TypeScript 錯誤。 |
-| `npm test` | 通過 | 4 個測試檔、12 個測試全數通過。 |
+| `npm test` | 通過 | 5 個測試檔、13 個測試全數通過。 |
 | `npm run build` | 通過 | Vite production build 成功；PWA 預快取 18 個資源。 |
-| `backend/.venv/bin/python -m pytest` | 通過 | 後端 13 個測試全數通過。 |
+| `backend/.venv/bin/python -m pytest` | 通過 | 後端 14 個測試全數通過。 |
 | `npm run test:browser` | 通過 | 登入 token 下桌面與手機 Chrome 驗證，含管理員與 AI 面板。 |
 | `npm run test:offline` | 通過 | production preview 下離線重新載入會顯示登入頁。 |
 | `npm run lint` | 未提供 | `package.json` 沒有對應 script，也未安裝 ESLint。 |
@@ -44,7 +44,8 @@ updated: 2026-09-04
 
 ### 後端認證與學習資料
 
-- 學生郵箱格式、非白名單郵箱拒絕與管理員白名單。
+- 任何 `@g.puiching.edu.mo` 信箱皆可登入；學號格式保留學生角色，其他同網域信箱自動為老師。
+- 非學校網域且未加入白名單的郵箱仍會被拒絕；外部管理員白名單維持。
 - OTP 取得、驗證、過期、次數限制與管理員角色。
 - Resend API 優先使用；Gmail API 在 `EMAIL_FROM` 為空時讀取 OAuth 授權後儲存的寄件郵箱。
 - Gmail SMTP 465 / SSL 在沒有 Google Client Secret 時仍可寄送。

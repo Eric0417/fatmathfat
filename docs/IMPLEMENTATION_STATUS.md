@@ -4,7 +4,7 @@ type: note
 status: active
 tags: [memory, implementation-status, math-website]
 created: 2026-09-03
-updated: 2026-09-04
+updated: 2026-09-05
 ---
 
 # 集合好好學實作狀態
@@ -36,6 +36,8 @@ updated: 2026-09-04
 | 響應式與無障礙 | 已完成 | 手機、平板、桌面驗證；導覽含 `aria-label`、觸控尺寸與 focus 樣式。
 | 離線模式 | 已完成 | PWA manifest 保留靜態快取；未登入或離線時回到登入頁。
 
+> 2026-09-05 更新：`@g.puiching.edu.mo` 網域開放登入；學號格式為學生，其他同網域信箱自動為老師，外部管理員仍使用白名單。
+
 ## 離線與連線
 
 **狀態：網站需連線**
@@ -53,3 +55,5 @@ updated: 2026-09-04
 ## 部署狀態
 
 本版功能已推送為 GitHub `e643121` 並部署。Render static site `fatmathfat` 與 backend `fatmathfat-api` 均為 live；線上 bundle 已確認包含 7 個主題的新版例子與詳細說明。
+
+本次學校網域教師登入修正已完成本機驗證；本提交將推送至 GitHub `main` 並由 Render 部署。

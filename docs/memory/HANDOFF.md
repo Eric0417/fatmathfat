@@ -32,7 +32,7 @@ updated: 2026-09-05
 - 完成 PWA manifest、service worker 與離線重載驗證。
 - 通過 `npm run typecheck`、`npm test`、`npm run build`、Playwright 桌面/手機瀏覽器驗證。
 - 新增 FastAPI backend：PostgreSQL 資料模型、Alembic migration、Email OTP、JWT 與 CORS。
-- 完成學校郵箱角色規則：`^[0-9]{7}-[0-9]$` 學生，`wongeric1417@gmail.com` 預設管理員，其他管理員由後台加入。
+- 完成學校郵箱角色規則：`^[0-9]{7}-[0-9]$` 學生，同網域其他信箱自動為老師；外部管理員由預設郵箱與後台白名單控制。
 - 完成學習數據 API：最後登入／活動、課程完成度、練習摘要、測驗成績與錯題。
 - 完成管理員 API 與 `#/admin`：學生清單、學習數據、教師白名單新增／移除。
 - 完成 DeepSeek `deepseek-v4-flash` AI 老師：全站面板、測驗中停用、依弱點生成練習、題目結構與集合運算驗證。
@@ -52,10 +52,12 @@ updated: 2026-09-05
 - 已通過 Render workspace 的 `npm run typecheck`、13 項前端測試、production build，並以 mock 登入 State 驗證桌面、平板與手機頁面及登入頁。
 - 已強化 AI 老師前端交互：送出後顯示等待狀態與動態點點，回覆以逐字效果顯示並自動捲動；後端 `/api/ai/chat` 與 AI 回覆內容不變。
 - 已新增 `AiTeacherPanel.test.tsx`，以 jsdom 與真實 Chrome mock API 驗證等待狀態、停用狀態與回覆呈現。
+- 調整學校網域登入規則：任何 `@g.puiching.edu.mo` 信箱都可登入，非學號格式自動以老師身分登入；外部管理員與白名單邏輯維持。
+- 通過後端 pytest 14 項、前端 Vitest 13 項、typecheck 與 production build。
 
 ## 進行中
 
-- 目前無進行中的郵件寄送問題；線上 OTP 已完成第一次真實寄送測試。
+- 目前無進行中的功能問題；學校網域教師登入修正已完成，本提交將推送至 GitHub 部署。
 
 ## 待辦
 
@@ -66,10 +68,11 @@ updated: 2026-09-05
 ## 給下一個 agent 的提示
 
 - 先讀 `CONVENTIONS.md`，再讀本檔。
-- 任何結構性變更都要重新索引 graph；目前 index 已反映新程式碼（686 nodes / 1915 edges），且 D-011 已寫入 ADR。
+- 任何結構性變更都要重新索引 graph；目前 index 已反映新程式碼（690 nodes / 1934 edges），且 D-012 已寫入 ADR。
 - 網站需要連線；PWA 靜態資源仍可快取，但未登入或離線時顯示登入頁。
 - 目前視覺決策是 D-010「使用 Academic Blue 學術視覺並部署至 Render」；後續視覺調整集中在 `src/styles.css`，不要改回紫色、玻璃或霓虹風格。
 - AI 老師目前為前端呈現層強化，決策與範圍記錄為 D-011；DeepSeek 後端與 API 契約未改。
+- 學校網域教師登入規則記錄為 D-012；本次修正已加入本提交，推送後由 Render 部署後端服務。
 - 後端路由在 `backend/app/routers/`，AI 服務在 `backend/app/services/`，資料庫 migration 在 `backend/alembic/`。
 - 前端登入與 API client 在 `src/context/AuthContext.tsx` 與 `src/lib/api.ts`；AI 面板在 `src/components/AiTeacherPanel.tsx`。
 - 重大決策已記進 `DECISIONS.md`；結構變更後需重新執行 CBM index 與 ADR。

@@ -14,6 +14,7 @@ from app.models import TeacherAllowlist, User
 
 
 ALGORITHM = "HS256"
+SCHOOL_EMAIL_DOMAIN = "g.puiching.edu.mo"
 
 
 def utc_now() -> datetime:
@@ -25,11 +26,15 @@ def normalize_email(email: str) -> str:
 
 
 def matches_student_email(email: str) -> bool:
-    local, _, domain = email.partition("@")
+    local = email.partition("@")[0]
     return (
-        domain == "g.puiching.edu.mo"
+        matches_school_email(email)
         and re.fullmatch(settings.STUDENT_EMAIL_PATTERN, local) is not None
     )
+
+
+def matches_school_email(email: str) -> bool:
+    return email.partition("@")[2] == SCHOOL_EMAIL_DOMAIN
 
 
 def generate_verification_code() -> str:
@@ -62,6 +67,8 @@ def decode_access_token(token: str) -> dict | None:
 def role_for_email(db: Session, email: str) -> str | None:
     if matches_student_email(email):
         return "student"
+    if matches_school_email(email):
+        return "teacher"
     allowlisted = (
         db.query(TeacherAllowlist)
         .filter(TeacherAllowlist.email == email)

@@ -87,6 +87,8 @@ updated: 2026-09-05
 
 **影響：** 網站不再宣稱免登入或離線可用；舊紀錄留於原裝置但不遷移。Render 新增 web service 與 PostgreSQL。
 
+**目前狀態：** 學校網域教師登入規則由 D-012 調整。
+
 ## D-007 使用 DeepSeek 作為全站 AI 老師
 
 **狀態：** active
@@ -148,3 +150,15 @@ updated: 2026-09-05
 **替代方案：** 改接 streaming API 或修改後端回應格式。需要新增後端協定且會擴大改動範圍；目前需求可由前端呈現層完成。
 
 **影響：** 修改 `src/components/AiTeacherPanel.tsx`、`src/styles.css`，新增 `AiTeacherPanel.test.tsx`；後端、資料庫、環境變數與 API response model 不變。
+
+## D-012 學校網域教師免白名單自動登入
+
+**狀態：** active
+
+**決定：** `@g.puiching.edu.mo` 網域開放登入。符合學號格式者維持學生角色，同網域其他信箱自動以老師身分登入；外部管理員仍以 `ADMIN_EMAILS` 與後台白名單授權。
+
+**理由：** 老師的學校 Gmail 因未先加入白名單而無法登入。學校網域本身已是清楚的學校成員信任邊界，不需逐人手動新增。
+
+**替代方案：** 繼續由管理員逐一新增老師信箱。會增加管理者負擔，也直接造成目前的老師無法登入。
+
+**影響：** 修改 `backend/app/auth.py` 與 `backend/app/routers/auth.py`；無資料庫 migration。學號信箱角色不變，其他同網域信箱擁有老師權限。
