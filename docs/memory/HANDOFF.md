@@ -65,7 +65,8 @@ updated: 2026-09-06
 
 ## 進行中
 
-- 準備將 D-014 安全硬化修改推送到 GitHub `main` 並由 Render 自動部署。
+- 已推送 D-014 安全硬化修改 `47b194d` 至 GitHub `main`；Render web service deploy `dep-dae5r5e7bikc7386pfc0` 狀態為 `live`。
+- 已透過 Render API 直接同步靜態站 headers，並將 `JWT_EXPIRE_MINUTES=60`、`QUIZ_SESSION_TTL_MINUTES=120` 套用到 `fatmathfat-api`。
 
 ## 待辦
 
