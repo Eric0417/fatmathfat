@@ -77,13 +77,18 @@ export function CoordinateLineLab({ compact = false }: CoordinateLineLabProps) {
   const [secondIntercept, setSecondIntercept] = useState(2);
   const [showSecond, setShowSecond] = useState(false);
   const [ratio, setRatio] = useState(1);
+  const [ratioMin, setRatioMin] = useState(-5);
+  const [ratioMax, setRatioMax] = useState(5);
 
   const firstLine =
     mode === 'points'
       ? lineFromPoints(pointA, pointB)
       : lineFromSlopeIntercept(firstSlope, firstIntercept);
   const secondLine = lineFromSlopeIntercept(secondSlope, secondIntercept);
-  const section = firstLine ? sectionPoint(pointA, pointB, ratio) : null;
+  const ratioInvalid = Math.abs(ratio + 1) < 1e-9;
+  const section = firstLine && !ratioInvalid
+    ? sectionPoint(pointA, pointB, ratio)
+    : null;
   const relation = firstLine ? relationBetweenLines(firstLine, secondLine) : null;
   const intersection = firstLine
     ? intersectionOfLines(firstLine, secondLine)
@@ -119,6 +124,22 @@ export function CoordinateLineLab({ compact = false }: CoordinateLineLabProps) {
       x: Math.max(X_MIN, Math.min(X_MAX, current.x + amountX)),
       y: Math.max(Y_MIN, Math.min(Y_MAX, current.y + amountY))
     }));
+  };
+
+  const clampRatio = (value: number, min = ratioMin, max = ratioMax) =>
+    Math.max(min, Math.min(max, value));
+
+  const updateRatioRange = (nextMin: number, nextMax: number) => {
+    if (
+      !Number.isFinite(nextMin) ||
+      !Number.isFinite(nextMax) ||
+      nextMin >= nextMax
+    ) {
+      return;
+    }
+    setRatioMin(nextMin);
+    setRatioMax(nextMax);
+    setRatio((current) => clampRatio(current, nextMin, nextMax));
   };
 
   const renderLine = (line: LinearEquation, className: string) => {
@@ -312,18 +333,72 @@ export function CoordinateLineLab({ compact = false }: CoordinateLineLabProps) {
                 ({formatNumber(midpoint(pointA, pointB).x)}, {formatNumber(midpoint(pointA, pointB).y)})
               </strong>
             </div>
-            <label className="line-lab__slider">
-              <span>定比分點 λ</span>
+            <div className="line-lab__ratio-control">
+              <div className="line-lab__ratio-header">
+                <span>定比分點 λ</span>
+                <strong>{ratioInvalid ? '未定義' : formatNumber(ratio)}</strong>
+              </div>
               <input
                 type="range"
-                min="-3"
-                max="3"
-                step="0.5"
+                aria-label="定比分點 λ 滑桿"
+                min={ratioMin}
+                max={ratioMax}
+                step={Math.max(0.01, (ratioMax - ratioMin) / 200)}
                 value={ratio}
-                onChange={(event) => setRatio(Number(event.target.value))}
+                onChange={(event) =>
+                  setRatio(clampRatio(Number(event.target.value)))
+                }
               />
-              <strong>{formatNumber(ratio)}</strong>
-            </label>
+              <div className="line-lab__ratio-inputs">
+                <label>
+                  <span>λ 數值</span>
+                  <input
+                    type="number"
+                    min={ratioMin}
+                    max={ratioMax}
+                    step="0.01"
+                    value={ratio}
+                    aria-label="λ 數值"
+                    onChange={(event) =>
+                      setRatio(clampRatio(Number(event.target.value)))
+                    }
+                  />
+                </label>
+                <label>
+                  <span>下限</span>
+                  <input
+                    type="number"
+                    step="0.25"
+                    value={ratioMin}
+                    aria-label="λ 下限"
+                    onChange={(event) =>
+                      updateRatioRange(
+                        Number(event.target.value),
+                        ratioMax
+                      )
+                    }
+                  />
+                </label>
+                <label>
+                  <span>上限</span>
+                  <input
+                    type="number"
+                    step="0.25"
+                    value={ratioMax}
+                    aria-label="λ 上限"
+                    onChange={(event) =>
+                      updateRatioRange(
+                        ratioMin,
+                        Number(event.target.value)
+                      )
+                    }
+                  />
+                </label>
+              </div>
+              {ratioInvalid && (
+                <small>λ = −1 時分母為零，定比分點沒有定義。</small>
+              )}
+            </div>
           </>
         ) : (
           <div className="line-lab__sliders">

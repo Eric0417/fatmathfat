@@ -5027,6 +5027,7 @@ code {
 
 .line-lab__metric,
 .line-lab__slider,
+.line-lab__ratio-control,
 .line-lab__equation,
 .line-lab__relation {
   min-width: 0;
@@ -5043,6 +5044,7 @@ code {
 
 .line-lab__metric span,
 .line-lab__slider span,
+.line-lab__ratio-control span,
 .line-lab__equation span,
 .line-lab__relation span {
   color: var(--color-text-secondary);
@@ -5051,6 +5053,7 @@ code {
 
 .line-lab__metric strong,
 .line-lab__slider strong,
+.line-lab__ratio-control strong,
 .line-lab__equation strong,
 .line-lab__relation strong {
   min-width: 0;
@@ -5070,6 +5073,54 @@ code {
   width: 100%;
   min-width: 0;
   accent-color: var(--color-primary);
+}
+
+.line-lab__ratio-control {
+  display: grid;
+  min-width: 0;
+  grid-column: span 2;
+  gap: 0.55rem;
+}
+
+.line-lab__ratio-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.line-lab__ratio-control > input[type="range"] {
+  width: 100%;
+  min-width: 0;
+  accent-color: var(--color-primary);
+}
+
+.line-lab__ratio-inputs {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.55rem;
+}
+
+.line-lab__ratio-inputs label {
+  display: grid;
+  min-width: 0;
+  gap: 0.2rem;
+}
+
+.line-lab__ratio-inputs input {
+  width: 100%;
+  min-width: 0;
+  padding: 0.4rem 0.5rem;
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  color: var(--color-text-primary);
+  background: #ffffff;
+  font: inherit;
+  font-size: 0.86rem;
+}
+
+.line-lab__ratio-control small {
+  color: var(--color-warning);
 }
 
 .line-lab__sliders {
@@ -5180,8 +5231,13 @@ code {
   }
 
   .line-lab__equation,
-  .line-lab__relation {
+  .line-lab__relation,
+  .line-lab__ratio-control {
     grid-column: 1;
+  }
+
+  .line-lab__ratio-inputs {
+    grid-template-columns: 1fr;
   }
 
   .line-lab__slider {

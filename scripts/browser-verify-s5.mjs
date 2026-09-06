@@ -106,6 +106,20 @@ try {
     (await page.getByText('兩線關係').count()) === 1,
     'two-line comparison did not render'
   );
+  const lambdaSlider = page.getByRole('slider', {
+    name: '定比分點 λ 滑桿'
+  });
+  assert(
+    Number(await lambdaSlider.getAttribute('step')) < 0.5,
+    'lambda slider is not smooth enough'
+  );
+  await page.getByLabel('λ 下限').fill('-2');
+  await page.getByLabel('λ 上限').fill('4');
+  assert(
+    (await lambdaSlider.getAttribute('min')) === '-2' &&
+      (await lambdaSlider.getAttribute('max')) === '4',
+    'lambda custom range did not update'
+  );
   await page.getByRole('button', { name: /y = mx \+ b/ }).click();
   assert(
     (await page.getByRole('slider', { name: /第一條線斜率/ }).count()) === 1,

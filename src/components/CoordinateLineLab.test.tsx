@@ -27,4 +27,24 @@ describe('CoordinateLineLab', () => {
     expect(screen.getByText('兩線關係')).toBeTruthy();
     expect(screen.getByText('垂直')).toBeTruthy();
   });
+
+  it('uses a smooth ratio slider and supports a custom lambda range', () => {
+    render(<CoordinateLineLab />);
+    const ratioSlider = screen.getByRole('slider', {
+      name: '定比分點 λ 滑桿'
+    });
+    expect(Number(ratioSlider.getAttribute('step'))).toBeLessThan(0.5);
+    expect(ratioSlider.getAttribute('min')).toBe('-5');
+    expect(ratioSlider.getAttribute('max')).toBe('5');
+
+    fireEvent.change(screen.getByLabelText('λ 下限'), {
+      target: { value: '-2' }
+    });
+    fireEvent.change(screen.getByLabelText('λ 上限'), {
+      target: { value: '4' }
+    });
+
+    expect(ratioSlider.getAttribute('min')).toBe('-2');
+    expect(ratioSlider.getAttribute('max')).toBe('4');
+  });
 });
