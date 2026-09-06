@@ -32,6 +32,7 @@ def _latest_quiz(user: User, db: Session) -> dict | None:
         return None
     return {
         "id": attempt.id,
+        "grade_level": attempt.grade_level,
         "completed_at": attempt.completed_at.isoformat(),
         "score": attempt.score,
         "correct": attempt.correct,

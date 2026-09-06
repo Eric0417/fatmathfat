@@ -155,6 +155,7 @@ def save_quiz(
 
     attempt = QuizAttempt(
         user_id=current_user.id,
+        grade_level=session.grade_level or "S4",
         completed_at=completed_at,
         score=scored["score"],
         correct=scored["correct"],

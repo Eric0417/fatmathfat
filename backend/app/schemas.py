@@ -85,6 +85,7 @@ class QuizAttemptResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     id: int
+    grade_level: GradeLevel | None = None
     completed_at: datetime
     score: float
     correct: int

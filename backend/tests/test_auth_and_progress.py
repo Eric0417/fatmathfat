@@ -47,6 +47,7 @@ def test_student_login_and_progress(client, student_token):
     )
     assert quiz.status_code == 201
     assert quiz.json()["score"] == 83
+    assert quiz.json()["grade_level"] == "S4"
 
 
 def test_teacher_request_code_uses_plain_email(client, monkeypatch):

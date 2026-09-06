@@ -150,6 +150,7 @@ class QuizAttempt(Base):
         nullable=False,
         index=True,
     )
+    grade_level = Column(String(10), nullable=False, default="S4", index=True)
     completed_at = Column(DateTime(timezone=True), nullable=False)
     score = Column(Float, nullable=False)
     correct = Column(Integer, nullable=False)
