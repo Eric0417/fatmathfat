@@ -64,3 +64,4 @@ updated: 2026-09-06
 | S5 教材 MarkItDown 轉檔 | done | 20 張照片輸出至 `content/s5/ocr/` |
 | S4/S5 瀏覽器完整驗證 | done | `test:browser` 與 `test:browser:s5` 均通過桌面／手機驗證 |
 | Render 部署與線上確認 | done | API grade endpoint 與 S5 static bundle 已上線 |
+| 非學生 OTP fallback | done | 教師寄件失敗時改用一般寄件者；線上已驗證 |

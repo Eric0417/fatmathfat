@@ -214,3 +214,15 @@ updated: 2026-09-06
 **替代方案：** 只在 localStorage 切換年級 —— 換裝置或重新登入會遺失，也無法讓教師統計；把 S5 內容混入同一組課程 —— 學生容易看到不屬於自己的教材；直接改開發目錄靜態版 —— 那裏沒有登入與後端同步能力。
 
 **影響：** 新增 `users.grade_level`、`quiz_sessions.grade_level`、`quiz_attempts.grade_level` migration；新增 `contentRegistry`、`s5Curriculum`、`s5Questions`、`coordinateMath`、`CoordinateLineLab` 與 `#/s5-lab`。S4 AI 老師不變，S5 v1 隱藏 AI 老師與 AI 生成練習。原始 JPEG 不提交，OCR Markdown 存放於 `content/s5/ocr/`。
+
+## D-017 非學生 OTP 寄件增加預設寄件者 fallback
+
+**狀態：** active
+
+**決定：** 非學生帳號寄送驗證碼時，先嘗試既有的 `TEACHER_EMAIL_FROM`／`TEACHER_GMAIL_APP_PASSWORD`；若失敗，再以一般 `EMAIL_FROM`／`GMAIL_APP_PASSWORD` 使用單一 `text/plain` 重試。只有兩者都失敗才回傳 `503`。
+
+**理由：** 線上教師寄件帳號失效時，所有管理員都會因單一寄件路徑失敗而無法登入；一般學生寄件帳號仍在正常運作，適合當作即時備援。仍保留純文字格式，不回到先前教師郵件無法送達的 multipart 路徑。
+
+**替代方案：** 要求手動更換教師 app password，會讓管理員登入繼續中斷；完全取消教師專用寄件者，會忽略既有教師郵件相容性決策。
+
+**影響：** 修改 `backend/app/routers/auth.py` 與 auth 測試；無資料庫 migration。線上已以 `imwong@g.puiching.edu.mo` 驗證 request-code 回傳 `200`。

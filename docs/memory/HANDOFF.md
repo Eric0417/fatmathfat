@@ -78,6 +78,7 @@ updated: 2026-09-06
 - 完成 S4 既有 Playwright 回歸與 S5 桌面／手機直線實驗室驗證；`test:browser:s5` 已加入 package scripts。
 - 完成 production preview 的 PWA 離線重載驗證；S4／S5 年級改版未破壞既有離線快取。
 - 已推送 `0751459` 至 GitHub `main`；Render API 的 `PATCH /api/auth/grade` 與靜態站 S5 bundle 均已在線上確認。
+- 修復非學生管理員登入寄件失敗：`65b0cae` 加入預設寄件者 fallback；線上 `imwong@g.puiching.edu.mo` request-code 已回傳 `200`，後端測試增至 26 項。
 
 ## 進行中
 
@@ -95,7 +96,7 @@ updated: 2026-09-06
 ## 給下一個 agent 的提示
 
 - 先讀 `CONVENTIONS.md`，再讀本檔。
-- 任何結構性變更都要重新索引 graph；目前 index 已反映 S4／S5 年級與 S5 瀏覽器驗證改版（953 nodes / 2757 edges），且 D-016 已同步 CBM。
+- 任何結構性變更都要重新索引 graph；目前 index 已反映非學生 OTP fallback 修正（955 nodes / 2765 edges），且 D-016、D-017 已同步 CBM。
 - 網站需要連線；PWA 靜態資源仍可快取，但未登入或離線時顯示登入頁。
 - 目前視覺決策是 D-010「使用 Academic Blue 學術視覺並部署至 Render」；後續視覺調整集中在 `src/styles.css`，不要改回紫色、玻璃或霓虹風格。
 - AI 老師目前為前端呈現層強化，決策與範圍記錄為 D-011；DeepSeek 後端與 API 契約未改。
@@ -113,3 +114,4 @@ updated: 2026-09-06
 - 直線計算邏輯在 `src/lib/coordinateMath.ts`；直線實驗室元件在 `src/components/CoordinateLineLab.tsx`，路由為 `#/s5-lab`。
 - S5 照片來源對照見 [S5_CURRICULUM.md](S5_CURRICULUM.md)；OCR 草稿在 `content/s5/ocr/`，原始照片目錄已由 `.gitignore` 排除。
 - S5 學生目前不顯示 AI 老師浮動面板；`AppShell` 只在 S4 渲染 `AiTeacherPanel`。
+- 非學生 OTP 寄件失敗時的備援策略見 D-017；不要移除該 fallback，否則單一教師寄件帳號失效會再次阻斷管理員登入。
