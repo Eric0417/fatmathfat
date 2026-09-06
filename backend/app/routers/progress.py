@@ -147,7 +147,10 @@ def save_quiz(
             detail="這個測驗 session 已取消。",
         )
 
-    scored = score_quiz_answers(body.answers)
+    scored = score_quiz_answers(
+        body.answers,
+        grade_level=session.grade_level or "S4",
+    )
     completed_at = utc_now()
 
     attempt = QuizAttempt(

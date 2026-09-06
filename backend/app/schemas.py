@@ -5,6 +5,8 @@ from pydantic import BaseModel, ConfigDict, EmailStr, Field
 
 from app.models import User
 
+GradeLevel = Literal["S4", "S5"]
+
 
 class RequestCodeRequest(BaseModel):
     email: EmailStr
@@ -13,6 +15,7 @@ class RequestCodeRequest(BaseModel):
 class VerifyCodeRequest(BaseModel):
     email: EmailStr
     code: str = Field(min_length=6, max_length=6)
+    grade_level: GradeLevel | None = None
 
 
 class TokenResponse(BaseModel):
@@ -26,6 +29,7 @@ class UserResponse(BaseModel):
     id: int
     email: str
     role: Literal["student", "teacher"]
+    grade_level: GradeLevel | None = None
     student_number: str | None = None
     last_login_at: datetime | None = None
     last_seen_at: datetime | None = None
@@ -102,10 +106,15 @@ class TeacherAddRequest(BaseModel):
     email: EmailStr
 
 
+class GradeUpdateRequest(BaseModel):
+    grade_level: GradeLevel
+
+
 class AdminStudentResponse(BaseModel):
     id: int
     email: str
     role: str
+    grade_level: GradeLevel | None
     last_login_at: datetime | None
     last_seen_at: datetime | None
     completed_lessons: list[str]

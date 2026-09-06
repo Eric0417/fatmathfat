@@ -63,6 +63,7 @@ def _student_response(user: User, db: Session) -> AdminStudentResponse:
         id=user.id,
         email=user.email,
         role=user.role,
+        grade_level=user.grade_level,
         last_login_at=user.last_login_at,
         last_seen_at=user.last_seen_at,
         completed_lessons=lessons,

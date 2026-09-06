@@ -67,6 +67,7 @@ def start_quiz(
             id=session_id,
             user_id=current_user.id,
             status="active",
+            grade_level=current_user.grade_level or "S4",
             started_at=utc_now(),
         )
     )

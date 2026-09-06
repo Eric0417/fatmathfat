@@ -119,6 +119,40 @@ def test_student_request_code_keeps_html_email(client, monkeypatch):
     assert calls[-1][4] is None
 
 
+def test_student_login_requires_grade_level(client):
+    email = "2345678-2@g.puiching.edu.mo"
+    assert (
+        client.post("/api/auth/request-code", json={"email": email}).status_code
+        == 200
+    )
+    response = client.post(
+        "/api/auth/verify-code",
+        json={"email": email, "code": "123456"},
+    )
+    assert response.status_code == 422
+
+
+def test_student_can_switch_grade(client, student_token):
+    headers = auth_headers(student_token)
+    response = client.patch(
+        "/api/auth/grade",
+        headers=headers,
+        json={"grade_level": "S5"},
+    )
+    assert response.status_code == 200
+    assert response.json()["grade_level"] == "S5"
+    assert client.get("/api/auth/me", headers=headers).json()["grade_level"] == "S5"
+
+
+def test_teacher_cannot_switch_grade(client, teacher_token):
+    response = client.patch(
+        "/api/auth/grade",
+        headers=auth_headers(teacher_token),
+        json={"grade_level": "S5"},
+    )
+    assert response.status_code == 403
+
+
 def test_any_school_domain_email_can_login_as_teacher(client):
     for email in (
         "imwong@g.puiching.edu.mo",

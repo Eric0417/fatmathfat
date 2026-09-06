@@ -20,6 +20,7 @@ from app.database import get_db
 from app.models import AuthCode, TeacherAllowlist, User
 from app.rate_limit import global_otp_limiter, ip_otp_limiter, otp_email_limiter
 from app.schemas import (
+    GradeUpdateRequest,
     MessageResponse,
     RequestCodeRequest,
     TokenResponse,
@@ -182,11 +183,23 @@ def verify_code(body: VerifyCodeRequest, db: Session = Depends(get_db)):
             detail="此郵箱未授權。",
         )
 
+    grade_level = body.grade_level
+    if role == "student" and grade_level not in {"S4", "S5"}:
+        db.delete(auth_code)
+        db.commit()
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail="學生必須選擇 S4 或 S5。",
+        )
+    if role != "student":
+        grade_level = None
+
     user = db.query(User).filter(User.email == email).first()
     if user is None:
         user = User(
             email=email,
             role=role,
+            grade_level=grade_level,
             student_number=email.split("@")[0] if role == "student" else None,
             last_login_at=utc_now(),
             last_seen_at=utc_now(),
@@ -202,6 +215,8 @@ def verify_code(body: VerifyCodeRequest, db: Session = Depends(get_db)):
             )
         if role == "teacher":
             user.role = "teacher"
+        if role == "student":
+            user.grade_level = grade_level
         user.last_login_at = utc_now()
         user.last_seen_at = utc_now()
 
@@ -221,6 +236,23 @@ def verify_code(body: VerifyCodeRequest, db: Session = Depends(get_db)):
 
 @router.get("/me", response_model=UserResponse)
 def me(current_user: User = Depends(get_current_user)):
+    return current_user
+
+
+@router.patch("/grade", response_model=UserResponse)
+def update_grade(
+    body: GradeUpdateRequest,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    if current_user.role != "student":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="只有學生可以切換年級。",
+        )
+    current_user.grade_level = body.grade_level
+    db.commit()
+    db.refresh(current_user)
     return current_user
 
 

@@ -26,6 +26,7 @@ class User(Base):
     id = Column(Integer, primary_key=True, index=True)
     email = Column(String(255), unique=True, nullable=False, index=True)
     role = Column(String(20), nullable=False, default="student", index=True)
+    grade_level = Column(String(10), nullable=True, index=True)
     student_number = Column(String(100), nullable=True)
     is_active = Column(Boolean, nullable=False, default=True)
     last_login_at = Column(DateTime(timezone=True), nullable=True)
@@ -83,6 +84,7 @@ class QuizSession(Base):
         index=True,
     )
     status = Column(String(20), nullable=False, default="active", index=True)
+    grade_level = Column(String(10), nullable=True, index=True)
     started_at = Column(
         DateTime(timezone=True),
         server_default=func.now(),

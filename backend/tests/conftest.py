@@ -40,7 +40,7 @@ def student_token(client):
     assert request.status_code == 200
     response = client.post(
         "/api/auth/verify-code",
-        json={"email": email, "code": "123456"},
+        json={"email": email, "code": "123456", "grade_level": "S4"},
     )
     assert response.status_code == 200
     return response.json()["access_token"]
