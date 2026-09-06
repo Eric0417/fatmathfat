@@ -1,8 +1,13 @@
-import { useState } from 'react';
+import {
+  useState,
+  type Dispatch,
+  type SetStateAction
+} from 'react';
 import {
   distancePointToLine,
   formatLinearEquation,
   formatNumber,
+  lineFromPoints,
   lineFromSlopeIntercept,
   triangleArea
 } from '../lib/coordinateMath';
@@ -247,6 +252,161 @@ function DistanceNormalVisual() {
   );
 }
 
+function LineFormsVisual() {
+  const [form, setForm] = useState<'point-slope' | 'slope-intercept' | 'two-point' | 'intercept' | 'general'>('point-slope');
+  const [slope, setSlope] = useState(1);
+  const [pointX, setPointX] = useState(2);
+  const [pointY, setPointY] = useState(3);
+  const [yIntercept, setYIntercept] = useState(0);
+  const [xIntercept, setXIntercept] = useState(3);
+  const [interceptY, setInterceptY] = useState(2);
+  const [pointA, setPointA] = useState<CartesianPoint>({ x: -4, y: -2 });
+  const [pointB, setPointB] = useState<CartesianPoint>({ x: 4, y: 3 });
+  const line = (() => {
+    if (form === 'point-slope') {
+      return lineFromSlopeIntercept(slope, pointY - slope * pointX);
+    }
+    if (form === 'slope-intercept' || form === 'general') {
+      return lineFromSlopeIntercept(slope, yIntercept);
+    }
+    if (form === 'two-point') {
+      return lineFromPoints(pointA, pointB) ?? lineFromSlopeIntercept(0, 0);
+    }
+    if (Math.abs(xIntercept) < 1e-9 || Math.abs(interceptY) < 1e-9) {
+      return null;
+    }
+    return lineFromPoints(
+      { x: xIntercept, y: 0 },
+      { x: 0, y: interceptY }
+    ) ?? lineFromSlopeIntercept(0, 0);
+  })();
+
+  return (
+    <section className="s5-topic-visual s5-topic-visual--line-forms">
+      <div className="line-lab__controls">
+        <div className="line-lab__modes" aria-label="直線方程形式">
+          {(
+            [
+              ['point-slope', '點斜式'],
+              ['slope-intercept', '斜截式'],
+              ['two-point', '兩點式'],
+              ['intercept', '截距式'],
+              ['general', '一般式']
+            ] as const
+          ).map(([value, label]) => (
+            <button
+              key={value}
+              type="button"
+              className={form === value ? 'line-lab__mode-button line-lab__mode-button--active' : 'line-lab__mode-button'}
+              aria-pressed={form === value}
+              onClick={() => setForm(value)}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+      </div>
+      <div className="line-lab__stage">
+        <svg className="line-lab__svg" viewBox={`0 0 ${WIDTH} ${HEIGHT}`} role="img" aria-label="直線方程形式轉換視覺化">
+          <rect className="line-lab__plot" width={WIDTH} height={HEIGHT} rx="12" />
+          <Grid />
+          {line && <PlotLine line={line} className="line-lab__line line-lab__line--first" />}
+        </svg>
+      </div>
+      <div className="line-lab__readout">
+        <div className="line-lab__sliders">
+          {(form === 'point-slope' || form === 'slope-intercept' || form === 'general') && (
+            <label className="line-lab__slider">
+              <span>斜率 m</span>
+              <input type="range" min="-3" max="3" step="0.1" value={slope} onChange={(event) => setSlope(Number(event.target.value))} />
+              <strong>{formatNumber(slope)}</strong>
+            </label>
+          )}
+          {form === 'point-slope' && (
+            <>
+              <label className="line-lab__slider">
+                <span>點 P 的 x 坐標</span>
+                <input type="range" min="-6" max="6" step="0.5" value={pointX} onChange={(event) => setPointX(Number(event.target.value))} />
+                <strong>{formatNumber(pointX)}</strong>
+              </label>
+              <label className="line-lab__slider">
+                <span>點 P 的 y 坐標</span>
+                <input type="range" min="-4" max="5" step="0.5" value={pointY} onChange={(event) => setPointY(Number(event.target.value))} />
+                <strong>{formatNumber(pointY)}</strong>
+              </label>
+            </>
+          )}
+          {(form === 'slope-intercept' || form === 'general') && (
+            <label className="line-lab__slider">
+              <span>y 截距 b</span>
+              <input type="range" min="-4" max="4" step="0.5" value={yIntercept} onChange={(event) => setYIntercept(Number(event.target.value))} />
+              <strong>{formatNumber(yIntercept)}</strong>
+            </label>
+          )}
+          {form === 'two-point' && (
+            <>
+              {(
+                [
+                  ['A', pointA, setPointA],
+                  ['B', pointB, setPointB]
+                ] as Array<[string, CartesianPoint, Dispatch<SetStateAction<CartesianPoint>>]>
+              ).map(([label, value, setter]) => (
+                <div className="line-lab__point-inputs" key={String(label)}>
+                  <strong>{label}</strong>
+                  <label className="line-lab__slider">
+                    <span>x</span>
+                    <input type="range" min="-6" max="6" step="0.5" value={value.x} onChange={(event) => setter((current) => ({ ...current, x: Number(event.target.value) }))} />
+                    <strong>{formatNumber(value.x)}</strong>
+                  </label>
+                  <label className="line-lab__slider">
+                    <span>y</span>
+                    <input type="range" min="-4" max="5" step="0.5" value={value.y} onChange={(event) => setter((current) => ({ ...current, y: Number(event.target.value) }))} />
+                    <strong>{formatNumber(value.y)}</strong>
+                  </label>
+                </div>
+              ))}
+            </>
+          )}
+          {form === 'intercept' && (
+            <>
+              <label className="line-lab__slider">
+                <span>x 截距 a</span>
+                <input type="range" min="-6" max="6" step="0.5" value={xIntercept} onChange={(event) => setXIntercept(Number(event.target.value))} />
+                <strong>{formatNumber(xIntercept)}</strong>
+              </label>
+              <label className="line-lab__slider">
+                <span>y 截距 b</span>
+                <input type="range" min="-5" max="5" step="0.5" value={interceptY} onChange={(event) => setInterceptY(Number(event.target.value))} />
+                <strong>{formatNumber(interceptY)}</strong>
+              </label>
+            </>
+          )}
+        </div>
+        {line ? (
+          <>
+            <div className="line-lab__equation">
+              <span>斜截式</span>
+              <strong>{formatLinearEquation(line)}</strong>
+            </div>
+            <div className="line-lab__equation">
+              <span>一般式</span>
+              <strong>{formatNumber(line.a)}x + {formatNumber(line.b)}y + {formatNumber(line.c)} = 0</strong>
+            </div>
+            {form === 'intercept' && (
+              <div className="line-lab__metric">
+                <span>截距式</span>
+                <strong>x/{formatNumber(xIntercept)} + y/{formatNumber(interceptY)} = 1</strong>
+              </div>
+            )}
+          </>
+        ) : (
+          <p className="line-lab__metric">截距式要求 a、b 都不為 0。</p>
+        )}
+      </div>
+    </section>
+  );
+}
+
 function LineFamilyVisual() {
   const [kind, setKind] = useState<'parallel' | 'perpendicular' | 'through'>('parallel');
   const [lambda, setLambda] = useState(1);
@@ -356,6 +516,7 @@ function LineFamilyVisual() {
 export function S5LessonVisual({ lessonId }: { lessonId: S5LessonVisualType }) {
   if (lessonId === 'polygon-area') return <PolygonAreaVisual />;
   if (lessonId === 'distance-normal') return <DistanceNormalVisual />;
+  if (lessonId === 'line-forms') return <LineFormsVisual />;
   if (lessonId === 'line-family') return <LineFamilyVisual />;
   return <CoordinateLineLab compact focus={lessonId} />;
 }

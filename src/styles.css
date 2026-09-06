@@ -5480,6 +5480,15 @@ code {
   margin-bottom: 1rem;
 }
 
+.line-lab__point-inputs {
+  display: grid;
+  gap: 0.45rem;
+  padding: 0.6rem;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  background: var(--color-surface-soft);
+}
+
 .line-lab__grid-line--family {
   stroke: rgba(47, 93, 126, 0.2);
   stroke-width: 1;

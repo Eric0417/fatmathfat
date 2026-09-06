@@ -101,6 +101,7 @@ try {
     const tailoredVisuals = {
       's5-polygon-area': '.s5-topic-visual--polygon-area',
       's5-distance-normal': '.s5-topic-visual--distance',
+      's5-line-forms': '.s5-topic-visual--line-forms',
       's5-line-family': '.s5-topic-visual--line-family'
     };
     const expectedVisual = tailoredVisuals[lessonId] ?? '.coordinate-line-lab';
