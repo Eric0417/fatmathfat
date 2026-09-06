@@ -87,6 +87,48 @@ def test_teacher_request_code_uses_plain_email(client, monkeypatch):
     assert calls[-1][4] == "teacher-app-password"
 
 
+def test_non_student_request_code_falls_back_to_default_sender(
+    client,
+    monkeypatch,
+):
+    calls = []
+
+    def fake_send(
+        to,
+        code,
+        plain_only=False,
+        sender_email=None,
+        sender_password=None,
+    ):
+        calls.append(
+            (to, code, plain_only, sender_email, sender_password)
+        )
+        return sender_email is None
+
+    monkeypatch.setattr(settings, "TEACHER_EMAIL_FROM", "teacher@gmail.com")
+    monkeypatch.setattr(
+        settings,
+        "TEACHER_GMAIL_APP_PASSWORD",
+        "expired-teacher-password",
+    )
+    monkeypatch.setattr(
+        "app.routers.auth.send_verification_email",
+        fake_send,
+    )
+
+    response = client.post(
+        "/api/auth/request-code",
+        json={"email": "imwong@g.puiching.edu.mo"},
+    )
+
+    assert response.status_code == 200
+    assert len(calls) == 2
+    assert calls[0][4] == "expired-teacher-password"
+    assert calls[1][3] is None
+    assert calls[1][4] is None
+    assert calls[1][2] is True
+
+
 def test_student_request_code_keeps_html_email(client, monkeypatch):
     calls = []
 

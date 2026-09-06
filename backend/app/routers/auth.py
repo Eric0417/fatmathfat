@@ -100,7 +100,7 @@ def request_code(
     db.commit()
 
     is_student = matches_student_email(email)
-    if not send_verification_email(
+    sent = send_verification_email(
         email,
         code,
         plain_only=not is_student,
@@ -110,7 +110,14 @@ def request_code(
         sender_password=(
             None if is_student else settings.TEACHER_GMAIL_APP_PASSWORD
         ),
-    ):
+    )
+    if not sent and not is_student:
+        sent = send_verification_email(
+            email,
+            code,
+            plain_only=True,
+        )
+    if not sent:
         stored = (
             db.query(AuthCode)
             .filter(AuthCode.email == email)
