@@ -262,3 +262,15 @@ updated: 2026-09-06
 **替代方案：** 只把 step 改成更小值 —— 能改善順滑度，但無法讓使用者自訂範圍；改用純數字輸入 —— 失去視覺拖動觀察。
 
 **影響：** 修改 `CoordinateLineLab`、其元件測試與 S5 browser verification；無後端或資料庫變更。
+
+## D-021 清除 S5 殘留集合視覺並強化年級切換辨識
+
+**狀態：** active
+
+**決定：** S5 所有課程都使用 `CoordinateLineLab`，不再顯示任何 Venn 圖。S4／S5 切換按鈕加入不同圖示與顏色：S4 用學院藍、S5 用陶土色，並提供明確的 `aria-label` 與 `data-grade`。S5 每課新增可展開的情境挑戰。
+
+**理由：** S5 前三課原先在 `lesson.gradeLevel === 'S5'` 分支之外仍落入 Venn fallback，造成集合內容混入直線課程；兩個年級按鈕共用同一主色也難以快速辨識。
+
+**替代方案：** 只在 CSS 隱藏 Venn —— 無法解決語意錯誤與可維護性；只改文字顏色 —— 辨識度仍不足。
+
+**影響：** 修改 `LessonsPage`、`AppShell`、S5 curriculum/types、styles 與 S4/S5 browser verification。無後端或資料庫變更。
