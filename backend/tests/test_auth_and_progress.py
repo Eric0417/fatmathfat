@@ -154,6 +154,43 @@ def test_teacher_cannot_switch_grade(client, teacher_token):
     assert response.status_code == 403
 
 
+def test_s5_quiz_uses_s5_answer_keys(client, student_token):
+    headers = auth_headers(student_token)
+    switched = client.patch(
+        "/api/auth/grade",
+        headers=headers,
+        json={"grade_level": "S5"},
+    )
+    assert switched.status_code == 200
+
+    started = client.post("/api/quiz/start", headers=headers)
+    assert started.status_code == 201
+    quiz_session_id = started.json()["quiz_session_id"]
+    s5_keys = {
+        question_id: answer_key
+        for question_id, answer_key in QUIZ_ANSWER_KEYS.items()
+        if answer_key["grade_level"] == "S5"
+    }
+    answers = {
+        question_id: answer_key["answer"]
+        for question_id, answer_key in s5_keys.items()
+    }
+
+    quiz = client.post(
+        "/api/progress/quiz",
+        headers=headers,
+        json={
+            "quiz_session_id": quiz_session_id,
+            "answers": answers,
+            "duration_ms": 1000,
+        },
+    )
+    assert quiz.status_code == 201
+    assert quiz.json()["score"] == 100
+    assert quiz.json()["total"] == 12
+    assert quiz.json()["grade_level"] == "S5"
+
+
 def test_any_school_domain_email_can_login_as_teacher(client):
     for email in (
         "imwong@g.puiching.edu.mo",

@@ -74,6 +74,78 @@ QUIZ_ANSWER_KEYS: dict[str, dict[str, Any]] = {
         "grade_level": "S4",
         "mistake_tags": ["forgot-universe"],
     },
+    "s5-directed-01": {
+        "answer": "−5",
+        "topic": "s5-directed-segment",
+        "grade_level": "S5",
+        "mistake_tags": ["directed-length-sign"],
+    },
+    "s5-section-02": {
+        "answer": "(3, 14/3)",
+        "topic": "s5-section-point",
+        "grade_level": "S5",
+        "mistake_tags": ["section-ratio-order"],
+    },
+    "s5-area-01": {
+        "answer": "6",
+        "topic": "s5-polygon-area",
+        "grade_level": "S5",
+        "mistake_tags": [],
+    },
+    "s5-slope-01": {
+        "answer": "2",
+        "topic": "s5-slope",
+        "grade_level": "S5",
+        "mistake_tags": [],
+    },
+    "s5-slope-04": {
+        "answer": "120°",
+        "topic": "s5-slope",
+        "grade_level": "S5",
+        "mistake_tags": ["slope-angle-confusion"],
+    },
+    "s5-form-01": {
+        "answer": "y = 2x − 1",
+        "topic": "s5-line-forms",
+        "grade_level": "S5",
+        "mistake_tags": [],
+    },
+    "s5-form-03": {
+        "answer": "x/3 + y/(−2) = 1",
+        "topic": "s5-line-forms",
+        "grade_level": "S5",
+        "mistake_tags": ["intercept-sign"],
+    },
+    "s5-relation-01": {
+        "answer": "垂直",
+        "topic": "s5-line-relations",
+        "grade_level": "S5",
+        "mistake_tags": ["parallel-perpendicular-condition"],
+    },
+    "s5-relation-04": {
+        "answer": "(1, 1)",
+        "topic": "s5-line-relations",
+        "grade_level": "S5",
+        "mistake_tags": [],
+    },
+    "s5-distance-01": {
+        "answer": "1",
+        "topic": "s5-distance-normal",
+        "grade_level": "S5",
+        "mistake_tags": ["distance-absolute-value"],
+    },
+    "s5-distance-03": {
+        "answer": "3",
+        "topic": "s5-distance-normal",
+        "grade_level": "S5",
+        "mistake_tags": ["distance-absolute-value"],
+    },
+    "s5-family-02": {
+        "answer": "3x − 2y + λ = 0",
+        "topic": "s5-line-family",
+        "grade_level": "S5",
+        "mistake_tags": ["parallel-perpendicular-condition"],
+    },
 }
 
 QUIZ_QUESTION_IDS = frozenset(QUIZ_ANSWER_KEYS)
