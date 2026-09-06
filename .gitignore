@@ -9,3 +9,4 @@ backend/**/*.db
 backend/**/*.sqlite
 backend/.pytest_cache/
 .pytest_cache/
+S5_book_photo/
