@@ -10,34 +10,42 @@ import { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { QuestionRunner } from '../components/QuestionRunner';
 import {
+  gradeOrDefault,
+  isTopicForGrade,
   mixedPracticeQuestions,
   questionsForLesson,
   questionsForTopic,
-  topicLabels
-} from '../data/questions';
+  topicLabelFor,
+  topicsForGrade
+} from '../data/contentRegistry';
 import type {
   PracticeProgressResponse,
   QuizQuestion,
   QuizTopic
 } from '../types';
 
-const practiceTopics = Object.keys(topicLabels) as QuizTopic[];
-
-function isQuizTopic(value: string | undefined): value is QuizTopic {
-  return Boolean(value && value in topicLabels);
-}
-
 export function PracticePage({ topic }: { topic?: string }) {
-  const { apiFetch } = useAuth();
+  const { apiFetch, user } = useAuth();
+  const grade = gradeOrDefault(user?.grade_level);
+  const practiceTopics = topicsForGrade(grade);
+
+  function isQuizTopic(value: string | undefined): value is QuizTopic {
+    return Boolean(
+      value &&
+        (isTopicForGrade(value, grade) ||
+          (value === 'operations' && grade === 'S4'))
+    );
+  }
+
   const selectedTopic =
     topic && topic !== 'mixed' && (isQuizTopic(topic) || topic === 'operations')
       ? topic
       : undefined;
   const initialQuestions = selectedTopic
     ? selectedTopic === 'operations'
-      ? questionsForLesson('operations')
-      : questionsForTopic(selectedTopic)
-    : mixedPracticeQuestions();
+      ? questionsForLesson(grade, 'operations')
+      : questionsForTopic(grade, selectedTopic)
+    : mixedPracticeQuestions(grade);
   const [questions, setQuestions] = useState<QuizQuestion[]>(initialQuestions);
   const [generated, setGenerated] = useState(false);
   const [generating, setGenerating] = useState(false);
@@ -52,7 +60,7 @@ export function PracticePage({ topic }: { topic?: string }) {
     selectedTopic === 'operations'
       ? '交集、聯集與差集'
       : selectedTopic
-        ? topicLabels[selectedTopic]
+        ? topicLabelFor(selectedTopic)
         : '綜合練習';
 
   return (
@@ -78,7 +86,8 @@ export function PracticePage({ topic }: { topic?: string }) {
             <Target size={16} aria-hidden="true" />
             即時回饋
           </span>
-          <button
+          {grade === 'S4' && (
+            <button
             className="button button--ghost ai-practice-button"
             type="button"
             disabled={generating}
@@ -111,14 +120,15 @@ export function PracticePage({ topic }: { topic?: string }) {
                 })
                 .finally(() => setGenerating(false));
             }}
-          >
+            >
             {generating ? (
               <RefreshCw className="spin" size={17} aria-hidden="true" />
             ) : (
               <Sparkles size={17} aria-hidden="true" />
             )}
             {generating ? '生成中...' : '生成弱點練習'}
-          </button>
+            </button>
+          )}
         </div>
       </div>
 
@@ -142,7 +152,7 @@ export function PracticePage({ topic }: { topic?: string }) {
         </div>
         <div className="practice-topic-list">
           {practiceTopics.map((topic) => {
-            const count = questionsForTopic(topic).length;
+            const count = questionsForTopic(grade, topic).length;
             return (
               <a
                 className={`practice-topic-card${selectedTopic === topic ? ' practice-topic-card--active' : ''}`}
@@ -151,7 +161,7 @@ export function PracticePage({ topic }: { topic?: string }) {
                 aria-current={selectedTopic === topic ? 'page' : undefined}
               >
                 <span>
-                  <strong>{topicLabels[topic]}</strong>
+                  <strong>{topicLabelFor(topic)}</strong>
                   <small>{count} 題</small>
                 </span>
                 <ChevronRight size={17} aria-hidden="true" />

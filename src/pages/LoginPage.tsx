@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import {
   ArrowLeft,
   CircleAlert,
+  GraduationCap,
   KeyRound,
   Mail,
   ShieldCheck,
@@ -9,11 +10,17 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { apiFetch } from '../lib/api';
+import type { GradeLevel } from '../types';
+
+function isStudentEmail(email: string): boolean {
+  return /^[0-9]{7}-[0-9]@g\.puiching\.edu\.mo$/i.test(email.trim());
+}
 
 export function LoginPage() {
   const { login } = useAuth();
   const [step, setStep] = useState<'request' | 'verify'>('request');
   const [email, setEmail] = useState('');
+  const [gradeLevel, setGradeLevel] = useState<GradeLevel>('S4');
   const [code, setCode] = useState('');
   const [error, setError] = useState('');
   const [notice, setNotice] = useState('');
@@ -58,9 +65,17 @@ export function LoginPage() {
       setError('驗證碼必須是 6 位數字。');
       return;
     }
+    if (isStudentEmail(email) && !['S4', 'S5'].includes(gradeLevel)) {
+      setError('請選擇 S4 或 S5。');
+      return;
+    }
     setSubmitting(true);
     try {
-      await login(email.trim(), code);
+      await login(
+        email.trim(),
+        code,
+        isStudentEmail(email) ? gradeLevel : undefined
+      );
       window.location.hash = '#/';
     } catch (err) {
       setError(err instanceof Error ? err.message : '登入失敗。');
@@ -123,6 +138,27 @@ export function LoginPage() {
                 required
               />
             </div>
+            {isStudentEmail(email) && (
+              <fieldset className="grade-selector">
+                <legend>
+                  <GraduationCap size={16} aria-hidden="true" />
+                  你的年級
+                </legend>
+                <div className="grade-selector__options">
+                  {(['S4', 'S5'] as GradeLevel[]).map((grade) => (
+                    <button
+                      key={grade}
+                      className={`grade-option${gradeLevel === grade ? ' grade-option--selected' : ''}`}
+                      type="button"
+                      aria-pressed={gradeLevel === grade}
+                      onClick={() => setGradeLevel(grade)}
+                    >
+                      {grade}
+                    </button>
+                  ))}
+                </div>
+              </fieldset>
+            )}
             <button
               className="button button--primary auth-submit"
               type="submit"

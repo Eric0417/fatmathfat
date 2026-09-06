@@ -14,7 +14,7 @@ import {
   getToken,
   setToken
 } from '../lib/api';
-import type { User } from '../types';
+import type { GradeLevel, User } from '../types';
 
 interface TokenResponse {
   access_token: string;
@@ -29,7 +29,12 @@ interface AuthContextValue {
   user: User | null;
   token: string | null;
   loading: boolean;
-  login: (email: string, code: string) => Promise<User>;
+  login: (
+    email: string,
+    code: string,
+    gradeLevel?: GradeLevel
+  ) => Promise<User>;
+  setGrade: (gradeLevel: GradeLevel) => Promise<User>;
   logout: () => void;
   apiFetch: ApiClient;
 }
@@ -70,14 +75,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
   }, [token]);
 
-  const login = useCallback(async (email: string, code: string) => {
+  const login = useCallback(async (
+    email: string,
+    code: string,
+    gradeLevel?: GradeLevel
+  ) => {
     const response = await apiFetch<TokenResponse>('/api/auth/verify-code', {
       method: 'POST',
-      body: JSON.stringify({ email, code })
+      body: JSON.stringify({ email, code, grade_level: gradeLevel ?? null })
     });
     setToken(response.access_token);
     setCurrentToken(response.access_token);
     const currentUser = await apiFetch<User>('/api/auth/me');
+    setUser(currentUser);
+    return currentUser;
+  }, []);
+
+  const setGrade = useCallback(async (gradeLevel: GradeLevel) => {
+    const currentUser = await apiFetch<User>('/api/auth/grade', {
+      method: 'PATCH',
+      body: JSON.stringify({ grade_level: gradeLevel })
+    });
     setUser(currentUser);
     return currentUser;
   }, []);
@@ -107,10 +125,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       token,
       loading,
       login,
+      setGrade,
       logout,
       apiFetch: authenticatedFetch
     }),
-    [user, token, loading, login, logout, authenticatedFetch]
+    [user, token, loading, login, setGrade, logout, authenticatedFetch]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

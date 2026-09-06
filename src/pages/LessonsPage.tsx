@@ -1,9 +1,14 @@
 import { Check, ChevronLeft, ChevronRight, CircleCheck } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { lessons, lessonByTopic } from '../data/curriculum';
-import { questionsForLesson } from '../data/questions';
+import {
+  gradeOrDefault,
+  lessonForGrade,
+  lessonsForGrade,
+  questionsForLesson
+} from '../data/contentRegistry';
 import { VennDiagram } from '../components/VennDiagram';
+import { CoordinateLineLab } from '../components/CoordinateLineLab';
 import type { Lesson, ProgressResponse, SetOperation, SetState } from '../types';
 
 function lessonDiagramState(lesson: Lesson): SetState {
@@ -39,20 +44,22 @@ function EmptySetVisual() {
 
 function LessonDetail({
   lesson,
+  gradeLessons,
   completedLessons,
   onComplete,
   onVisit
 }: {
   lesson: Lesson;
+  gradeLessons: Lesson[];
   completedLessons: string[];
   onComplete: (lessonId: string) => void;
   onVisit: (lessonId: string) => void;
 }) {
   const completed = completedLessons.includes(lesson.id);
-  const practiceQuestions = questionsForLesson(lesson.id);
+  const practiceQuestions = questionsForLesson(lesson.gradeLevel, lesson.id);
   const state = lessonDiagramState(lesson);
-  const nextLesson = lessons.find((item) => item.order === lesson.order + 1);
-  const previousLesson = lessons.find((item) => item.order === lesson.order - 1);
+  const nextLesson = gradeLessons.find((item) => item.order === lesson.order + 1);
+  const previousLesson = gradeLessons.find((item) => item.order === lesson.order - 1);
 
   useEffect(() => {
     onVisit(lesson.id);
@@ -66,7 +73,7 @@ function LessonDetail({
           <h2>七個學習主題</h2>
         </div>
         <ol className="lesson-list">
-          {lessons.map((item) => (
+          {gradeLessons.map((item) => (
             <li key={item.id}>
               <a
                 className={`lesson-list__item${item.id === lesson.id ? ' lesson-list__item--active' : ''}`}
@@ -126,6 +133,8 @@ function LessonDetail({
           </div>
           {lesson.id === 'empty-set' ? (
             <EmptySetVisual />
+          ) : lesson.gradeLevel === 'S5' && lesson.interactive === 'line-lab' ? (
+            <CoordinateLineLab compact />
           ) : (
             <VennDiagram
               state={state}
@@ -237,9 +246,11 @@ function LessonDetail({
 }
 
 export function LessonsPage({ lessonId }: { lessonId?: string }) {
-  const { apiFetch } = useAuth();
+  const { apiFetch, user } = useAuth();
+  const grade = gradeOrDefault(user?.grade_level);
+  const gradeLessons = lessonsForGrade(grade);
   const [currentLessonId, setCurrentLessonId] = useState(
-    lessonId ?? lessons[0]?.id
+    lessonId ?? gradeLessons[0]?.id
   );
   const [progress, setProgress] = useState<ProgressResponse | null>(null);
 
@@ -275,7 +286,7 @@ export function LessonsPage({ lessonId }: { lessonId?: string }) {
       .catch(() => undefined);
   }, [apiFetch]);
 
-  const lesson = lessonByTopic(currentLessonId ?? '');
+  const lesson = lessonForGrade(currentLessonId ?? '', grade);
 
   if (!lesson) {
     return (
@@ -295,6 +306,7 @@ export function LessonsPage({ lessonId }: { lessonId?: string }) {
     <LessonDetail
       key={lesson.id}
       lesson={lesson}
+      gradeLessons={gradeLessons}
       completedLessons={
         progress?.completed_lessons.map((item) => item.lesson_id) ?? []
       }

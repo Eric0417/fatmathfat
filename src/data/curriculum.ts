@@ -3,6 +3,7 @@ import type { Lesson } from '../types';
 export const lessons: Lesson[] = [
   {
     id: 'set',
+    gradeLevel: 'S4',
     order: 1,
     title: '什麼是集合？',
     shortTitle: '集合',
@@ -56,6 +57,7 @@ export const lessons: Lesson[] = [
   },
   {
     id: 'membership',
+    gradeLevel: 'S4',
     order: 2,
     title: '元素與集合的關係',
     shortTitle: '屬於',
@@ -109,6 +111,7 @@ export const lessons: Lesson[] = [
   },
   {
     id: 'representation',
+    gradeLevel: 'S4',
     order: 3,
     title: '集合的三種表示法',
     shortTitle: '表示法',
@@ -162,6 +165,7 @@ export const lessons: Lesson[] = [
   },
   {
     id: 'empty-set',
+    gradeLevel: 'S4',
     order: 4,
     title: '空集合與集合個數',
     shortTitle: '空集合',
@@ -215,6 +219,7 @@ export const lessons: Lesson[] = [
   },
   {
     id: 'subset',
+    gradeLevel: 'S4',
     order: 5,
     title: '子集合、真子集合與相等',
     shortTitle: '子集合',
@@ -269,6 +274,7 @@ export const lessons: Lesson[] = [
   },
   {
     id: 'operations',
+    gradeLevel: 'S4',
     order: 6,
     title: '交集、聯集與差集',
     shortTitle: '集合運算',
@@ -323,6 +329,7 @@ export const lessons: Lesson[] = [
   },
   {
     id: 'complement',
+    gradeLevel: 'S4',
     order: 7,
     title: '全集與補集',
     shortTitle: '補集',

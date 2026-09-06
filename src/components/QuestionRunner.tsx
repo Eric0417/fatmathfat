@@ -3,16 +3,19 @@ import { useEffect, useState } from 'react';
 import { useAiTeacher } from '../context/AiTeacherContext';
 import { VennDiagram } from './VennDiagram';
 import {
-  difficultyLabels,
-  questionKindLabels,
-  topicLabels
+  difficultyLabels
 } from '../data/questions';
+import {
+  questionKindLabelFor,
+  topicLabelFor
+} from '../data/contentRegistry';
 import { formatSet } from '../lib/setMath';
-import type { QuizQuestion } from '../types';
+import type { GradeLevel, QuizQuestion } from '../types';
 
 interface QuestionRunnerProps {
   questions: QuizQuestion[];
   mode: 'practice' | 'quiz' | 'review';
+  grade?: GradeLevel;
   quizSessionId?: string | null;
   onComplete?: (answers: Record<string, string>) => void;
   onBack?: () => void;
@@ -43,6 +46,7 @@ function QuestionData({ question }: { question: QuizQuestion }) {
 export function QuestionRunner({
   questions,
   mode,
+  grade = 'S4',
   quizSessionId = null,
   onComplete,
   onBack,
@@ -187,8 +191,8 @@ export function QuestionRunner({
         <h2 id="question-title">{question.prompt}</h2>
         <QuestionData question={question} />
         <div className="question-runner__meta" aria-label="題目資訊">
-          <span>{topicLabels[question.topic]}</span>
-          <span>{questionKindLabels[question.kind]}</span>
+          <span>{topicLabelFor(question.topic)}</span>
+          <span>{questionKindLabelFor(question.kind)}</span>
           <span>{difficultyLabels[question.difficulty]}</span>
         </div>
         {question.venn && (

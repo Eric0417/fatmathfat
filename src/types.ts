@@ -15,7 +15,24 @@ export interface SetState {
   b: number[];
 }
 
-export type QuizTopic =
+export type GradeLevel = 'S4' | 'S5';
+
+export interface CartesianPoint {
+  x: number;
+  y: number;
+}
+
+export interface LinearEquation {
+  a: number;
+  b: number;
+  c: number;
+  slope: number | null;
+  vertical: boolean;
+  xIntercept: number | null;
+  yIntercept: number | null;
+}
+
+export type S4QuizTopic =
   | 'set-and-element'
   | 'membership'
   | 'representation'
@@ -25,7 +42,19 @@ export type QuizTopic =
   | 'difference'
   | 'complement';
 
-export type QuestionKind =
+export type S5QuizTopic =
+  | 's5-directed-segment'
+  | 's5-section-point'
+  | 's5-polygon-area'
+  | 's5-slope'
+  | 's5-line-forms'
+  | 's5-line-relations'
+  | 's5-distance-normal'
+  | 's5-line-family';
+
+export type QuizTopic = S4QuizTopic | S5QuizTopic;
+
+export type S4QuestionKind =
   | 'membership'
   | 'equality'
   | 'subset'
@@ -39,9 +68,20 @@ export type QuestionKind =
   | 'empty-set'
   | 'venn';
 
+export type S5QuestionKind =
+  | 'coordinate'
+  | 'slope'
+  | 'line-equation'
+  | 'line-relation'
+  | 'distance'
+  | 'angle'
+  | 'area';
+
+export type QuestionKind = S4QuestionKind | S5QuestionKind;
+
 export type QuestionDifficulty = 'basic' | 'standard' | 'challenge';
 
-export type LessonTopic =
+export type S4LessonTopic =
   | 'set'
   | 'membership'
   | 'representation'
@@ -50,8 +90,21 @@ export type LessonTopic =
   | 'operations'
   | 'complement';
 
+export type S5LessonTopic =
+  | 's5-directed-segment'
+  | 's5-section-point'
+  | 's5-polygon-area'
+  | 's5-slope'
+  | 's5-line-forms'
+  | 's5-line-relations'
+  | 's5-distance-normal'
+  | 's5-line-family';
+
+export type LessonTopic = S4LessonTopic | S5LessonTopic;
+
 export interface Lesson {
   id: LessonTopic;
+  gradeLevel: GradeLevel;
   order: number;
   title: string;
   shortTitle: string;
@@ -64,6 +117,7 @@ export interface Lesson {
   detailedNotes: string[];
   commonMistakes: string[];
   practiceTopic: QuizTopic;
+  interactive?: 'venn' | 'line-lab';
   universe?: number[];
   setA?: number[];
   setB?: number[];
@@ -82,7 +136,15 @@ export type MistakeTag =
   | 'forgot-universe'
   | 'difference-direction'
   | 'proper-subset-confusion'
-  | 'empty-set-confusion';
+  | 'empty-set-confusion'
+  | 'directed-length-sign'
+  | 'section-ratio-order'
+  | 'slope-angle-confusion'
+  | 'intercept-sign'
+  | 'parallel-perpendicular-condition'
+  | 'distance-absolute-value'
+  | 'line-form-domain'
+  | 'normal-form-sign';
 
 export interface QuizQuestion {
   id: string;
@@ -124,6 +186,7 @@ export interface User {
   id: number;
   email: string;
   role: UserRole;
+  grade_level?: GradeLevel | null;
   student_number?: string | null;
   last_login_at?: string | null;
   last_seen_at?: string | null;
@@ -133,6 +196,7 @@ export interface User {
 
 export interface QuizAttemptResponse {
   id: number | string;
+  grade_level?: GradeLevel | null;
   completed_at: string;
   score: number;
   correct: number;

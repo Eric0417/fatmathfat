@@ -10,6 +10,11 @@ import { QuizPage } from './pages/QuizPage';
 import { ResultsPage } from './pages/ResultsPage';
 import { LoginPage } from './pages/LoginPage';
 import { AdminPage } from './pages/AdminPage';
+import { LineLabPage } from './pages/LineLabPage';
+import {
+  gradeOrDefault,
+  normalizedRouteForGrade
+} from './data/contentRegistry';
 
 function currentRoute(): string {
   const hash = window.location.hash || '#/';
@@ -19,6 +24,7 @@ function currentRoute(): string {
 function AppRoutes() {
   const { user, loading } = useAuth();
   const [route, setRoute] = useState(currentRoute);
+  const grade = gradeOrDefault(user?.grade_level);
 
   useEffect(() => {
     const onHashChange = () => setRoute(currentRoute());
@@ -31,6 +37,14 @@ function AppRoutes() {
       window.location.hash = '#/';
     }
   }, [user, route]);
+
+  useEffect(() => {
+    if (!user) return;
+    const normalizedRoute = normalizedRouteForGrade(route, grade);
+    if (normalizedRoute !== route) {
+      window.location.hash = `#${normalizedRoute}`;
+    }
+  }, [grade, route, user]);
 
   let content: React.ReactNode;
 
@@ -54,6 +68,8 @@ function AppRoutes() {
     content = <LessonsPage lessonId={route.split('/')[2]} />;
   } else if (route === '/explorer') {
     content = <ExplorerPage />;
+  } else if (route === '/s5-lab') {
+    content = <LineLabPage />;
   } else if (route === '/practice') {
     content = <PracticePage />;
   } else if (route.startsWith('/practice/')) {

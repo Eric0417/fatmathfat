@@ -2,10 +2,12 @@ import type {
   QuestionDifficulty,
   QuestionKind,
   QuizQuestion,
-  QuizTopic
+  QuizTopic,
+  S4QuestionKind,
+  S4QuizTopic
 } from '../types';
 
-export const topicLabels: Record<QuizTopic, string> = {
+export const topicLabels: Record<S4QuizTopic, string> = {
   'set-and-element': '集合與元素',
   membership: '元素關係',
   representation: '集合表示法',
@@ -22,7 +24,7 @@ export const difficultyLabels: Record<QuestionDifficulty, string> = {
   challenge: '挑戰'
 };
 
-export const questionKindLabels: Record<QuestionKind, string> = {
+export const questionKindLabels: Record<S4QuestionKind, string> = {
   membership: '判斷元素關係',
   equality: '判斷集合相等',
   subset: '判斷子集合',

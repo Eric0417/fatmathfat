@@ -12,6 +12,7 @@ interface AdminStudent {
   id: number;
   email: string;
   role: string;
+  grade_level?: string | null;
   last_login_at?: string | null;
   last_seen_at?: string | null;
   completed_lessons: string[];
@@ -200,6 +201,7 @@ export function AdminPage() {
               <thead>
                 <tr>
                   <th>學生</th>
+                  <th>年級</th>
                   <th>最後登入</th>
                   <th>最後活動</th>
                   <th>單元</th>
@@ -212,6 +214,7 @@ export function AdminPage() {
                 {data?.students.map((student) => (
                   <tr key={student.id}>
                     <td>{student.email}</td>
+                    <td>{student.grade_level ?? '—'}</td>
                     <td>{formatDate(student.last_login_at)}</td>
                     <td>{formatDate(student.last_seen_at)}</td>
                     <td>{student.completed_lessons.length}</td>

@@ -8,8 +8,15 @@ import {
 import { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { QuestionRunner } from '../components/QuestionRunner';
-import { lessons, lessonByTopic } from '../data/curriculum';
-import { quizQuestions, topicLabels } from '../data/questions';
+import {
+  gradeOrDefault,
+  isTopicForGrade,
+  lessonForGrade,
+  lessonIdsForGrade,
+  lessonsForGrade,
+  quizQuestionsForGrade,
+  topicLabelFor
+} from '../data/contentRegistry';
 import type {
   ProgressResponse,
   QuizAttemptResponse,
@@ -83,21 +90,34 @@ function ResultTable({ results }: { results: QuizResultRecord[] }) {
 }
 
 export function ResultsPage() {
-  const { apiFetch } = useAuth();
+  const { apiFetch, user } = useAuth();
+  const grade = gradeOrDefault(user?.grade_level);
+  const lessons = lessonsForGrade(grade);
+  const quizQuestions = quizQuestionsForGrade(grade);
+  const gradeLessonIds = new Set(lessonIdsForGrade(grade));
   const [progress, setProgress] = useState<ProgressResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [confirmClear, setConfirmClear] = useState(false);
   const [retryQuestions, setRetryQuestions] = useState<QuizQuestion[] | null>(null);
-  const results = (progress?.quiz_attempts ?? []).map(toResultRecord);
+  const results = (progress?.quiz_attempts ?? [])
+    .filter((attempt) => !attempt.grade_level || attempt.grade_level === grade)
+    .map(toResultRecord);
   const completedLessons =
-    progress?.completed_lessons.map((item) => item.lesson_id) ?? [];
+    progress?.completed_lessons
+      .map((item) => item.lesson_id)
+      .filter((lessonId) => gradeLessonIds.has(lessonId)) ?? [];
   const lastLesson = progress?.last_lesson ?? null;
   const latest = results[0];
   const highest = results.length > 0 ? Math.max(...results.map((result) => result.score)) : null;
   const recentScore = latest?.score ?? null;
   const weakTopics = latest
     ? Object.entries(latest.topicScores)
-        .filter(([, score]) => score.total > 0 && score.correct < score.total)
+        .filter(
+          ([topic, score]) =>
+            isTopicForGrade(topic, grade) &&
+            score.total > 0 &&
+            score.correct < score.total
+        )
         .map(([topic]) => topic as QuizTopic)
     : [];
   const recentQuestions =
@@ -224,8 +244,8 @@ export function ResultsPage() {
               </div>
               <div className="result-overview-card__topics">
                 {Object.entries(latest.topicScores).map(([topic, score]) => {
-                  const label = topicLabels[topic as QuizTopic];
-                  if (!label || score.total === 0) return null;
+                  if (!isTopicForGrade(topic, grade) || score.total === 0) return null;
+                  const label = topicLabelFor(topic);
                   return (
                     <div className="topic-result" key={topic}>
                       <div className="topic-result__label">
@@ -253,7 +273,7 @@ export function ResultsPage() {
                     {weakTopics.map((topic) => (
                       <li key={topic}>
                         <a href={`#/practice/${topic}`}>
-                          {topicLabels[topic]} 練習
+                          {topicLabelFor(topic)} 練習
                         </a>
                       </li>
                     ))}
@@ -306,7 +326,7 @@ export function ResultsPage() {
               </div>
               <p className="learning-location">
                 最近學習位置：
-                {lastLesson ? lessonByTopic(lastLesson)?.title ?? '已離開課程' : '尚未開始'}
+                {lastLesson ? lessonForGrade(lastLesson, grade)?.title ?? '已離開課程' : '尚未開始'}
               </p>
             </div>
             <div className="unit-progress-list">

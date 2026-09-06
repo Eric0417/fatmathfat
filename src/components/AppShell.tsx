@@ -6,12 +6,15 @@ import {
   Home,
   ListChecks,
   LogOut,
+  Ruler,
   ShieldCheck,
   Shapes
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
+import { gradeOrDefault } from '../data/contentRegistry';
 import { AiTeacherPanel } from './AiTeacherPanel';
+import type { GradeLevel } from '../types';
 
 interface NavItem {
   href: string;
@@ -20,14 +23,20 @@ interface NavItem {
   match: string;
 }
 
-const navItems: NavItem[] = [
-  { href: '#/', label: '首頁', icon: Home, match: '/' },
-  { href: '#/lessons', label: '課程', icon: BookOpen, match: '/lessons' },
-  { href: '#/explorer', label: '集合工具', icon: Shapes, match: '/explorer' },
-  { href: '#/practice', label: '練習', icon: ListChecks, match: '/practice' },
-  { href: '#/quiz', label: '測驗', icon: ClipboardList, match: '/quiz' },
-  { href: '#/results', label: '學習結果', icon: BarChart3, match: '/results' }
-];
+function navItemsForGrade(grade: GradeLevel): NavItem[] {
+  const tool =
+    grade === 'S5'
+      ? { href: '#/s5-lab', label: '直線實驗室', icon: Ruler, match: '/s5-lab' }
+      : { href: '#/explorer', label: '集合工具', icon: Shapes, match: '/explorer' };
+  return [
+    { href: '#/', label: '首頁', icon: Home, match: '/' },
+    { href: '#/lessons', label: '課程', icon: BookOpen, match: '/lessons' },
+    tool,
+    { href: '#/practice', label: '練習', icon: ListChecks, match: '/practice' },
+    { href: '#/quiz', label: '測驗', icon: ClipboardList, match: '/quiz' },
+    { href: '#/results', label: '學習結果', icon: BarChart3, match: '/results' }
+  ];
+}
 
 interface AppShellProps {
   route: string;
@@ -35,7 +44,9 @@ interface AppShellProps {
 }
 
 export function AppShell({ route, children }: AppShellProps) {
-  const { user, logout } = useAuth();
+  const { user, logout, setGrade } = useAuth();
+  const grade = gradeOrDefault(user?.grade_level);
+  const [switchingGrade, setSwitchingGrade] = useState(false);
   const [isOnline, setIsOnline] = useState(() =>
     typeof navigator === 'undefined' ? true : navigator.onLine
   );
@@ -56,11 +67,22 @@ export function AppShell({ route, children }: AppShellProps) {
     return route.startsWith(item.match);
   };
   const itemsForRole = [
-    ...navItems,
+    ...navItemsForGrade(grade),
     ...(user?.role === 'teacher'
       ? [{ href: '#/admin', label: '管理', icon: ShieldCheck, match: '/admin' }]
       : [])
   ];
+
+  const changeGrade = async (nextGrade: GradeLevel) => {
+    if (switchingGrade || nextGrade === grade) return;
+    setSwitchingGrade(true);
+    try {
+      await setGrade(nextGrade);
+      window.location.hash = '#/';
+    } finally {
+      setSwitchingGrade(false);
+    }
+  };
 
   return (
     <div className="app-shell">
@@ -72,7 +94,11 @@ export function AppShell({ route, children }: AppShellProps) {
             </span>
             <span className="brand__text">
               <strong>集合好好學</strong>
-              <small>集合概念視覺化與基礎解題</small>
+              <small>
+                {grade === 'S5'
+                  ? 'S5 直線坐標幾何與互動解題'
+                  : '集合概念視覺化與基礎解題'}
+              </small>
             </span>
           </a>
           <nav className="main-nav" aria-label="主要導覽">
@@ -93,12 +119,44 @@ export function AppShell({ route, children }: AppShellProps) {
             })}
             <div className="main-nav__account" aria-label="帳號">
               <span className="main-nav__email">{user?.email}</span>
+              {user?.role === 'student' && (
+                <div className="grade-switch" aria-label="切換年級">
+                  {(['S4', 'S5'] as GradeLevel[]).map((level) => (
+                    <button
+                      key={level}
+                      type="button"
+                      className={`grade-switch__option${grade === level ? ' grade-switch__option--active' : ''}`}
+                      disabled={switchingGrade}
+                      aria-pressed={grade === level}
+                      onClick={() => void changeGrade(level)}
+                    >
+                      {level}
+                    </button>
+                  ))}
+                </div>
+              )}
               <button type="button" className="main-nav__logout" onClick={logout}>
                 <LogOut size={16} aria-hidden="true" />
                 <span>登出</span>
               </button>
             </div>
           </nav>
+          {user?.role === 'student' && (
+            <div className="mobile-grade-switch" aria-label="切換年級">
+              {(['S4', 'S5'] as GradeLevel[]).map((level) => (
+                <button
+                  key={level}
+                  type="button"
+                  className={`grade-switch__option${grade === level ? ' grade-switch__option--active' : ''}`}
+                  disabled={switchingGrade}
+                  aria-pressed={grade === level}
+                  onClick={() => void changeGrade(level)}
+                >
+                  {level}
+                </button>
+              ))}
+            </div>
+          )}
           <button
             className="mobile-account-logout"
             type="button"
@@ -139,12 +197,18 @@ export function AppShell({ route, children }: AppShellProps) {
       )}
 
       <main className="app-main">{children}</main>
-      <AiTeacherPanel />
+      {grade === 'S4' && <AiTeacherPanel />}
 
       <footer className="app-footer">
         <div className="app-footer__inner">
-          <p>學校專用學習區，登入後會同步學習紀錄。</p>
-          <p>本網站統一使用 ⊆ 表示子集合，⊊ 表示真子集合；A ⊂ B 表示同義的子集合關係。</p>
+          <p>
+            {grade === 'S5'
+              ? 'S5 專區：直線坐標幾何、互動實驗室與練習測驗。'
+              : 'S4 專區：集合概念、互動 Venn 圖與練習測驗。'}
+          </p>
+          {grade === 'S4' && (
+            <p>本網站統一使用 ⊆ 表示子集合，⊊ 表示真子集合；A ⊂ B 表示同義的子集合關係。</p>
+          )}
           <p className="site-credit">developed by Eric Wong</p>
         </div>
       </footer>

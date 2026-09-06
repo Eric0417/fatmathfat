@@ -9,8 +9,14 @@ import {
 import { useState } from 'react';
 import { QuestionRunner } from '../components/QuestionRunner';
 import { useAuth } from '../context/AuthContext';
-import { quizQuestions, topicLabels } from '../data/questions';
+import {
+  gradeOrDefault,
+  isTopicForGrade,
+  quizQuestionsForGrade,
+  topicLabelFor
+} from '../data/contentRegistry';
 import type {
+  GradeLevel,
   MistakeTag,
   QuizAttemptResponse,
   QuizQuestion,
@@ -26,7 +32,15 @@ const mistakeLabels: Record<MistakeTag, string> = {
   'forgot-universe': '補集漏看全集',
   'difference-direction': '差集方向錯誤',
   'proper-subset-confusion': '子集合／真子集合混淆',
-  'empty-set-confusion': '空集合混淆'
+  'empty-set-confusion': '空集合混淆',
+  'directed-length-sign': '有向線段正負號',
+  'section-ratio-order': '定比分點順序',
+  'slope-angle-confusion': '斜率與傾斜角換算',
+  'intercept-sign': '截距正負號',
+  'parallel-perpendicular-condition': '平行與垂直條件',
+  'distance-absolute-value': '距離公式絕對值',
+  'line-form-domain': '直線形式適用範圍',
+  'normal-form-sign': '法線式符號'
 };
 
 const emptyTopicScores = (): Record<QuizTopic, { correct: number; total: number }> => ({
@@ -37,14 +51,26 @@ const emptyTopicScores = (): Record<QuizTopic, { correct: number; total: number 
   subset: { correct: 0, total: 0 },
   'intersection-union': { correct: 0, total: 0 },
   difference: { correct: 0, total: 0 },
-  complement: { correct: 0, total: 0 }
+  complement: { correct: 0, total: 0 },
+  's5-directed-segment': { correct: 0, total: 0 },
+  's5-section-point': { correct: 0, total: 0 },
+  's5-polygon-area': { correct: 0, total: 0 },
+  's5-slope': { correct: 0, total: 0 },
+  's5-line-forms': { correct: 0, total: 0 },
+  's5-line-relations': { correct: 0, total: 0 },
+  's5-distance-normal': { correct: 0, total: 0 },
+  's5-line-family': { correct: 0, total: 0 }
 });
 
 function QuizSummary({
   result,
+  questions,
+  grade,
   onRetry
 }: {
   result: QuizResultRecord;
+  questions: QuizQuestion[];
+  grade: GradeLevel;
   onRetry?: () => void;
 }) {
   const weakTopics = Object.entries(result.topicScores)
@@ -67,7 +93,8 @@ function QuizSummary({
 
       <div className="topic-results">
         {Object.entries(result.topicScores).map(([topic, score]) => {
-          const label = topicLabels[topic as QuizTopic];
+          if (!isTopicForGrade(topic, grade) || score.total === 0) return null;
+          const label = topicLabelFor(topic);
           const percentage = score.total === 0 ? 0 : Math.round((score.correct / score.total) * 100);
           return (
             <div className="topic-result" key={topic}>
@@ -93,7 +120,7 @@ function QuizSummary({
             {weakTopics.map((topic) => (
               <li key={topic}>
                 <a href={`#/practice/${topic}`}>
-                  {topicLabels[topic]} 練習
+                  {topicLabelFor(topic)} 練習
                 </a>
               </li>
             ))}
@@ -110,7 +137,7 @@ function QuizSummary({
           <ul className="mistake-list">
             {result.mistakes.map((mistake, index) => (
               <li key={`${mistake.questionId}-${index}`}>
-                <p>{quizQuestions.find((question) => question.id === mistake.questionId)?.prompt}</p>
+                <p>{questions.find((question) => question.id === mistake.questionId)?.prompt}</p>
                 <strong>{index + 1}. 你選了「{mistake.selected}」</strong>
                 <p>正確答案：「{mistake.answer}」</p>
                 {mistake.tags.length > 0 && (
@@ -149,7 +176,9 @@ function QuizSummary({
 }
 
 export function QuizPage() {
-  const { apiFetch } = useAuth();
+  const { apiFetch, user } = useAuth();
+  const grade = gradeOrDefault(user?.grade_level);
+  const quizQuestions = quizQuestionsForGrade(grade);
   const [started, setStarted] = useState(false);
   const [runKey, setRunKey] = useState(0);
   const [result, setResult] = useState<QuizResultRecord | null>(null);
@@ -314,7 +343,11 @@ export function QuizPage() {
         <div>
           <span className="eyebrow">12 題 ・ 8 個概念</span>
           <h1>綜合測驗</h1>
-          <p>測驗不以排名為目的，而是幫助你看出哪一類集合關係還需要更多練習。</p>
+          <p>
+            {grade === 'S5'
+              ? '測驗涵蓋有向線段、定比分點、斜率、直線方程、兩線關係、距離與直線系。'
+              : '測驗不以排名為目的，而是幫助你看出哪一類集合關係還需要更多練習。'}
+          </p>
         </div>
       </div>
 
@@ -330,7 +363,11 @@ export function QuizPage() {
         </div>
         <div>
           <h2>準備好就開始</h2>
-          <p>題目涵蓋：集合與元素、元素關係、集合表示法、空集合、子集合、交集、聯集、差集與補集。</p>
+          <p>
+            {grade === 'S5'
+              ? '題目涵蓋：有向線段、定比分點、面積、斜率、直線方程、兩線位置、距離與直線系。'
+              : '題目涵蓋：集合與元素、元素關係、集合表示法、空集合、子集合、交集、聯集、差集與補集。'}
+          </p>
           <p>作答時不會立即顯示答案；完成後會顯示各概念的分數與錯題類型。</p>
         </div>
         <button className="button button--primary button--large" type="button" onClick={() => void start()}>
@@ -341,6 +378,8 @@ export function QuizPage() {
       {result && (
         <QuizSummary
           result={result}
+          questions={quizQuestions}
+          grade={grade}
           onRetry={() => setReviewQuestions(wrongQuestions)}
         />
       )}

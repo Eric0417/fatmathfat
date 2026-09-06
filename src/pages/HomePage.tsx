@@ -4,12 +4,20 @@ import {
   ChevronRight,
   ClipboardList,
   ListChecks,
+  Ruler,
   Shapes
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { lessons, lessonByTopic } from '../data/curriculum';
+import {
+  gradeOrDefault,
+  lessonForGrade,
+  lessonIdsForGrade,
+  lessonsForGrade,
+  toolRoute
+} from '../data/contentRegistry';
 import { VennDiagram } from '../components/VennDiagram';
+import { CoordinateLineLab } from '../components/CoordinateLineLab';
 import type { ProgressResponse } from '../types';
 
 const previewState = {
@@ -19,12 +27,19 @@ const previewState = {
 };
 
 export function HomePage() {
-  const { apiFetch } = useAuth();
+  const { apiFetch, user } = useAuth();
+  const grade = gradeOrDefault(user?.grade_level);
+  const lessons = lessonsForGrade(grade);
+  const gradeLessonIds = new Set(lessonIdsForGrade(grade));
   const [progress, setProgress] = useState<ProgressResponse | null>(null);
-  const completed = progress?.completed_lessons.length ?? 0;
-  const latestResult = progress?.quiz_attempts[0] ?? null;
+  const completed =
+    progress?.completed_lessons.filter((item) => gradeLessonIds.has(item.lesson_id)).length ?? 0;
+  const latestResult =
+    progress?.quiz_attempts.find(
+      (attempt) => !attempt.grade_level || attempt.grade_level === grade
+    ) ?? null;
   const lastLesson = progress?.last_lesson ?? null;
-  const lastLessonTitle = lastLesson ? lessonByTopic(lastLesson)?.title : undefined;
+  const lastLessonTitle = lastLesson ? lessonForGrade(lastLesson, grade)?.title : undefined;
 
   useEffect(() => {
     void apiFetch<ProgressResponse>('/api/progress')
@@ -36,13 +51,23 @@ export function HomePage() {
     <>
       <div className="page-heading">
         <div>
-          <span className="eyebrow">有限集合 ・ 圖形 ・ 符號 ・ 語言</span>
-          <h1>集合概念視覺化與基礎解題</h1>
+          <span className="eyebrow">
+            {grade === 'S5'
+              ? 'S5 ・ 坐標 ・ 斜率 ・ 直線方程'
+              : '有限集合 ・ 圖形 ・ 符號 ・ 語言'}
+          </span>
+          <h1>
+            {grade === 'S5'
+              ? '直線坐標幾何視覺化與基礎解題'
+              : '集合概念視覺化與基礎解題'}
+          </h1>
           <p>
-            先操作元素，再看 Venn 圖，最後對照數學符號與中文解釋。
+            {grade === 'S5'
+              ? '先拖動坐標平面上的點，再對照距離、斜率與直線方程。'
+              : '先操作元素，再看 Venn 圖，最後對照數學符號與中文解釋。'}
           </p>
         </div>
-        <a className="button button--primary button--large" href="#/lessons/set">
+        <a className="button button--primary button--large" href={`#/lessons/${lessons[0]?.id}`}>
           <BookOpen size={18} aria-hidden="true" />
           開始學習
           <ChevronRight size={18} aria-hidden="true" />
@@ -71,13 +96,13 @@ export function HomePage() {
             </div>
           </div>
           <div className="home-overview__links">
-            <a className="quick-link" href="#/explorer">
+            <a className="quick-link" href={toolRoute(grade)}>
               <span className="quick-link__icon quick-link__icon--academic">
-                <Shapes size={22} aria-hidden="true" />
+                {grade === 'S5' ? <Ruler size={22} aria-hidden="true" /> : <Shapes size={22} aria-hidden="true" />}
               </span>
               <span>
-                <strong>集合工具</strong>
-                <small>自己放元素、切換運算</small>
+                <strong>{grade === 'S5' ? '直線實驗室' : '集合工具'}</strong>
+                <small>{grade === 'S5' ? '拖動點與斜率即時觀察' : '自己放元素、切換運算'}</small>
               </span>
               <ChevronRight size={17} aria-hidden="true" />
             </a>
@@ -116,21 +141,31 @@ export function HomePage() {
         <div className="home-overview__visual">
           <div className="panel-heading">
             <span className="panel-kicker">實際操作預覽</span>
-            <h2>A ∩ B 與 A ∪ B</h2>
+            <h2>{grade === 'S5' ? '直線坐標實驗' : 'A ∩ B 與 A ∪ B'}</h2>
           </div>
-          <VennDiagram state={previewState} operation="intersection" />
-          <div className="legend-row" aria-label="顏色圖例">
-            <span className="legend-item legend-item--blue">集合 A</span>
-            <span className="legend-item legend-item--orange">集合 B</span>
-            <span className="legend-item legend-item--green">交集區域</span>
-          </div>
+          {grade === 'S5' ? (
+            <CoordinateLineLab compact />
+          ) : (
+            <>
+              <VennDiagram state={previewState} operation="intersection" />
+              <div className="legend-row" aria-label="顏色圖例">
+                <span className="legend-item legend-item--blue">集合 A</span>
+                <span className="legend-item legend-item--orange">集合 B</span>
+                <span className="legend-item legend-item--green">交集區域</span>
+              </div>
+            </>
+          )}
         </div>
       </section>
 
       <section className="concept-strip" aria-labelledby="concept-heading">
         <div className="section-heading">
           <h2 id="concept-heading">從哪裡開始</h2>
-          <p>七個單元，每個都保持「例子 → 操作 → 定義 → 練習」的節奏。</p>
+          <p>
+            {grade === 'S5'
+              ? '八個單元，每個都保持「例子 → 操作 → 定義 → 練習」的節奏。'
+              : '七個單元，每個都保持「例子 → 操作 → 定義 → 練習」的節奏。'}
+          </p>
         </div>
         <div className="concept-list">
           {lessons.map((lesson) => (
