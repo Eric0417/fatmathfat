@@ -12,6 +12,7 @@ describe('S5 curriculum depth', () => {
       expect(lesson.keyPoints.length).toBeGreaterThanOrEqual(4);
       expect(lesson.strategies?.length).toBeGreaterThanOrEqual(3);
       expect(lesson.applications?.length).toBeGreaterThanOrEqual(2);
+      expect(lesson.challenges?.length).toBeGreaterThanOrEqual(1);
       expect(lesson.definition.trim().length).toBeGreaterThan(20);
       expect(lesson.explanation.trim().length).toBeGreaterThan(40);
       lesson.examples.forEach((example) => {

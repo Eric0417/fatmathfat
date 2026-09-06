@@ -76,6 +76,12 @@ try {
     (await desktopPage.getByRole('link', { name: /學習結果/ }).count()) >= 1,
     'home results entry is missing'
   );
+  assert(
+    (await desktopPage
+      .getByRole('button', { name: '切換至 S4 集合課程' })
+      .getAttribute('data-grade')) === 'S4',
+    'S4 grade switch is not clearly labelled'
+  );
   await desktopPage.screenshot({
     path: `${outputDir}/home-desktop.png`,
     fullPage: true
@@ -258,7 +264,9 @@ try {
     'admin student table did not render'
   );
 
-  await desktopPage.getByRole('button', { name: 'S5', exact: true }).click();
+  await desktopPage
+    .getByRole('button', { name: '切換至 S5 直線幾何' })
+    .click();
   await desktopPage
     .getByRole('heading', { name: '直線坐標幾何視覺化與基礎解題' })
     .waitFor();
@@ -266,7 +274,9 @@ try {
     (await desktopPage.getByRole('link', { name: /直線實驗室/ }).count()) >= 1,
     'teacher cannot switch to S5 content'
   );
-  await desktopPage.getByRole('button', { name: 'S4', exact: true }).click();
+  await desktopPage
+    .getByRole('button', { name: '切換至 S4 集合課程' })
+    .click();
   await desktopPage
     .getByRole('heading', { name: '集合概念視覺化與基礎解題' })
     .waitFor();

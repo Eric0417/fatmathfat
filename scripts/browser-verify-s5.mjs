@@ -90,6 +90,14 @@ try {
       (await page.locator('.lesson-detail-list li').count()) >= 4,
       `${lessonId} is missing detailed notes`
     );
+    assert(
+      (await page.locator('.venn-diagram').count()) === 0,
+      `${lessonId} unexpectedly shows S4 set content`
+    );
+    assert(
+      (await page.locator('.coordinate-line-lab').count()) === 1,
+      `${lessonId} is missing the S5 coordinate visual`
+    );
   }
 
   await load(page, '/s5-lab');

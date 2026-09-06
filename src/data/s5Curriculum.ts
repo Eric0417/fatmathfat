@@ -67,6 +67,13 @@ export const s5Lessons: Lesson[] = [
         connection: 'AB + BA = 0 可檢查資料方向是否寫反。'
       }
     ],
+    challenges: [
+      {
+        title: '方向與長度',
+        prompt: '數軸上 A = 2、B = 8，求 AB、BA 與 |AB|。',
+        solution: 'AB = 8 − 2 = 6；BA = −6；|AB| = 6。'
+      }
+    ],
     practiceTopic: 's5-directed-segment'
   },
   {
@@ -133,6 +140,13 @@ export const s5Lessons: Lesson[] = [
         title: '三角形的重心',
         situation: '均勻三角形紙板可用重心支撐保持平衡。',
         connection: '重心是三個頂點坐標的平均值。'
+      }
+    ],
+    challenges: [
+      {
+        title: '找內分點',
+        prompt: 'P₁(2, 3)、P₂(8, 7)，λ = 3，求 P。',
+        solution: 'P = ((2 + 3×8)/4, (3 + 3×7)/4) = (6.5, 6)。'
       }
     ],
     practiceTopic: 's5-section-point'
@@ -203,6 +217,13 @@ export const s5Lessons: Lesson[] = [
         connection: '共線時三角形面積為 0。'
       }
     ],
+    challenges: [
+      {
+        title: '坐標三角形面積',
+        prompt: '求 (0, 0)、(6, 0)、(0, 4) 的面積。',
+        solution: '底 = 6、高 = 4，面積 = 12。'
+      }
+    ],
     practiceTopic: 's5-polygon-area'
   },
   {
@@ -269,6 +290,13 @@ export const s5Lessons: Lesson[] = [
         title: '價格趨勢線',
         situation: '兩個時間點的價格連線，判斷上升或下降快慢。',
         connection: '正斜率表示上升，負斜率表示下降。'
+      }
+    ],
+    challenges: [
+      {
+        title: '兩點求斜率',
+        prompt: '求 (2, 3) 與 (5, 9) 的斜率。',
+        solution: 'k = (9 − 3)/(5 − 2) = 2。'
       }
     ],
     practiceTopic: 's5-slope',
@@ -340,6 +368,13 @@ export const s5Lessons: Lesson[] = [
         connection: '點斜式直接由已知斜率與定點建立方程。'
       }
     ],
+    challenges: [
+      {
+        title: '由點與斜率建方程',
+        prompt: '直線過 (4, 1)，斜率為 −1/2，求斜截式。',
+        solution: 'y − 1 = −½(x − 4)，化簡為 y = −½x + 3。'
+      }
+    ],
     practiceTopic: 's5-line-forms',
     interactive: 'line-lab'
   },
@@ -407,6 +442,13 @@ export const s5Lessons: Lesson[] = [
         title: '鐵軌平行性',
         situation: '兩段鐵軌若方向相同且不重疊，就是平行。',
         connection: '方向相同由 A₁B₂ − A₂B₁ = 0 判斷。'
+      }
+    ],
+    challenges: [
+      {
+        title: '判斷垂直',
+        prompt: '兩線斜率分別為 3 與 −1/3，判斷位置關係。',
+        solution: '3 × (−1/3) = −1，所以兩線垂直。'
       }
     ],
     practiceTopic: 's5-line-relations',
@@ -478,6 +520,13 @@ export const s5Lessons: Lesson[] = [
         connection: '平行線距離由常數差除以 √(A² + B²)。'
       }
     ],
+    challenges: [
+      {
+        title: '原點到直線距離',
+        prompt: '求原點到 6x + 8y − 20 = 0 的距離。',
+        solution: '|−20| / √(36 + 64) = 20 / 10 = 2。'
+      }
+    ],
     practiceTopic: 's5-distance-normal',
     interactive: 'line-lab'
   },
@@ -545,6 +594,13 @@ export const s5Lessons: Lesson[] = [
         title: '平行路段家族',
         situation: '不同車道維持相同方向，只差偏移距離。',
         connection: 'Ax + By + λ = 0 是平行直線系。'
+      }
+    ],
+    challenges: [
+      {
+        title: '過交點且水平',
+        prompt: 'x + y − 1 = 0 與 x − y + 1 = 0 的交點為 (0, 1)。求過此點且平行 x 軸的直線。',
+        solution: '平行 x 軸表示 y 為常數，所以直線是 y = 1。'
       }
     ],
     practiceTopic: 's5-line-family',

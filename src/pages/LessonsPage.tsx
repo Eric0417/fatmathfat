@@ -133,7 +133,7 @@ function LessonDetail({
           </div>
           {lesson.id === 'empty-set' ? (
             <EmptySetVisual />
-          ) : lesson.gradeLevel === 'S5' && lesson.interactive === 'line-lab' ? (
+          ) : lesson.gradeLevel === 'S5' ? (
             <CoordinateLineLab compact />
           ) : (
             <VennDiagram
@@ -215,6 +215,30 @@ function LessonDetail({
                   <p>{application.situation}</p>
                   <small>{application.connection}</small>
                 </article>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {lesson.gradeLevel === 'S5' && lesson.challenges && (
+          <section className="panel lesson-challenge-panel" aria-labelledby="challenge-title">
+            <div className="panel-heading panel-heading--compact">
+              <span className="panel-kicker">S5 情境挑戰</span>
+              <h2 id="challenge-title">先嘗試，再展開解答</h2>
+            </div>
+            <div className="lesson-challenge-list">
+              {lesson.challenges.map((challenge, index) => (
+                <details className="lesson-challenge-item" key={challenge.title}>
+                  <summary>
+                    <span>{String(index + 1).padStart(2, '0')}</span>
+                    <strong>{challenge.title}</strong>
+                  </summary>
+                  <p>{challenge.prompt}</p>
+                  <div className="lesson-challenge-solution">
+                    <strong>解答</strong>
+                    <span>{challenge.solution}</span>
+                  </div>
+                </details>
               ))}
             </div>
           </section>

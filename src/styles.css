@@ -4838,10 +4838,34 @@ code {
 }
 
 .grade-switch__option {
+  display: inline-flex;
   min-width: 38px;
   min-height: 30px;
+  align-items: center;
+  justify-content: center;
+  gap: 0.2rem;
   padding: 0.15rem 0.42rem;
   font-size: 0.72rem;
+}
+
+.grade-switch__option[data-grade="S4"] {
+  color: var(--color-primary);
+  border-color: rgba(47, 93, 126, 0.45);
+}
+
+.grade-switch__option[data-grade="S5"] {
+  color: var(--color-accent);
+  border-color: rgba(169, 103, 74, 0.5);
+}
+
+.grade-switch__option[data-grade="S4"].grade-switch__option--active {
+  border-color: #2f5d7e;
+  background: #2f5d7e;
+}
+
+.grade-switch__option[data-grade="S5"].grade-switch__option--active {
+  border-color: #9b654d;
+  background: #9b654d;
 }
 
 .main-nav__account {
@@ -4855,6 +4879,22 @@ code {
 
 .main-nav__account .grade-switch {
   flex: 0 0 auto;
+}
+
+.main-nav__account .grade-switch__option {
+  border-color: rgba(199, 213, 223, 0.28);
+  color: var(--color-sidebar-text);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.main-nav__account .grade-switch__option[data-grade="S4"].grade-switch__option--active {
+  border-color: #4d86a8;
+  background: #2f5d7e;
+}
+
+.main-nav__account .grade-switch__option[data-grade="S5"].grade-switch__option--active {
+  border-color: #c78372;
+  background: #9b654d;
 }
 
 .main-nav__account .main-nav__logout {
@@ -5348,6 +5388,60 @@ code {
 
 .lesson-application-item small {
   color: var(--color-text-secondary);
+}
+
+.lesson-challenge-list {
+  display: grid;
+  gap: 0.7rem;
+}
+
+.lesson-challenge-item {
+  padding: 0.85rem;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  background: var(--color-surface-soft);
+}
+
+.lesson-challenge-item summary {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: 0.65rem;
+  color: var(--color-text-primary);
+  cursor: pointer;
+}
+
+.lesson-challenge-item summary > span {
+  display: grid;
+  width: 2rem;
+  height: 2rem;
+  place-items: center;
+  border-radius: 6px;
+  color: #ffffff;
+  background: var(--color-primary);
+  font-weight: 800;
+}
+
+.lesson-challenge-item > p {
+  margin: 0.75rem 0;
+  color: var(--color-body);
+}
+
+.lesson-challenge-solution {
+  display: grid;
+  gap: 0.25rem;
+  padding: 0.7rem;
+  border-left: 3px solid var(--color-success);
+  border-radius: 0 6px 6px 0;
+  background: var(--color-success-soft);
+}
+
+.lesson-challenge-solution strong {
+  color: var(--color-success);
+}
+
+.lesson-challenge-solution span {
+  color: var(--color-body);
 }
 
 @media (max-width: 820px) {

@@ -121,18 +121,25 @@ export function AppShell({ route, children }: AppShellProps) {
               <span className="main-nav__email">{user?.email}</span>
               {user && (
                 <div className="grade-switch" aria-label="切換年級">
-                  {(['S4', 'S5'] as GradeLevel[]).map((level) => (
-                    <button
-                      key={level}
-                      type="button"
-                      className={`grade-switch__option${grade === level ? ' grade-switch__option--active' : ''}`}
-                      disabled={switchingGrade}
-                      aria-pressed={grade === level}
-                      onClick={() => void changeGrade(level)}
-                    >
-                      {level}
-                    </button>
-                  ))}
+                  {(['S4', 'S5'] as GradeLevel[]).map((level) => {
+                    const Icon = level === 'S5' ? Ruler : Shapes;
+                    return (
+                      <button
+                        key={level}
+                        type="button"
+                        data-grade={level}
+                        className={`grade-switch__option${grade === level ? ' grade-switch__option--active' : ''}`}
+                        disabled={switchingGrade}
+                        aria-pressed={grade === level}
+                        aria-label={`切換至 ${level} ${level === 'S5' ? '直線幾何' : '集合課程'}`}
+                        title={`${level}：${level === 'S5' ? '直線坐標幾何' : '有限集合'}`}
+                        onClick={() => void changeGrade(level)}
+                      >
+                        <Icon size={13} aria-hidden="true" />
+                        <span>{level}</span>
+                      </button>
+                    );
+                  })}
                 </div>
               )}
               <button type="button" className="main-nav__logout" onClick={logout}>
@@ -143,18 +150,25 @@ export function AppShell({ route, children }: AppShellProps) {
           </nav>
           {user && (
             <div className="mobile-grade-switch" aria-label="切換年級">
-              {(['S4', 'S5'] as GradeLevel[]).map((level) => (
-                <button
-                  key={level}
-                  type="button"
-                  className={`grade-switch__option${grade === level ? ' grade-switch__option--active' : ''}`}
-                  disabled={switchingGrade}
-                  aria-pressed={grade === level}
-                  onClick={() => void changeGrade(level)}
-                >
-                  {level}
-                </button>
-              ))}
+              {(['S4', 'S5'] as GradeLevel[]).map((level) => {
+                const Icon = level === 'S5' ? Ruler : Shapes;
+                return (
+                  <button
+                    key={level}
+                    type="button"
+                    data-grade={level}
+                    className={`grade-switch__option${grade === level ? ' grade-switch__option--active' : ''}`}
+                    disabled={switchingGrade}
+                    aria-pressed={grade === level}
+                    aria-label={`切換至 ${level} ${level === 'S5' ? '直線幾何' : '集合課程'}`}
+                    title={`${level}：${level === 'S5' ? '直線坐標幾何' : '有限集合'}`}
+                    onClick={() => void changeGrade(level)}
+                  >
+                    <Icon size={13} aria-hidden="true" />
+                    <span>{level}</span>
+                  </button>
+                );
+              })}
             </div>
           )}
           <button

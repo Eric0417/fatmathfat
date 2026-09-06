@@ -120,6 +120,7 @@ export interface Lesson {
   interactive?: 'venn' | 'line-lab';
   strategies?: string[];
   applications?: LessonApplication[];
+  challenges?: LessonChallenge[];
   universe?: number[];
   setA?: number[];
   setB?: number[];
@@ -135,6 +136,12 @@ export interface LessonApplication {
   title: string;
   situation: string;
   connection: string;
+}
+
+export interface LessonChallenge {
+  title: string;
+  prompt: string;
+  solution: string;
 }
 
 export type MistakeTag =
