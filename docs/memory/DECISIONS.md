@@ -202,3 +202,15 @@ updated: 2026-09-06
 **替代方案：** 只縮小字體與隱藏標籤，或繼續使用頂部 icon 導覽。前者無法解決 7 個入口與長內容；後者在手機上缺少可發現性，且 320px 仍可能折行。
 
 **影響：** `AppShell` 新增手機導覽與手機登出，`src/styles.css` 新增 touch-first refinement；瀏覽器驗證加入 320px、1024px、登入頁、AI 面板與手機集合操作。後端、資料模型、API、`render.yaml` 與 PWA 設定不變。
+
+## D-016 採用 S4／S5 年級分類與 S5 直線坐標幾何
+
+**狀態：** active
+
+**決定：** 在 `math_website_render` 加入 `GradeLevel = 'S4' | 'S5'`。學生於 Email OTP 登入時必須選擇年級，之後可透過 `PATCH /api/auth/grade` 切換；教師不選年級，管理頁可看到所有年級。現有集合課程標記為 S4，新增照片整理出的 S5「直線坐標幾何」課程、練習、測驗與可拖動直線實驗室。
+
+**理由：** 不同年級需要不同課程、題庫與工具。目前登入、學習數據、測驗 session 與管理後台都在全棧工作區，因此年級應成為帳號與測驗資料的第一級分類，而不是只在前端切換視覺。
+
+**替代方案：** 只在 localStorage 切換年級 —— 換裝置或重新登入會遺失，也無法讓教師統計；把 S5 內容混入同一組課程 —— 學生容易看到不屬於自己的教材；直接改開發目錄靜態版 —— 那裏沒有登入與後端同步能力。
+
+**影響：** 新增 `users.grade_level`、`quiz_sessions.grade_level`、`quiz_attempts.grade_level` migration；新增 `contentRegistry`、`s5Curriculum`、`s5Questions`、`coordinateMath`、`CoordinateLineLab` 與 `#/s5-lab`。S4 AI 老師不變，S5 v1 隱藏 AI 老師與 AI 生成練習。原始 JPEG 不提交，OCR Markdown 存放於 `content/s5/ocr/`。

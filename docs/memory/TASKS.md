@@ -56,3 +56,10 @@ updated: 2026-09-06
 | 伺服器計分 | done | `/api/progress/quiz` 只接受 answers，由 `quiz_bank.py` 計算分數與錯題 |
 | 安全硬化部署驗證 | done | pytest 21 項、Vitest 13 項、typecheck、build、Alembic upgrade |
 | 描述法論域資料模型 | pending | 若要支援描述法轉列舉法，需另存 `domain` |
+| S4／S5 年級資料模型 | done | `users`、quiz session 與 quiz attempt 記錄年級；舊學生回填 S4 |
+| 學生年級登入與切換 | done | OTP 必選 S4/S5；`PATCH /api/auth/grade` 僅學生可用 |
+| 年級測驗計分 | done | 後端依 session 年級選擇 S4/S5 答案金鑰 |
+| S5 直線教材與題庫 | done | 8 單元、8 主題、40 題練習、12 題測驗 |
+| S5 直線實驗室 | done | 拖動 A/B、y=mx+b、兩線關係、鍵盤與響應式 |
+| S5 教材 MarkItDown 轉檔 | done | 20 張照片輸出至 `content/s5/ocr/` |
+| S4/S5 瀏覽器完整驗證 | pending | 待以 Playwright 驗證登入年級、直線實驗室與既有 Venn |

@@ -11,7 +11,7 @@ updated: 2026-09-06
 
 ## 摘要
 
-本專案是一個學校專用的全棧應用。前端為 Vite + React + TypeScript，後端為 FastAPI + PostgreSQL；學生以學校郵箱 OTP 登入，教師／管理員可查看學習數據。網站需要連線，AI 老師由 DeepSeek 提供。
+本專案是一個 S4／S5 分年級的學校全棧應用。前端為 Vite + React + TypeScript，後端為 FastAPI + PostgreSQL；學生以學校郵箱 OTP 登入並選擇年級，教師／管理員可查看所有年級學生的學習數據。網站需要連線，S4 由 DeepSeek AI 老師提供支援，S5 第一版以直線坐標幾何教材與互動實驗室為主。
 
 ## 技術選型
 
@@ -31,17 +31,20 @@ updated: 2026-09-06
 
 - `src/lib/`：集合運算與 API client。
 - `src/data/`：課程與題目資料。
+- `src/lib/`：集合運算、坐標幾何與 API client。
+- `content/s5/ocr/`：S5 教材照片的 MarkItDown OCR 來源稿。
 - `src/components/`：共用 shell、Venn 圖、題目流程。
 - `src/pages/`：首頁、課程、工具、練習、測驗、結果。
 - `backend/app/`：後端模型、routers、驗證碼、Email、DeepSeek 與題目驗證。
 - `backend/alembic/`：資料庫 migration。
 - `public/`：PWA icon、favicon、manifest 資源。
 
-路由分為 `#/lessons/:id`、`#/explorer`、`#/practice/:topic`、`#/quiz` 與 `#/results`。題目資料集中於 `src/data/questions.ts`，每個單元至少 5 題，題型與難度以資料欄位描述，避免把大量題目寫入 UI 元件。
+路由分為 `#/lessons/:id`、`#/explorer`、`#/s5-lab`、`#/practice/:topic`、`#/quiz` 與 `#/results`。S4 題目集中於 `src/data/questions.ts`，S5 題目集中於 `src/data/s5Questions.ts`，`src/data/contentRegistry.ts` 依目前年級選擇內容。
 
 ## 視覺與互動設計
 
 - 目前使用 Academic Blue：淺灰白頁面、白色卡片、深藏青左側導覽、學院藍主色與低飽和陶土色強調。
+- S5 直線實驗室使用 SVG 坐標平面與 pointer capture，保留可拖動、鍵盤微調、斜率截距滑桿與兩線比較。
 - 桌面使用左側導覽，1180px 以下切換為頂部導覽；620px 以下切換為固定底部導覽，teacher 會增加「管理」入口。
 - 820px 以下單元清單改為水平 snap 清單；手機 AI 老師面板位於底部導覽上方並保留安全區域。
 - 卡片使用輕度陰影、細邊框與 10px 至 14px 圓角。
@@ -54,6 +57,7 @@ updated: 2026-09-06
 - 元素限定為有限整數。
 - 主要處理 `∈`、`∉`、`⊆`、`⊊`、`=`、`∩`、`∪`、差集、補集。
 - 已包含學校網域登入、正式教師網域自動登入、學生／管理員角色、學習數據同步與 AI 老師。
+- 已包含 S4／S5 年級分類、S5 直線坐標幾何課程、40 題練習、12 題測驗與直線實驗室。
 - 不包含作業派發、排行、多人連線與複雜動畫；AI 對話與生成題目不持久化。
 - 補集、差集、反例與描述法轉換屬於課程內容；已有基礎教材與題型。
 - 測驗、課程完成度、練習摘要與最後活動以後端為準；舊版 `localStorage` 資料保留但不遷移。
@@ -64,3 +68,4 @@ updated: 2026-09-06
 - 若 Render 資料庫或服務停機，網站無法登入或同步；出現此情況時會顯示錯誤。
 - 描述法的條件目前以文字與有限整數例子呈現，尚未建立正式的論域（domain）資料結構。
 - 台灣教材常見 `A⊂B`、`A′`、`A^c`、`Ā` 等記號，目前以說明與同義標註處理，主要保留使用者指定的 `⊆`/`⊊`、`Aᶜ`。
+- S5 第一版未接入 AI 老師與 AI 生成練習；需要擴充 DeepSeek 提示詞與題目驗證後才能開啟。

@@ -11,7 +11,7 @@ updated: 2026-09-06
 
 ## 摘要
 
-本專案已進入**全棧學校版**：Vite + React + TypeScript 前端，FastAPI + PostgreSQL 後端，Email OTP 登入、學生／管理員角色、學習數據同步與 DeepSeek AI 老師。目前有七個學習單元、八個練習主題、互動 Venn 工具、錯題重做與跨裝置學習紀錄。
+本專案已進入**S4／S5 分年級全棧學校版**：Vite + React + TypeScript 前端，FastAPI + PostgreSQL 後端，Email OTP 登入、學生／管理員角色、學習數據同步與 DeepSeek AI 老師。S4 保留七個集合單元、八個練習主題與互動 Venn 工具；S5 新增直線坐標幾何八個單元、八個練習主題、12 題測驗與可拖動直線實驗室。
 
 ## 已完成
 
@@ -68,6 +68,13 @@ updated: 2026-09-06
 - 手機 AI 老師面板移到底部導覽上方、加入安全區域留白與 70dvh 高度上限，避免浮層遮住操作。
 - 擴充 `browser-verify.mjs`：新增 320px 手機、iPad 1024px 橫向、登入頁、AI 面板位置、底部導覽尺寸與手機集合操作／練習回饋驗證。
 - 建立 GitHub branch `feat/mobile-tablet-optimization` 並推送至 `Eric0417/fatmathfat`；合併至 `main` 後，Render static site deploy `dep-dae6mlu7bikc73d54440` 已 live。
+- 新增 S4／S5 年級資料模型：`users.grade_level`、`quiz_sessions.grade_level`、`quiz_attempts.grade_level` 與 `003_grade_levels` migration；舊學生回填 S4。
+- 完成學生 OTP 年級選擇、站內 `PATCH /api/auth/grade` 切換，以及教師不選年級但可查看所有學生的管理流程。
+- 將測驗 server scoring 改為依 `quiz_sessions.grade_level` 選取 S4 或 S5 答案金鑰，防止跨年級混用題庫。
+- 新增 `contentRegistry`、S5 直線坐標幾何八單元教材與 40 題練習題庫；S4 既有內容、進度與 Venn 互動維持不變。
+- 新增 `#/s5-lab` 直線實驗室：拖動 A/B、切換 y=mx+b、比較兩線位置、夾角與交點；支援鍵盤微調與手機響應式版面。
+- 使用 MarkItDown 本機 Vision 轉換器將 20 張 S5 教材照片輸出為 `content/s5/ocr/*.md`；原始 JPEG 未提交。
+- 完成後端 25 項 pytest、前端 28 項 Vitest、typecheck 與 production build；D-016 已寫入長期記憶。
 
 ## 進行中
 
@@ -80,6 +87,7 @@ updated: 2026-09-06
 - 若要支援作業派發、即時在線狀態、AI 對話審查或 AI 題目入庫，需另做資料模型與管理流程。
 - 若要支援描述法轉列舉法的實際論域資料模型，需建立 domain 資料結構。
 - JWT 目前仍存於 `localStorage`；若要進一步改用 HttpOnly cookie 與 server-side revocation，需另做前端 `credentials` 流程與 CSRF 防護。
+- S5 第一版未接入 AI 老師，避免現有集合專用提示詞誤答直線坐標幾何；若要啟用，需擴充 AI topic 白名單、提示詞與題目驗證。
 
 ## 給下一個 agent 的提示
 
@@ -98,3 +106,7 @@ updated: 2026-09-06
 - 原本的 `math_website` 仍是未初始化 Git 的開發目錄；本期實作與部署修改在 `math_website_render`。
 - 本次 Academic Blue 前端改版將推送到 GitHub `main`，由 Render 自動部署 `fatmathfat` static site；後端服務不被修改。
 - 新測驗流程：前端先呼叫 `POST /api/quiz/start`，完成時以 `quiz_session_id` 與 `answers` 呼叫 `POST /api/progress/quiz`；後端計算分數並標記 session finished。
+- 年級內容入口集中在 `src/data/contentRegistry.ts`；S5 教材與題庫分別在 `src/data/s5Curriculum.ts` 與 `src/data/s5Questions.ts`。
+- 直線計算邏輯在 `src/lib/coordinateMath.ts`；直線實驗室元件在 `src/components/CoordinateLineLab.tsx`，路由為 `#/s5-lab`。
+- S5 照片來源對照見 [S5_CURRICULUM.md](S5_CURRICULUM.md)；OCR 草稿在 `content/s5/ocr/`，原始照片目錄已由 `.gitignore` 排除。
+- S5 學生目前不顯示 AI 老師浮動面板；`AppShell` 只在 S4 渲染 `AiTeacherPanel`。
