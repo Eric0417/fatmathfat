@@ -6,8 +6,8 @@ describe('S5 curriculum depth', () => {
     expect(s5Lessons).toHaveLength(8);
     s5Lessons.forEach((lesson) => {
       expect(lesson.gradeLevel).toBe('S5');
-      expect(lesson.examples.length).toBeGreaterThanOrEqual(3);
-      expect(lesson.detailedNotes.length).toBeGreaterThanOrEqual(4);
+      expect(lesson.examples.length).toBeGreaterThanOrEqual(4);
+      expect(lesson.detailedNotes.length).toBeGreaterThanOrEqual(5);
       expect(lesson.commonMistakes.length).toBeGreaterThanOrEqual(2);
       expect(lesson.keyPoints.length).toBeGreaterThanOrEqual(4);
       expect(lesson.strategies?.length).toBeGreaterThanOrEqual(3);
