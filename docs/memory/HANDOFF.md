@@ -92,7 +92,7 @@ updated: 2026-09-07
 - 修正 S5 數學文字與步驟，加入逐步範例與情境挑戰解題流程；綜合練習改為覆蓋全部主題。
 - 強化 S5 AI 生成題目驗證：後端會重新計算可解析題型，錯誤答案或混入集合欄位的題目整批拒絕。
 - 本次修正已通過前端 Vitest 32 項、後端 pytest 31 項、S4/S5 瀏覽器回歸、production build 與離線驗證。
-- 已推送 `5cee239` 至 GitHub `main`；Render static site 與 API 均已確認上線新版品牌與內容。
+- 已推送 `5cee239` 與後續深度內容 `e815ca4` 至 GitHub `main`；Render static site 與 API 均已確認上線新版品牌、課程視覺與完整範例。
 
 ## 進行中
 
