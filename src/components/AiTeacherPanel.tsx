@@ -8,6 +8,7 @@ import {
 } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
+import { useGradeView } from '../context/GradeViewContext';
 import { useAiTeacher } from '../context/AiTeacherContext';
 
 interface ChatMessage {
@@ -18,6 +19,7 @@ interface ChatMessage {
 
 export function AiTeacherPanel() {
   const { apiFetch } = useAuth();
+  const { grade } = useGradeView();
   const { context, quizActive, quizSessionId } = useAiTeacher();
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -99,7 +101,10 @@ export function AiTeacherPanel() {
         method: 'POST',
         body: JSON.stringify({
           message,
-          context,
+          context: {
+            ...context,
+            grade_level: grade
+          },
           quiz_session_id: quizSessionId
         })
       });
@@ -137,7 +142,13 @@ export function AiTeacherPanel() {
               </span>
               <div>
                 <strong>AI 老師</strong>
-                <small>{quizActive ? '測驗進行中' : '集合學習助手'}</small>
+                <small>
+                  {quizActive
+                    ? '測驗進行中'
+                    : grade === 'S5'
+                      ? '直線幾何學習助手'
+                      : '集合學習助手'}
+                </small>
               </div>
             </div>
             <button
@@ -158,7 +169,9 @@ export function AiTeacherPanel() {
               </div>
             ) : messages.length === 0 && !loading && !revealing ? (
               <p className="ai-teacher__empty">
-                你可以問集合的定義、符號或目前題目的提示。
+                {grade === 'S5'
+                  ? '你可以問斜率、直線方程、距離、兩線關係或目前題目的提示。'
+                  : '你可以問集合的定義、符號或目前題目的提示。'}
               </p>
             ) : (
               <div className="ai-teacher__messages" aria-live="polite">
@@ -220,7 +233,13 @@ export function AiTeacherPanel() {
                     void send();
                   }
                 }}
-                placeholder={loading ? 'AI 正在回答...' : '問問集合概念...'}
+                placeholder={
+                  loading
+                    ? 'AI 正在回答...'
+                    : grade === 'S5'
+                      ? '問問直線幾何...'
+                      : '問問集合概念...'
+                }
                 aria-label="向 AI 老師提問"
                 disabled={quizActive || loading}
                 rows={2}

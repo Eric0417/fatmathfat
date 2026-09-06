@@ -131,6 +131,7 @@ class AdminLearningDataResponse(BaseModel):
 
 class AiQuestionContext(BaseModel):
     route: str = ""
+    grade_level: GradeLevel | None = None
     lesson_id: str | None = None
     topic: str | None = None
     question_id: str | None = None

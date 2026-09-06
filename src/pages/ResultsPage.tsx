@@ -7,9 +7,9 @@ import {
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
+import { useGradeView } from '../context/GradeViewContext';
 import { QuestionRunner } from '../components/QuestionRunner';
 import {
-  gradeOrDefault,
   isTopicForGrade,
   lessonForGrade,
   lessonIdsForGrade,
@@ -90,8 +90,8 @@ function ResultTable({ results }: { results: QuizResultRecord[] }) {
 }
 
 export function ResultsPage() {
-  const { apiFetch, user } = useAuth();
-  const grade = gradeOrDefault(user?.grade_level);
+  const { apiFetch } = useAuth();
+  const { grade } = useGradeView();
   const lessons = lessonsForGrade(grade);
   const quizQuestions = quizQuestionsForGrade(grade);
   const gradeLessonIds = new Set(lessonIdsForGrade(grade));

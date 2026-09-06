@@ -50,6 +50,23 @@ export const s5Lessons: Lesson[] = [
       '把 AB 與 BA 的數量寫成相同，忽略方向造成的正負號。',
       '距離公式漏加平方或忘記取平方根，把有向線段與長度混用。'
     ],
+    strategies: [
+      '先寫「終點坐標 − 起點坐標」，不要憑圖形猜正負。',
+      '求長度時把整個差先平方，最後才取平方根。',
+      '遇到絕對值條件時拆成正、負兩種情況。'
+    ],
+    applications: [
+      {
+        title: '導航位移',
+        situation: '從 A 走到 B，往右或往左的距離相同，但位移方向相反。',
+        connection: 'AB 是位移，|AB| 是路徑上的直線長度。'
+      },
+      {
+        title: '校正測量資料',
+        situation: '同一組點用相反順序記錄時，數值只差一個正負號。',
+        connection: 'AB + BA = 0 可檢查資料方向是否寫反。'
+      }
+    ],
     practiceTopic: 's5-directed-segment'
   },
   {
@@ -100,6 +117,23 @@ export const s5Lessons: Lesson[] = [
     commonMistakes: [
       '把 P₁P₂ 與 P₂P₁ 的比值順序寫反，導致公式中的 λ 用錯方向。',
       '以為 λ = −1 只是一個普通的負比例，忽略分母為零的問題。'
+    ],
+    strategies: [
+      '先圈起起點 P₁ 與終點 P₂，再確認 λ 是 P₁P 除以 PP₂。',
+      '先判斷內分或外分，內分 λ > 0，外分 λ < 0。',
+      '用中點或已知端點反查 λ，避免只背公式。'
+    ],
+    applications: [
+      {
+        title: '路線分段',
+        situation: '公車站把兩地之間的線段按固定比例分段。',
+        connection: '定比分點公式就是「按比例插值」的坐標版。'
+      },
+      {
+        title: '三角形的重心',
+        situation: '均勻三角形紙板可用重心支撐保持平衡。',
+        connection: '重心是三個頂點坐標的平均值。'
+      }
     ],
     practiceTopic: 's5-section-point'
   },
@@ -152,6 +186,23 @@ export const s5Lessons: Lesson[] = [
       '三角形面積公式只取一半卻漏掉絕對值，得到負面積。',
       '分割多邊形時對角線重疊，造成同一塊區域重複計算。'
     ],
+    strategies: [
+      '三個頂點依逆時針順序代入，再取絕對值的一半。',
+      '先算行列式是否為 0，快速判斷共線。',
+      '多邊形先畫對角線分割，再逐塊加總。'
+    ],
+    applications: [
+      {
+        title: '土地測量',
+        situation: '已知多邊形地界的頂點坐標，要估算面積。',
+        connection: '把多邊形切成三角形，再用頂點坐標求面積。'
+      },
+      {
+        title: '三個感測點共線',
+        situation: '三個資料點是否正好落在同一條直線上。',
+        connection: '共線時三角形面積為 0。'
+      }
+    ],
     practiceTopic: 's5-polygon-area'
   },
   {
@@ -202,6 +253,23 @@ export const s5Lessons: Lesson[] = [
     commonMistakes: [
       '把斜率與傾斜角當成可以直接互相代入，未考慮 tan 的週期與 90°。',
       '兩點求斜率時分子分母順序不一致，造成正負號相反。'
+    ],
+    strategies: [
+      '斜率公式固定用 (y₂ − y₁)/(x₂ − x₁)。',
+      '垂直線先判 x 坐標是否相等，不要硬除零。',
+      '由斜率轉傾斜角時，負斜率要加上 180°。'
+    ],
+    applications: [
+      {
+        title: '坡道與樓梯',
+        situation: '路面每前進一段水平距離，高度改變多少。',
+        connection: '斜率就是「垂直變化 ÷ 水平變化」。'
+      },
+      {
+        title: '價格趨勢線',
+        situation: '兩個時間點的價格連線，判斷上升或下降快慢。',
+        connection: '正斜率表示上升，負斜率表示下降。'
+      }
     ],
     practiceTopic: 's5-slope',
     interactive: 'line-lab'
@@ -255,6 +323,23 @@ export const s5Lessons: Lesson[] = [
       '使用截距式時未檢查 a 或 b 是否為 0，導致分母無意義。',
       '把 x 截距與 y 截距位置互換，寫錯截距式。'
     ],
+    strategies: [
+      '先圈出已知的是斜率、點、兩點還是截距。',
+      '垂直線直接寫 x = x₁，水平線直接寫 y = y₁。',
+      '最後化為一般式，檢查係數與截距是否一致。'
+    ],
+    applications: [
+      {
+        title: '成本模型',
+        situation: '每月固定費用加上每件商品的變動成本。',
+        connection: '總成本 = 斜率 × 數量 + 固定截距。'
+      },
+      {
+        title: '道路規格',
+        situation: '一條路必須經過指定點，並保持固定坡度。',
+        connection: '點斜式直接由已知斜率與定點建立方程。'
+      }
+    ],
     practiceTopic: 's5-line-forms',
     interactive: 'line-lab'
   },
@@ -306,6 +391,23 @@ export const s5Lessons: Lesson[] = [
     commonMistakes: [
       '只用斜率相等判斷重合，忽略 y 截距不同時其實是平行。',
       '有垂直線時仍直接套 k₁k₂ = −1，忽略斜率不存在。'
+    ],
+    strategies: [
+      '平行先比較方向，再用常數判斷是否重合。',
+      '垂直先找特殊直線，再套用 k₁k₂ = −1。',
+      '求夾角前先排除平行、重合與垂直。'
+    ],
+    applications: [
+      {
+        title: '兩條道路相交',
+        situation: '兩條道路交會時，要知道交叉口位置與轉角。',
+        connection: '交點由聯立方程求，夾角由斜率差求。'
+      },
+      {
+        title: '鐵軌平行性',
+        situation: '兩段鐵軌若方向相同且不重疊，就是平行。',
+        connection: '方向相同由 A₁B₂ − A₂B₁ = 0 判斷。'
+      }
     ],
     practiceTopic: 's5-line-relations',
     interactive: 'line-lab'
@@ -359,6 +461,23 @@ export const s5Lessons: Lesson[] = [
       '距離公式漏掉分子絕對值，得到負距離。',
       '求平行線距離時未先讓 A、B 係數一致，直接相減常數。'
     ],
+    strategies: [
+      '距離公式先寫分母 √(A² + B²)。',
+      '分子代入後先取絕對值。',
+      '平行線距離前，先把兩式 A、B 化成相同倍數。'
+    ],
+    applications: [
+      {
+        title: '行車離線距離',
+        situation: 'GPS 要計算車輛偏離規劃路線多遠。',
+        connection: '點到直線的距離就是最短路徑。'
+      },
+      {
+        title: '兩條平行軌道',
+        situation: '計算兩條平行軌道之間的固定距離。',
+        connection: '平行線距離由常數差除以 √(A² + B²)。'
+      }
+    ],
     practiceTopic: 's5-distance-normal',
     interactive: 'line-lab'
   },
@@ -410,6 +529,23 @@ export const s5Lessons: Lesson[] = [
     commonMistakes: [
       '誤以為 l₁ + λl₂ = 0 包含 l₂ 這條直線。',
       '用直線系解題時漏掉斜率不存在的直線。'
+    ],
+    strategies: [
+      '先寫出滿足方向或過點條件的直線系。',
+      '再用距離、面積或另一點求出 λ。',
+      '檢查特例：垂直線是否已由其他形式涵蓋。'
+    ],
+    applications: [
+      {
+        title: '道路網規劃',
+        situation: '設計所有通過同一個路口的道路。',
+        connection: '過交點的直線系可一次描述這些道路。'
+      },
+      {
+        title: '平行路段家族',
+        situation: '不同車道維持相同方向，只差偏移距離。',
+        connection: 'Ax + By + λ = 0 是平行直線系。'
+      }
     ],
     practiceTopic: 's5-line-family',
     interactive: 'line-lab'

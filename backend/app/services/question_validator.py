@@ -11,6 +11,14 @@ ALLOWED_TOPICS = {
     "intersection-union",
     "difference",
     "complement",
+    "s5-directed-segment",
+    "s5-section-point",
+    "s5-polygon-area",
+    "s5-slope",
+    "s5-line-forms",
+    "s5-line-relations",
+    "s5-distance-normal",
+    "s5-line-family",
 }
 
 ALLOWED_KINDS = {
@@ -26,6 +34,13 @@ ALLOWED_KINDS = {
     "cardinality",
     "empty-set",
     "venn",
+    "coordinate",
+    "slope",
+    "line-equation",
+    "line-relation",
+    "distance",
+    "angle",
+    "area",
 }
 
 ALLOWED_DIFFICULTY = {"basic", "standard", "challenge"}
@@ -37,6 +52,14 @@ ALLOWED_TAGS = {
     "difference-direction",
     "proper-subset-confusion",
     "empty-set-confusion",
+    "directed-length-sign",
+    "section-ratio-order",
+    "slope-angle-confusion",
+    "intercept-sign",
+    "parallel-perpendicular-condition",
+    "distance-absolute-value",
+    "line-form-domain",
+    "normal-form-sign",
 }
 
 

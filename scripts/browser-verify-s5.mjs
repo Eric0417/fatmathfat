@@ -123,9 +123,33 @@ try {
     'S5 practice did not render'
   );
   assert(
-    (await page.getByRole('button', { name: /生成弱點練習/ }).count()) === 0,
-    'S5 practice unexpectedly shows AI question generation'
+    (await page.getByRole('button', { name: /生成弱點練習/ }).count()) === 1,
+    'S5 practice is missing AI question generation'
   );
+  await page.route('**/api/ai/generate-practice', async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        questions: [
+          {
+            id: 'ai-s5-browser-1',
+            topic: 's5-slope',
+            kind: 'slope',
+            difficulty: 'standard',
+            prompt: 'AI 生成的斜率題',
+            choices: ['2', '1/2', '−2', '4'],
+            answer: '2',
+            explanation: '斜率是縱坐標差除以橫坐標差。',
+            hint: '先算兩個坐標差。',
+            mistakeTags: ['slope-angle-confusion']
+          }
+        ]
+      })
+    });
+  });
+  await page.getByRole('button', { name: /生成弱點練習/ }).click();
+  await page.getByRole('heading', { name: 'AI 生成的斜率題' }).waitFor();
   await page.locator('.choice-button').first().click();
   assert(
     (await page.locator('.feedback').count()) === 1,
@@ -146,9 +170,22 @@ try {
     'S5 quiz summary did not render'
   );
   assert(
-    (await page.getByRole('button', { name: /AI 老師/ }).count()) === 0,
-    'S5 user unexpectedly sees AI teacher'
+    (await page.getByRole('button', { name: /AI 老師/ }).count()) === 1,
+    'S5 user is missing AI teacher'
   );
+  await page.route('**/api/ai/chat', async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({ message: '先計算兩點的縱坐標差與橫坐標差。' })
+    });
+  });
+  await page.getByRole('button', { name: 'AI 老師' }).click();
+  await page.locator('.ai-teacher__panel').waitFor();
+  await page.locator('.ai-teacher__input textarea').fill('斜率怎麼求？');
+  await page.locator('.ai-teacher__send').click();
+  await page.getByText('先計算兩點的縱坐標差與橫坐標差。', { exact: true }).waitFor();
+  await page.getByRole('button', { name: '關閉 AI 老師' }).click();
 
   const mobile = await browser.newContext({
     viewport: { width: 320, height: 568 },

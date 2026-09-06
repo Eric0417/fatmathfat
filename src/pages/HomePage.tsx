@@ -9,8 +9,8 @@ import {
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
+import { useGradeView } from '../context/GradeViewContext';
 import {
-  gradeOrDefault,
   lessonForGrade,
   lessonIdsForGrade,
   lessonsForGrade,
@@ -27,8 +27,8 @@ const previewState = {
 };
 
 export function HomePage() {
-  const { apiFetch, user } = useAuth();
-  const grade = gradeOrDefault(user?.grade_level);
+  const { apiFetch } = useAuth();
+  const { grade } = useGradeView();
   const lessons = lessonsForGrade(grade);
   const gradeLessonIds = new Set(lessonIdsForGrade(grade));
   const [progress, setProgress] = useState<ProgressResponse | null>(null);
@@ -76,7 +76,11 @@ export function HomePage() {
 
       <div className="home-notice" role="note" aria-label="使用說明">
         <span>登入後會同步學習紀錄。</span>
-        <span>可以依序學習，也可以直接操作集合工具。</span>
+        <span>
+          {grade === 'S5'
+            ? '可以依序學習，也可以直接操作直線實驗室。'
+            : '可以依序學習，也可以直接操作集合工具。'}
+        </span>
       </div>
 
       <section className="home-overview" aria-label="學習入口">

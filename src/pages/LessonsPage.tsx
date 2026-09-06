@@ -1,8 +1,8 @@
 import { Check, ChevronLeft, ChevronRight, CircleCheck } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
+import { useGradeView } from '../context/GradeViewContext';
 import {
-  gradeOrDefault,
   lessonForGrade,
   lessonsForGrade,
   questionsForLesson
@@ -70,7 +70,7 @@ function LessonDetail({
       <aside className="lesson-rail panel" aria-label="單元清單">
         <div className="panel-heading panel-heading--compact">
           <span className="panel-kicker">單元</span>
-          <h2>七個學習主題</h2>
+          <h2>{gradeLessons.length} 個學習主題</h2>
         </div>
         <ol className="lesson-list">
           {gradeLessons.map((item) => (
@@ -185,6 +185,41 @@ function LessonDetail({
           </ol>
         </section>
 
+        {lesson.gradeLevel === 'S5' && lesson.strategies && (
+          <section className="panel lesson-strategy-panel" aria-labelledby="strategy-title">
+            <div className="panel-heading panel-heading--compact">
+              <span className="panel-kicker">S5 解題策略</span>
+              <h2 id="strategy-title">先選策略，再動手算</h2>
+            </div>
+            <div className="lesson-strategy-list">
+              {lesson.strategies.map((strategy, index) => (
+                <div className="lesson-strategy-item" key={strategy}>
+                  <span>{String(index + 1).padStart(2, '0')}</span>
+                  <p>{strategy}</p>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {lesson.gradeLevel === 'S5' && lesson.applications && (
+          <section className="panel lesson-application-panel" aria-labelledby="application-title">
+            <div className="panel-heading panel-heading--compact">
+              <span className="panel-kicker">S5 應用情境</span>
+              <h2 id="application-title">把公式放回真實情境</h2>
+            </div>
+            <div className="lesson-application-list">
+              {lesson.applications.map((application) => (
+                <article className="lesson-application-item" key={application.title}>
+                  <strong>{application.title}</strong>
+                  <p>{application.situation}</p>
+                  <small>{application.connection}</small>
+                </article>
+              ))}
+            </div>
+          </section>
+        )}
+
         <section className="panel lesson-practice">
           <div>
             <span className="panel-kicker">單元練習</span>
@@ -246,8 +281,8 @@ function LessonDetail({
 }
 
 export function LessonsPage({ lessonId }: { lessonId?: string }) {
-  const { apiFetch, user } = useAuth();
-  const grade = gradeOrDefault(user?.grade_level);
+  const { apiFetch } = useAuth();
+  const { grade } = useGradeView();
   const gradeLessons = lessonsForGrade(grade);
   const [currentLessonId, setCurrentLessonId] = useState(
     lessonId ?? gradeLessons[0]?.id

@@ -258,6 +258,19 @@ try {
     'admin student table did not render'
   );
 
+  await desktopPage.getByRole('button', { name: 'S5', exact: true }).click();
+  await desktopPage
+    .getByRole('heading', { name: '直線坐標幾何視覺化與基礎解題' })
+    .waitFor();
+  assert(
+    (await desktopPage.getByRole('link', { name: /直線實驗室/ }).count()) >= 1,
+    'teacher cannot switch to S5 content'
+  );
+  await desktopPage.getByRole('button', { name: 'S4', exact: true }).click();
+  await desktopPage
+    .getByRole('heading', { name: '集合概念視覺化與基礎解題' })
+    .waitFor();
+
   let aiPayload = null;
   await desktopPage.route('**/api/ai/chat', async (route) => {
     aiPayload = route.request().postDataJSON();

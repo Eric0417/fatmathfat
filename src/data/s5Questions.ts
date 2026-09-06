@@ -473,6 +473,94 @@ export const s5Questions: QuizQuestion[] = [
     answer: 'y = 1',
     explanation: '平行 x 軸的直線 y 坐標固定，交點縱坐標為 1，所以是 y = 1。',
     mistakeTags: ['parallel-perpendicular-condition']
+  },
+  {
+    id: 's5-directed-06',
+    topic: 's5-directed-segment',
+    kind: 'coordinate',
+    difficulty: 'challenge',
+    prompt: 'A(−3, 2)、B(1, 2)，有向線段 AB 的 x 分量是多少？',
+    choices: ['4', '−4', '1', '2'],
+    answer: '4',
+    explanation: '有向線段的 x 分量是 xB − xA = 1 − (−3) = 4。',
+    mistakeTags: ['directed-length-sign']
+  },
+  {
+    id: 's5-section-06',
+    topic: 's5-section-point',
+    kind: 'coordinate',
+    difficulty: 'challenge',
+    prompt: '三角形頂點為 (1, 2)、(3, 4)、(5, 6)，重心坐標是？',
+    choices: ['(3, 4)', '(2, 3)', '(4, 5)', '(3, 3)'],
+    answer: '(3, 4)',
+    explanation: 'x = (1 + 3 + 5)/3 = 3，y = (2 + 4 + 6)/3 = 4。',
+    mistakeTags: ['section-ratio-order']
+  },
+  {
+    id: 's5-area-06',
+    topic: 's5-polygon-area',
+    kind: 'area',
+    difficulty: 'challenge',
+    prompt: '三角形頂點為 (0, 0)、(5, 0)、(2, 4)，面積是多少？',
+    choices: ['10', '20', '5', '8'],
+    answer: '10',
+    explanation: '底長 5、高 4，面積 = 5 × 4 ÷ 2 = 10。',
+    mistakeTags: []
+  },
+  {
+    id: 's5-slope-06',
+    topic: 's5-slope',
+    kind: 'slope',
+    difficulty: 'challenge',
+    prompt: 'A(1, 2)、B(1, 5) 的直線斜率如何？',
+    choices: ['不存在', '0', '3', '−3'],
+    answer: '不存在',
+    explanation: '兩點 x 坐標相同，直線為垂直線，斜率不存在。',
+    mistakeTags: ['slope-angle-confusion']
+  },
+  {
+    id: 's5-form-06',
+    topic: 's5-line-forms',
+    kind: 'line-equation',
+    difficulty: 'challenge',
+    prompt: '直線在 x 軸截距為 2、y 軸截距為 4，其斜截式是？',
+    choices: ['y = −2x + 4', 'y = 2x + 4', 'y = 4x + 2', 'y = −4x + 2'],
+    answer: 'y = −2x + 4',
+    explanation: '直線過 (2, 0) 與 (0, 4)，斜率 = (4 − 0)/(0 − 2) = −2。',
+    mistakeTags: ['intercept-sign']
+  },
+  {
+    id: 's5-relation-06',
+    topic: 's5-line-relations',
+    kind: 'line-relation',
+    difficulty: 'challenge',
+    prompt: 'y = 3x − 1 與 y = −x + 3 的交點是？',
+    choices: ['(1, 2)', '(2, 1)', '(1, −2)', '(3, 0)'],
+    answer: '(1, 2)',
+    explanation: '令 3x − 1 = −x + 3，得 x = 1、y = 2。',
+    mistakeTags: []
+  },
+  {
+    id: 's5-distance-06',
+    topic: 's5-distance-normal',
+    kind: 'distance',
+    difficulty: 'challenge',
+    prompt: '原點到直線 y = x 的距離是多少？',
+    choices: ['0', '1', '√2', '1/√2'],
+    answer: '0',
+    explanation: '原點 (0, 0) 在直線 y = x 上，所以距離為 0。',
+    mistakeTags: ['distance-absolute-value']
+  },
+  {
+    id: 's5-family-06',
+    topic: 's5-line-family',
+    kind: 'line-equation',
+    difficulty: 'challenge',
+    prompt: '平行直線系 2x + 3y + λ = 0 經過 (1, 1) 時，λ = ?',
+    choices: ['−5', '5', '−1', '1'],
+    answer: '−5',
+    explanation: '代入 (1, 1) 得 2 + 3 + λ = 0，所以 λ = −5。',
+    mistakeTags: ['parallel-perpendicular-condition']
   }
 ];
 

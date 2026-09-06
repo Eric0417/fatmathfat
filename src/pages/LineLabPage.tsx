@@ -37,6 +37,40 @@ export function LineLabPage() {
         </div>
       </section>
 
+      <section className="panel line-lab-formula-panel" aria-labelledby="formula-title">
+        <div className="panel-heading">
+          <span className="panel-kicker">S5 速查</span>
+          <h2 id="formula-title">直線坐標幾何常用公式</h2>
+        </div>
+        <div className="line-lab-formula-grid">
+          <article>
+            <strong>斜率</strong>
+            <code>k = (y₂ − y₁) / (x₂ − x₁)</code>
+            <small>垂直線斜率不存在</small>
+          </article>
+          <article>
+            <strong>兩點距離</strong>
+            <code>d = √((x₂ − x₁)² + (y₂ − y₁)²)</code>
+          </article>
+          <article>
+            <strong>中點與定比分點</strong>
+            <code>P = ((x₁ + λx₂)/(1 + λ), (y₁ + λy₂)/(1 + λ))</code>
+          </article>
+          <article>
+            <strong>兩線夾角</strong>
+            <code>tan θ = |(k₂ − k₁)/(1 + k₁k₂)|</code>
+          </article>
+          <article>
+            <strong>點線距離</strong>
+            <code>d = |Ax₀ + By₀ + C| / √(A² + B²)</code>
+          </article>
+          <article>
+            <strong>三角形面積</strong>
+            <code>S = ½ |x₁(y₂ − y₃) + x₂(y₃ − y₁) + x₃(y₁ − y₂)|</code>
+          </article>
+        </div>
+      </section>
+
       <CoordinateLineLab />
     </div>
   );

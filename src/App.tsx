@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { AppShell } from './components/AppShell';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import { GradeViewProvider, useGradeView } from './context/GradeViewContext';
 import { AiTeacherProvider } from './context/AiTeacherContext';
 import { HomePage } from './pages/HomePage';
 import { LessonsPage } from './pages/LessonsPage';
@@ -11,10 +12,7 @@ import { ResultsPage } from './pages/ResultsPage';
 import { LoginPage } from './pages/LoginPage';
 import { AdminPage } from './pages/AdminPage';
 import { LineLabPage } from './pages/LineLabPage';
-import {
-  gradeOrDefault,
-  normalizedRouteForGrade
-} from './data/contentRegistry';
+import { normalizedRouteForGrade } from './data/contentRegistry';
 
 function currentRoute(): string {
   const hash = window.location.hash || '#/';
@@ -23,8 +21,8 @@ function currentRoute(): string {
 
 function AppRoutes() {
   const { user, loading } = useAuth();
+  const { grade } = useGradeView();
   const [route, setRoute] = useState(currentRoute);
-  const grade = gradeOrDefault(user?.grade_level);
 
   useEffect(() => {
     const onHashChange = () => setRoute(currentRoute());
@@ -105,9 +103,11 @@ function AppRoutes() {
 export function App() {
   return (
     <AuthProvider>
-      <AiTeacherProvider>
-        <AppRoutes />
-      </AiTeacherProvider>
+      <GradeViewProvider>
+        <AiTeacherProvider>
+          <AppRoutes />
+        </AiTeacherProvider>
+      </GradeViewProvider>
     </AuthProvider>
   );
 }

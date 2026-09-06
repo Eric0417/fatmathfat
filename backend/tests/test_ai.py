@@ -58,6 +58,35 @@ def test_ai_chat_returns_message(client, student_token, monkeypatch):
     assert response.json()["message"] == "先想想交集的意思。"
 
 
+def test_ai_chat_uses_s5_coordinate_geometry_prompt(
+    client,
+    student_token,
+    monkeypatch,
+):
+    captured = {}
+
+    def fake_call_json(system_prompt, _user_prompt):
+        captured["system"] = system_prompt
+        return {"message": "先從兩點求斜率。"}
+
+    monkeypatch.setattr("app.routers.ai.call_json", fake_call_json)
+    response = client.post(
+        "/api/ai/chat",
+        headers=auth_headers(student_token),
+        json={
+            "message": "兩點的斜率怎麼求？",
+            "context": {
+                "route": "/lessons/s5-slope",
+                "lesson_id": "s5-slope",
+                "topic": "s5-slope",
+            },
+        },
+    )
+    assert response.status_code == 200
+    assert "直線" in captured["system"]
+    assert "有限集合" not in captured["system"]
+
+
 def test_ai_generate_questions_validates_response(client, student_token, monkeypatch):
     monkeypatch.setattr(
         "app.routers.ai.call_json",
@@ -88,6 +117,35 @@ def test_ai_generate_questions_validates_response(client, student_token, monkeyp
     )
     assert response.status_code == 200
     assert response.json()["questions"][0]["answer"] == "{2}"
+
+
+def test_ai_generate_s5_coordinate_question(client, student_token, monkeypatch):
+    monkeypatch.setattr(
+        "app.routers.ai.call_json",
+        lambda _system, _user: {
+            "questions": [
+                {
+                    "id": "ai-s5-test-1",
+                    "topic": "s5-slope",
+                    "kind": "slope",
+                    "difficulty": "standard",
+                    "prompt": "A(1, 2)、B(3, 6) 的斜率是多少？",
+                    "choices": ["2", "1/2", "−2", "4"],
+                    "answer": "2",
+                    "explanation": "斜率是 (6 − 2) ÷ (3 − 1)。",
+                    "hint": "先算縱坐標差與橫坐標差。",
+                    "mistakeTags": ["slope-angle-confusion"],
+                }
+            ]
+        },
+    )
+    response = client.post(
+        "/api/ai/generate-practice",
+        headers=auth_headers(student_token),
+        json={"topics": ["s5-slope"], "difficulty": "standard", "count": 1},
+    )
+    assert response.status_code == 200
+    assert response.json()["questions"][0]["topic"] == "s5-slope"
 
 
 def test_ai_generate_rejects_invalid_question(client, student_token, monkeypatch):

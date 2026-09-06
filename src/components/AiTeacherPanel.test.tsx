@@ -4,6 +4,7 @@ import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { AiTeacherPanel } from './AiTeacherPanel';
 import { AuthProvider } from '../context/AuthContext';
+import { GradeViewProvider } from '../context/GradeViewContext';
 import { AiTeacherProvider } from '../context/AiTeacherContext';
 
 afterEach(() => {
@@ -29,9 +30,11 @@ describe('AiTeacherPanel', () => {
 
     render(
       <AuthProvider>
-        <AiTeacherProvider>
-          <AiTeacherPanel />
-        </AiTeacherProvider>
+        <GradeViewProvider>
+          <AiTeacherProvider>
+            <AiTeacherPanel />
+          </AiTeacherProvider>
+        </GradeViewProvider>
       </AuthProvider>
     );
 

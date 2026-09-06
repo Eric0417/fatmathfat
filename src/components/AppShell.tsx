@@ -12,7 +12,7 @@ import {
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { gradeOrDefault } from '../data/contentRegistry';
+import { useGradeView } from '../context/GradeViewContext';
 import { AiTeacherPanel } from './AiTeacherPanel';
 import type { GradeLevel } from '../types';
 
@@ -44,8 +44,8 @@ interface AppShellProps {
 }
 
 export function AppShell({ route, children }: AppShellProps) {
-  const { user, logout, setGrade } = useAuth();
-  const grade = gradeOrDefault(user?.grade_level);
+  const { user, logout } = useAuth();
+  const { grade, changeGrade: switchGrade } = useGradeView();
   const [switchingGrade, setSwitchingGrade] = useState(false);
   const [isOnline, setIsOnline] = useState(() =>
     typeof navigator === 'undefined' ? true : navigator.onLine
@@ -77,7 +77,7 @@ export function AppShell({ route, children }: AppShellProps) {
     if (switchingGrade || nextGrade === grade) return;
     setSwitchingGrade(true);
     try {
-      await setGrade(nextGrade);
+      await switchGrade(nextGrade);
       window.location.hash = '#/';
     } finally {
       setSwitchingGrade(false);
@@ -119,7 +119,7 @@ export function AppShell({ route, children }: AppShellProps) {
             })}
             <div className="main-nav__account" aria-label="帳號">
               <span className="main-nav__email">{user?.email}</span>
-              {user?.role === 'student' && (
+              {user && (
                 <div className="grade-switch" aria-label="切換年級">
                   {(['S4', 'S5'] as GradeLevel[]).map((level) => (
                     <button
@@ -141,7 +141,7 @@ export function AppShell({ route, children }: AppShellProps) {
               </button>
             </div>
           </nav>
-          {user?.role === 'student' && (
+          {user && (
             <div className="mobile-grade-switch" aria-label="切換年級">
               {(['S4', 'S5'] as GradeLevel[]).map((level) => (
                 <button
@@ -197,7 +197,7 @@ export function AppShell({ route, children }: AppShellProps) {
       )}
 
       <main className="app-main">{children}</main>
-      {grade === 'S4' && <AiTeacherPanel />}
+      <AiTeacherPanel />
 
       <footer className="app-footer">
         <div className="app-footer__inner">

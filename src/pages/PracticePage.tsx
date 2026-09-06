@@ -8,9 +8,9 @@ import {
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
+import { useGradeView } from '../context/GradeViewContext';
 import { QuestionRunner } from '../components/QuestionRunner';
 import {
-  gradeOrDefault,
   isTopicForGrade,
   mixedPracticeQuestions,
   questionsForLesson,
@@ -25,8 +25,8 @@ import type {
 } from '../types';
 
 export function PracticePage({ topic }: { topic?: string }) {
-  const { apiFetch, user } = useAuth();
-  const grade = gradeOrDefault(user?.grade_level);
+  const { apiFetch } = useAuth();
+  const { grade } = useGradeView();
   const practiceTopics = topicsForGrade(grade);
 
   function isQuizTopic(value: string | undefined): value is QuizTopic {
@@ -86,8 +86,7 @@ export function PracticePage({ topic }: { topic?: string }) {
             <Target size={16} aria-hidden="true" />
             即時回饋
           </span>
-          {grade === 'S4' && (
-            <button
+          <button
             className="button button--ghost ai-practice-button"
             type="button"
             disabled={generating}
@@ -103,7 +102,7 @@ export function PracticePage({ topic }: { topic?: string }) {
                 {
                   method: 'POST',
                   body: JSON.stringify({
-                    topics: aiTopic ? [aiTopic] : [],
+                    topics: aiTopic ? [aiTopic] : topicsForGrade(grade),
                     difficulty: 'standard',
                     count: 5
                   })
@@ -127,8 +126,7 @@ export function PracticePage({ topic }: { topic?: string }) {
               <Sparkles size={17} aria-hidden="true" />
             )}
             {generating ? '生成中...' : '生成弱點練習'}
-            </button>
-          )}
+          </button>
         </div>
       </div>
 

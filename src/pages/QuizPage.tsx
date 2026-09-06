@@ -9,8 +9,8 @@ import {
 import { useState } from 'react';
 import { QuestionRunner } from '../components/QuestionRunner';
 import { useAuth } from '../context/AuthContext';
+import { useGradeView } from '../context/GradeViewContext';
 import {
-  gradeOrDefault,
   isTopicForGrade,
   quizQuestionsForGrade,
   topicLabelFor
@@ -176,8 +176,8 @@ function QuizSummary({
 }
 
 export function QuizPage() {
-  const { apiFetch, user } = useAuth();
-  const grade = gradeOrDefault(user?.grade_level);
+  const { apiFetch } = useAuth();
+  const { grade } = useGradeView();
   const quizQuestions = quizQuestionsForGrade(grade);
   const [started, setStarted] = useState(false);
   const [runKey, setRunKey] = useState(0);

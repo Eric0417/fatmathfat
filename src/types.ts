@@ -118,6 +118,8 @@ export interface Lesson {
   commonMistakes: string[];
   practiceTopic: QuizTopic;
   interactive?: 'venn' | 'line-lab';
+  strategies?: string[];
+  applications?: LessonApplication[];
   universe?: number[];
   setA?: number[];
   setB?: number[];
@@ -127,6 +129,12 @@ export interface LessonExample {
   title: string;
   statement: string;
   explanation: string;
+}
+
+export interface LessonApplication {
+  title: string;
+  situation: string;
+  connection: string;
 }
 
 export type MistakeTag =
@@ -238,6 +246,7 @@ export interface QuizSessionResponse {
 
 export interface AiQuestionContext {
   route: string;
+  grade_level?: GradeLevel | null;
   lesson_id?: string | null;
   topic?: string | null;
   question_id?: string | null;
