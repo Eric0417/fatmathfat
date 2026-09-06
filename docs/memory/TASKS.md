@@ -65,3 +65,4 @@ updated: 2026-09-06
 | S4/S5 瀏覽器完整驗證 | done | `test:browser` 與 `test:browser:s5` 均通過桌面／手機驗證 |
 | Render 部署與線上確認 | done | API grade endpoint 與 S5 static bundle 已上線 |
 | 非學生 OTP fallback | done | 教師寄件失敗時改用一般寄件者；線上已驗證 |
+| 管理員年級篩選 | done | 全部／S4／S5 篩選與人數統計；已部署 |
