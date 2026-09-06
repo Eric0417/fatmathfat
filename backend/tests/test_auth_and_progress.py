@@ -309,6 +309,29 @@ def test_admin_login_and_teacher_management(client, teacher_token):
     assert removed.status_code == 200
 
 
+def test_admin_students_include_both_grade_levels(client, teacher_token):
+    headers = auth_headers(teacher_token)
+    for local, grade_level in [("2345678-2", "S4"), ("3456789-3", "S5")]:
+        email = f"{local}@g.puiching.edu.mo"
+        assert (
+            client.post(
+                "/api/auth/request-code",
+                json={"email": email},
+            ).status_code
+            == 200
+        )
+        verified = client.post(
+            "/api/auth/verify-code",
+            json={"email": email, "code": "123456", "grade_level": grade_level},
+        )
+        assert verified.status_code == 200
+
+    students = client.get("/api/admin/students", headers=headers)
+    assert students.status_code == 200
+    grades = {student["grade_level"] for student in students.json()["students"]}
+    assert {"S4", "S5"}.issubset(grades)
+
+
 def test_student_cannot_access_admin(client, student_token):
     response = client.get(
         "/api/admin/students",

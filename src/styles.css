@@ -5198,3 +5198,45 @@ code {
     padding-left: 0.32rem;
   }
 }
+
+.admin-grade-filters {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.admin-grade-filter {
+  min-height: 36px;
+  padding: 0.35rem 0.7rem;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  color: var(--color-text-secondary);
+  background: var(--color-surface-soft);
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.admin-grade-filter:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+  background: var(--color-primary-soft);
+}
+
+.admin-grade-filter--active {
+  border-color: var(--color-primary);
+  color: #ffffff;
+  background: var(--color-primary);
+}
+
+@media (max-width: 620px) {
+  .admin-grade-filters {
+    width: 100%;
+  }
+
+  .admin-grade-filter {
+    flex: 1 1 auto;
+  }
+}

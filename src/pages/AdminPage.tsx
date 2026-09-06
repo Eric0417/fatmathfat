@@ -7,6 +7,7 @@ import {
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
+import type { GradeLevel } from '../types';
 
 interface AdminStudent {
   id: number;
@@ -47,6 +48,7 @@ export function AdminPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [notice, setNotice] = useState('');
+  const [gradeFilter, setGradeFilter] = useState<'all' | GradeLevel>('all');
 
   const load = async () => {
     setLoading(true);
@@ -112,6 +114,16 @@ export function AdminPage() {
     anchor.click();
     URL.revokeObjectURL(url);
   };
+
+  const filteredStudents =
+    data?.students.filter(
+      (student) =>
+        gradeFilter === 'all' || student.grade_level === gradeFilter
+    ) ?? [];
+  const s4Count =
+    data?.students.filter((student) => student.grade_level === 'S4').length ?? 0;
+  const s5Count =
+    data?.students.filter((student) => student.grade_level === 'S5').length ?? 0;
 
   return (
     <div className="page-stack">
@@ -192,6 +204,32 @@ export function AdminPage() {
             <span className="panel-kicker">學生</span>
             <h2 id="students-title">{data?.total_students ?? 0} 位學生</h2>
           </div>
+          <div className="admin-grade-filters" aria-label="學生年級篩選">
+            <button
+              className={`admin-grade-filter${gradeFilter === 'all' ? ' admin-grade-filter--active' : ''}`}
+              type="button"
+              aria-pressed={gradeFilter === 'all'}
+              onClick={() => setGradeFilter('all')}
+            >
+              全部 {data?.total_students ?? 0}
+            </button>
+            <button
+              className={`admin-grade-filter${gradeFilter === 'S4' ? ' admin-grade-filter--active' : ''}`}
+              type="button"
+              aria-pressed={gradeFilter === 'S4'}
+              onClick={() => setGradeFilter('S4')}
+            >
+              S4 {s4Count}
+            </button>
+            <button
+              className={`admin-grade-filter${gradeFilter === 'S5' ? ' admin-grade-filter--active' : ''}`}
+              type="button"
+              aria-pressed={gradeFilter === 'S5'}
+              onClick={() => setGradeFilter('S5')}
+            >
+              S5 {s5Count}
+            </button>
+          </div>
         </div>
         {loading ? (
           <p className="admin-loading">正在載入...</p>
@@ -211,7 +249,7 @@ export function AdminPage() {
                 </tr>
               </thead>
               <tbody>
-                {data?.students.map((student) => (
+                {filteredStudents.map((student) => (
                   <tr key={student.id}>
                     <td>{student.email}</td>
                     <td>{student.grade_level ?? '—'}</td>
@@ -229,6 +267,9 @@ export function AdminPage() {
                 ))}
               </tbody>
             </table>
+            {filteredStudents.length === 0 && (
+              <p className="admin-loading">這個年級目前沒有學生。</p>
+            )}
           </div>
         )}
       </section>
