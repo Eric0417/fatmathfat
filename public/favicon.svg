@@ -1,7 +1,16 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
   <rect width="64" height="64" rx="12" fill="#16324F"/>
   <rect x="8" y="8" width="48" height="48" rx="8" fill="#F5F7F8" stroke="#D7E0E6" stroke-width="2"/>
-  <circle cx="25" cy="33" r="13" fill="rgba(77,134,168,0.14)" stroke="#4D86A8" stroke-width="3"/>
-  <circle cx="39" cy="33" r="13" fill="rgba(199,131,114,0.14)" stroke="#C78372" stroke-width="3"/>
-  <text x="32" y="30" text-anchor="middle" font-family="Arial" font-size="17" font-weight="700" fill="#2F5D7E">A</text>
+  <g stroke="#D7E0E6" stroke-width="2">
+    <line x1="18" y1="24" x2="46" y2="24"/>
+    <line x1="18" y1="34" x2="46" y2="34"/>
+    <line x1="18" y1="44" x2="46" y2="44"/>
+    <line x1="26" y1="14" x2="26" y2="50"/>
+    <line x1="38" y1="14" x2="38" y2="50"/>
+  </g>
+  <line x1="16" y1="44" x2="48" y2="44" stroke="#2F5D7E" stroke-width="3" stroke-linecap="round"/>
+  <line x1="26" y1="12" x2="26" y2="52" stroke="#2F5D7E" stroke-width="3" stroke-linecap="round"/>
+  <line x1="31" y1="40" x2="44" y2="27" stroke="#C78372" stroke-width="4" stroke-linecap="round"/>
+  <circle cx="31" cy="40" r="3" fill="#C78372"/>
+  <circle cx="44" cy="27" r="3" fill="#2F5D7E"/>
 </svg>
