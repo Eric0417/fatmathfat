@@ -82,6 +82,14 @@ try {
       .getAttribute('data-grade')) === 'S4',
     'S4 grade switch is not clearly labelled'
   );
+  const s4Switch = desktopPage.getByRole('button', {
+    name: '切換至 S4 集合課程'
+  });
+  assert(
+    (await s4Switch.evaluate((element) => getComputedStyle(element).color)) !==
+      'rgb(255, 255, 255)',
+    'S4 selected switch still uses white as the selected color'
+  );
   await desktopPage.screenshot({
     path: `${outputDir}/home-desktop.png`,
     fullPage: true
@@ -273,6 +281,14 @@ try {
   assert(
     (await desktopPage.getByRole('link', { name: /直線實驗室/ }).count()) >= 1,
     'teacher cannot switch to S5 content'
+  );
+  const s5Switch = desktopPage.getByRole('button', {
+    name: '切換至 S5 直線幾何'
+  });
+  assert(
+    (await s5Switch.evaluate((element) => getComputedStyle(element).color)) !==
+      'rgb(255, 255, 255)',
+    'S5 selected switch still uses white as the selected color'
   );
   await desktopPage
     .getByRole('button', { name: '切換至 S4 集合課程' })

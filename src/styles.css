@@ -4826,8 +4826,8 @@ code {
 .grade-option--selected,
 .grade-switch__option--active {
   border-color: var(--color-primary);
-  color: #ffffff;
-  background: var(--color-primary);
+  color: var(--color-text-primary);
+  background: var(--color-primary-soft);
 }
 
 .grade-switch,
@@ -4860,12 +4860,16 @@ code {
 
 .grade-switch__option[data-grade="S4"].grade-switch__option--active {
   border-color: #2f5d7e;
-  background: #2f5d7e;
+  color: #173d5c;
+  background: #d9e8f3;
+  box-shadow: inset 0 0 0 1px #2f5d7e;
 }
 
 .grade-switch__option[data-grade="S5"].grade-switch__option--active {
   border-color: #9b654d;
-  background: #9b654d;
+  color: #5d3a2b;
+  background: #f3dfd5;
+  box-shadow: inset 0 0 0 1px #9b654d;
 }
 
 .main-nav__account {
@@ -4889,12 +4893,16 @@ code {
 
 .main-nav__account .grade-switch__option[data-grade="S4"].grade-switch__option--active {
   border-color: #4d86a8;
-  background: #2f5d7e;
+  color: #102d45;
+  background: #d9e8f3;
+  box-shadow: inset 0 0 0 1px #4d86a8;
 }
 
 .main-nav__account .grade-switch__option[data-grade="S5"].grade-switch__option--active {
   border-color: #c78372;
-  background: #9b654d;
+  color: #4f2e22;
+  background: #f3dfd5;
+  box-shadow: inset 0 0 0 1px #c78372;
 }
 
 .main-nav__account .main-nav__logout {
