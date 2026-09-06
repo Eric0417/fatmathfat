@@ -238,3 +238,15 @@ updated: 2026-09-06
 **替代方案：** 依教師自身年級限制管理頁 —— 會讓教師看不到其他年級；另建後端分頁 —— 目前學生規模不需要。
 
 **影響：** 修改 `src/pages/AdminPage.tsx`、`src/styles.css` 與管理頁測試；後端 `/api/admin/students` 仍回傳全部學生，無 API 或資料庫變更。
+
+## D-019 教師可切換 S4／S5 檢視並啟用 S5 AI 老師
+
+**狀態：** active
+
+**決定：** 教師帳號不寫入伺服器年級，而是在前端以 `GradeViewContext` 保存「目前檢視年級」，並加入 S4／S5 切換。S5 也顯示 AI 老師與 AI 生成練習；後端依 context 的 `grade_level`、route 與 topic 動態切換集合或直線坐標幾何提示詞。S5 課程增加解題策略、應用情境、公式速查與更多挑戰題。
+
+**理由：** 管理員需要親自瀏覽與驗證 S5 內容，卻不應被永久標記為某年級學生。教師檢視年級只需前端狀態，學生年級仍由伺服器保存。S5 若沒有 AI，老師就無法用現有 AI 老師輔助課程。
+
+**替代方案：** 給教師新增資料庫年級欄位 —— 會混淆「學生年級」與「教師檢視偏好」；維持 S5 無 AI —— 無法滿足教師與學生的輔導需求。
+
+**影響：** 新增 `src/context/GradeViewContext.tsx`；AppShell 對所有登入者顯示年級切換；AI validator、router 與 schema 支援 S5 topics/kinds/tags；S5 curriculum、questions、lesson UI、line lab 與瀏覽器驗證同步擴充。無資料庫 migration。

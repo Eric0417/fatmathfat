@@ -66,3 +66,6 @@ updated: 2026-09-06
 | Render 部署與線上確認 | done | API grade endpoint 與 S5 static bundle 已上線 |
 | 非學生 OTP fallback | done | 教師寄件失敗時改用一般寄件者；線上已驗證 |
 | 管理員年級篩選 | done | 全部／S4／S5 篩選與人數統計；已部署 |
+| 教師 S4／S5 檢視切換 | done | `GradeViewContext`；教師偏好存 localStorage |
+| S5 AI 老師與生成練習 | done | AI prompt、validator、panel 與瀏覽器驗證 |
+| S5 內容豐富化 | done | 策略、應用情境、公式速查與 48 題題庫 |

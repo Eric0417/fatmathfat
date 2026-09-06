@@ -80,6 +80,9 @@ updated: 2026-09-06
 - 已推送 `0751459` 至 GitHub `main`；Render API 的 `PATCH /api/auth/grade` 與靜態站 S5 bundle 均已在線上確認。
 - 修復非學生管理員登入寄件失敗：`65b0cae` 加入預設寄件者 fallback；線上 `imwong@g.puiching.edu.mo` request-code 已回傳 `200`，後端測試增至 26 項。
 - 管理員學生清單新增「全部／S4／S5」篩選與年級人數；前端測試增至 29 項、後端 27 項，`2960f47` 已部署並在線上 bundle 確認。
+- 教師與管理員現在可透過年級切換瀏覽 S4／S5；教師檢視偏好存於本機，學生年級仍存於伺服器。`1db8db8` 已部署。
+- S5 已啟用 AI 老師與 AI 生成練習；後端依年級與 topic 動態使用集合或直線坐標幾何提示詞。
+- S5 內容擴充：每課加入解題策略與應用情境，直線實驗室加入公式速查，題庫由 40 題增至 48 題。
 
 ## 進行中
 
@@ -97,7 +100,7 @@ updated: 2026-09-06
 ## 給下一個 agent 的提示
 
 - 先讀 `CONVENTIONS.md`，再讀本檔。
-- 任何結構性變更都要重新索引 graph；目前 index 已反映管理員年級篩選（961 nodes / 2791 edges），且 D-016、D-017、D-018 已同步 CBM。
+- 任何結構性變更都要重新索引 graph；目前 index 已反映 S5 教師檢視與 AI 內容（975 nodes / 2843 edges），且 D-016 至 D-019 已同步 CBM。
 - 網站需要連線；PWA 靜態資源仍可快取，但未登入或離線時顯示登入頁。
 - 目前視覺決策是 D-010「使用 Academic Blue 學術視覺並部署至 Render」；後續視覺調整集中在 `src/styles.css`，不要改回紫色、玻璃或霓虹風格。
 - AI 老師目前為前端呈現層強化，決策與範圍記錄為 D-011；DeepSeek 後端與 API 契約未改。
@@ -117,3 +120,5 @@ updated: 2026-09-06
 - S5 學生目前不顯示 AI 老師浮動面板；`AppShell` 只在 S4 渲染 `AiTeacherPanel`。
 - 非學生 OTP 寄件失敗時的備援策略見 D-017；不要移除該 fallback，否則單一教師寄件帳號失效會再次阻斷管理員登入。
 - 管理頁年級篩選見 D-018；後端仍回傳全部學生，前端只做顯示篩選，避免教師因年級身份看不到其他年級。
+- 教師年級檢視與 S5 AI 見 D-019；`GradeViewContext` 的教師檢視偏好只存 localStorage，不呼叫 `PATCH /api/auth/grade`。
+- S5 AI 驗證使用 `question_validator.py` 的 S5 topic/kind/tag 白名單；不要只改前端按鈕而跳過後端驗證。
