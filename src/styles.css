@@ -5543,3 +5543,137 @@ code {
     grid-template-columns: 1fr;
   }
 }
+
+/* Spacing cleanup: keep text away from borders and prevent controls from touching. */
+.button,
+.line-lab__mode-button,
+.line-lab__second-line-toggle,
+.admin-grade-filter,
+.grade-option,
+.grade-switch__option {
+  line-height: 1.2;
+}
+
+.button {
+  padding: 0.65rem 0.95rem;
+}
+
+.button--large {
+  padding-right: 1.05rem;
+  padding-left: 1.05rem;
+}
+
+.grade-switch__option {
+  min-height: 34px;
+  padding: 0.35rem 0.65rem;
+}
+
+.concept-list,
+.lesson-example-list,
+.lesson-challenge-list,
+.lesson-strategy-list,
+.lesson-application-list,
+.practice-topic-list,
+.line-lab__modes,
+.line-lab__sliders,
+.line-lab-formula-grid {
+  gap: 0.9rem;
+}
+
+.concept-card,
+.practice-topic-card,
+.lesson-strategy-item,
+.lesson-application-item,
+.lesson-challenge-item,
+.line-lab-formula-grid article {
+  padding: 1rem;
+}
+
+.practice-topic-card {
+  min-height: 72px;
+}
+
+.lesson-example-item {
+  padding: 1rem 0.2rem 1.1rem;
+}
+
+.lesson-example-item__heading {
+  gap: 0.7rem;
+}
+
+.lesson-example__text,
+.lesson-example-item__explanation,
+.lesson-example-steps,
+.lesson-challenge-steps,
+.lesson-mistake-list,
+.lesson-detail-list {
+  overflow-wrap: anywhere;
+  line-height: 1.7;
+}
+
+.lesson-example-steps,
+.lesson-challenge-steps {
+  gap: 0.5rem;
+  margin: 0.75rem 0;
+  padding-left: 1.5rem;
+}
+
+.lesson-example-item__conclusion,
+.lesson-challenge-solution {
+  padding: 0.75rem 0.9rem;
+}
+
+.line-lab__mode-button,
+.line-lab__second-line-toggle {
+  min-height: 44px;
+  padding: 0.65rem 0.95rem;
+  gap: 0.5rem;
+}
+
+.line-lab__slider,
+.line-lab__metric,
+.line-lab__equation,
+.line-lab__relation {
+  gap: 0.7rem;
+  padding: 0.8rem 0.95rem;
+  overflow-wrap: anywhere;
+}
+
+.line-lab__point-inputs {
+  gap: 0.6rem;
+  padding: 0.75rem;
+}
+
+.line-lab-formula-grid code {
+  line-height: 1.7;
+}
+
+.choice-button {
+  padding: 0.8rem 0.95rem;
+}
+
+.learning-stats div,
+.unit-progress-row {
+  gap: 0.35rem;
+  padding: 0.6rem 0.7rem;
+}
+
+.keypoint {
+  padding: 0.35rem 0.6rem;
+}
+
+.lesson-strategy-panel,
+.lesson-application-panel,
+.lesson-challenge-panel,
+.line-lab-page-intro,
+.line-lab-formula-panel {
+  padding: 1.1rem;
+}
+
+.lesson-strategy-panel .panel-heading,
+.lesson-application-panel .panel-heading,
+.lesson-challenge-panel .panel-heading,
+.line-lab-page-intro .panel-heading,
+.line-lab-formula-panel .panel-heading {
+  margin-bottom: 0.85rem;
+}
