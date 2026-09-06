@@ -148,6 +148,64 @@ def test_ai_generate_s5_coordinate_question(client, student_token, monkeypatch):
     assert response.json()["questions"][0]["topic"] == "s5-slope"
 
 
+def test_ai_generate_rejects_incorrect_s5_math(client, student_token, monkeypatch):
+    monkeypatch.setattr(
+        "app.routers.ai.call_json",
+        lambda _system, _user: {
+            "questions": [
+                {
+                    "id": "ai-s5-bad-math",
+                    "topic": "s5-slope",
+                    "kind": "slope",
+                    "difficulty": "standard",
+                    "prompt": "A(1, 2)、B(3, 6) 的斜率是多少？",
+                    "choices": ["3", "2", "4", "5"],
+                    "answer": "3",
+                    "explanation": "錯誤答案。",
+                    "hint": "先算坐標差。",
+                    "mistakeTags": ["slope-angle-confusion"],
+                }
+            ]
+        },
+    )
+    response = client.post(
+        "/api/ai/generate-practice",
+        headers=auth_headers(student_token),
+        json={"topics": ["s5-slope"], "difficulty": "standard", "count": 1},
+    )
+    assert response.status_code == 502
+
+
+def test_ai_generate_rejects_set_fields_on_s5(client, student_token, monkeypatch):
+    monkeypatch.setattr(
+        "app.routers.ai.call_json",
+        lambda _system, _user: {
+            "questions": [
+                {
+                    "id": "ai-s5-bad-field",
+                    "topic": "s5-slope",
+                    "kind": "slope",
+                    "difficulty": "standard",
+                    "prompt": "A(1, 2)、B(3, 6) 的斜率是多少？",
+                    "universe": [1, 2, 3, 6],
+                    "setA": [1, 2],
+                    "choices": ["2", "3", "4", "5"],
+                    "answer": "2",
+                    "explanation": "斜率是 2。",
+                    "hint": "先算坐標差。",
+                    "mistakeTags": ["slope-angle-confusion"],
+                }
+            ]
+        },
+    )
+    response = client.post(
+        "/api/ai/generate-practice",
+        headers=auth_headers(student_token),
+        json={"topics": ["s5-slope"], "difficulty": "standard", "count": 1},
+    )
+    assert response.status_code == 502
+
+
 def test_ai_generate_rejects_invalid_question(client, student_token, monkeypatch):
     monkeypatch.setattr(
         "app.routers.ai.call_json",

@@ -57,6 +57,10 @@ try {
 
   await prepare(page);
   assert(
+    (await page.getByText('數學好好學', { exact: true }).count()) >= 1,
+    'S5 brand was not updated'
+  );
+  assert(
     (await page.getByRole('heading', { name: '直線坐標幾何視覺化與基礎解題' }).count()) === 1,
     'S5 home title is missing'
   );
@@ -94,9 +98,15 @@ try {
       (await page.locator('.venn-diagram').count()) === 0,
       `${lessonId} unexpectedly shows S4 set content`
     );
+    const tailoredVisuals = {
+      's5-polygon-area': '.s5-topic-visual--polygon-area',
+      's5-distance-normal': '.s5-topic-visual--distance',
+      's5-line-family': '.s5-topic-visual--line-family'
+    };
+    const expectedVisual = tailoredVisuals[lessonId] ?? '.coordinate-line-lab';
     assert(
-      (await page.locator('.coordinate-line-lab').count()) === 1,
-      `${lessonId} is missing the S5 coordinate visual`
+      (await page.locator(expectedVisual).count()) === 1,
+      `${lessonId} is missing its tailored S5 visual`
     );
   }
 

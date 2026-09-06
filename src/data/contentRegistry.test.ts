@@ -32,6 +32,16 @@ describe('grade content registry', () => {
     expect(quizQuestionsForGrade('S5')).toHaveLength(12);
   });
 
+  it('spreads mixed practice across all grade topics', () => {
+    for (const grade of ['S4', 'S5'] as const) {
+      const topics = new Set(
+        mixedPracticeQuestions(grade).map((question) => question.topic)
+      );
+      expect(topics.size).toBe(8);
+      expect(grade === 'S4' ? topics.has('complement') : topics.has('s5-line-family')).toBe(true);
+    }
+  });
+
   it('normalizes routes that belong to another grade', () => {
     expect(normalizedRouteForGrade('/explorer', 'S5')).toBe('/s5-lab');
     expect(normalizedRouteForGrade('/s5-lab', 'S4')).toBe('/explorer');

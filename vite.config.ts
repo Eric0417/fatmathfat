@@ -9,9 +9,9 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.svg', 'app-icon.svg', 'apple-touch-icon.png'],
       manifest: {
-        name: '集合好好學',
-        short_name: '集合好好學',
-        description: '以圖形與文字同步理解有限集合、子集合與集合運算。',
+        name: '數學好好學',
+        short_name: '數學好好學',
+        description: 'S4 集合概念與 S5 直線坐標幾何的互動課程、練習與測驗。',
         theme_color: '#2F5D7E',
         background_color: '#F5F7F8',
         display: 'standalone',

@@ -1,5 +1,5 @@
 ---
-title: 集合好好學實作狀態
+title: 數學好好學實作狀態
 type: note
 status: active
 tags: [memory, implementation-status, math-website]
@@ -7,7 +7,7 @@ created: 2026-09-03
 updated: 2026-09-06
 ---
 
-# 集合好好學實作狀態
+# 數學好好學實作狀態
 
 ## 摘要
 

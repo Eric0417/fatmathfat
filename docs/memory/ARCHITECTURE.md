@@ -4,7 +4,7 @@ type: note
 status: active
 tags: [memory, architecture]
 created: 2026-09-02
-updated: 2026-09-06
+updated: 2026-09-07
 ---
 
 # 架構
@@ -33,7 +33,7 @@ updated: 2026-09-06
 - `src/data/`：課程與題目資料。
 - `src/lib/`：集合運算、坐標幾何與 API client。
 - `content/s5/ocr/`：S5 教材照片的 MarkItDown OCR 來源稿。
-- `src/components/`：共用 shell、Venn 圖、題目流程。
+- `src/components/`：共用 shell、Venn 圖、S5 專屬課程視覺、題目流程。
 - `src/pages/`：首頁、課程、工具、練習、測驗、結果。
 - `backend/app/`：後端模型、routers、驗證碼、Email、DeepSeek 與題目驗證。
 - `backend/alembic/`：資料庫 migration。
@@ -44,7 +44,7 @@ updated: 2026-09-06
 ## 視覺與互動設計
 
 - 目前使用 Academic Blue：淺灰白頁面、白色卡片、深藏青左側導覽、學院藍主色與低飽和陶土色強調。
-- S5 直線實驗室使用 SVG 坐標平面與 pointer capture，保留可拖動、鍵盤微調、斜率截距滑桿與兩線比較。
+- S5 直線實驗室使用 SVG 坐標平面與 pointer capture，保留可拖動、鍵盤微調、斜率截距滑桿與兩線比較；八個 S5 課程視覺由 `S5LessonVisual` 分派。
 - 桌面使用左側導覽，1180px 以下切換為頂部導覽；620px 以下切換為固定底部導覽，teacher 會增加「管理」入口。
 - 820px 以下單元清單改為水平 snap 清單；手機 AI 老師面板位於底部導覽上方並保留安全區域。
 - 卡片使用輕度陰影、細邊框與 10px 至 14px 圓角。
@@ -69,4 +69,4 @@ updated: 2026-09-06
 - 若 Render 資料庫或服務停機，網站無法登入或同步；出現此情況時會顯示錯誤。
 - 描述法的條件目前以文字與有限整數例子呈現，尚未建立正式的論域（domain）資料結構。
 - 台灣教材常見 `A⊂B`、`A′`、`A^c`、`Ā` 等記號，目前以說明與同義標註處理，主要保留使用者指定的 `⊆`/`⊊`、`Aᶜ`。
-- AI 老師同時支援 S4 集合與 S5 直線坐標幾何；後端依 `AiQuestionContext.grade_level`、route、lesson 與 topic 選擇提示詞。
+- AI 老師同時支援 S4 集合與 S5 直線坐標幾何；後端依 `AiQuestionContext.grade_level`、route、lesson 與 topic 選擇提示詞，S5 生成題目由可解析題型驗證器重新計算答案。

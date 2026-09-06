@@ -4,7 +4,7 @@ type: decision
 status: active
 tags: [memory, decisions]
 created: 2026-09-02
-updated: 2026-09-06
+updated: 2026-09-07
 ---
 
 # 決策紀錄
@@ -274,3 +274,15 @@ updated: 2026-09-06
 **替代方案：** 只在 CSS 隱藏 Venn —— 無法解決語意錯誤與可維護性；只改文字顏色 —— 辨識度仍不足。
 
 **影響：** 修改 `LessonsPage`、`AppShell`、S5 curriculum/types、styles 與 S4/S5 browser verification。無後端或資料庫變更。
+
+## D-022 S4／S5 內容一致性、數學正確性與課程深度修復
+
+**狀態：** active
+
+**決定：** 將全站產品名改為中性的「數學好好學」，S4 使用集合圖示與副標，S5 使用直線幾何圖示與副標。S5 每課使用專屬視覺，不再把同一套完整直線實驗室重複嵌入所有課程；修正截距式、平行／重合、三點面積、法線式符號、定比分點定義等數學文字。S5 範例與挑戰加入逐步解題。綜合練習改為每主題至少一題，後端 AI 生成 S5 題目必須通過可解析題型的數學校驗。
+
+**理由：** 使用者發現 S5 有 S4 品牌與圖形殘留，且課件深度不足、部分定義有數學矛盾；只補字數無法解決正確性與年級隔離問題。
+
+**替代方案：** 保留原產品名並只改副標 —— 仍會讓 S5 顯示集合品牌；只在前端隱藏 S4 圖 —— 無法解決課程視覺與數學內容；只擴充 AI prompt —— 無法阻止 AI 生成錯誤答案。
+
+**影響：** 修改 `AppShell`、`LoginPage`、PWA metadata、S5 curriculum/types、`S5LessonVisual`、`CoordinateLineLab`、`contentRegistry`、`question_validator.py` 與 S4/S5 browser verification。無資料庫 migration。

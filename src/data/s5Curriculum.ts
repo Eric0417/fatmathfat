@@ -9,11 +9,17 @@ export const s5Lessons: Lesson[] = [
     shortTitle: '有向線段',
     summary: '先認識有向線段的數量與長度，再用坐標差求兩點距離。',
     definition:
-      '規定起點與終點的線段稱為有向線段。它在數軸上的數量是終點坐標減起點坐標，長度則取這個差值的絕對值。',
+      '規定起點與終點的線段稱為有向線段。數軸上 P₁P₂ 的數量為 x₂ − x₁，長度為 |x₂ − x₁|；平面上 P₁(x₁, y₁)、P₂(x₂, y₂) 的距離為 √((x₂ − x₁)² + (y₂ − y₁)²)。',
     examples: [
       {
         title: '數軸上的有向線段',
         statement: '若 P₁ 的坐標是 x₁、P₂ 的坐標是 x₂，則 P₁P₂ = x₂ − x₁。',
+        steps: [
+          '寫出終點坐標減起點坐標。',
+          'P₁P₂ = x₂ − x₁，保留正負號。',
+          '長度取絕對值：|P₁P₂| = |x₂ − x₁|。'
+        ],
+        conclusion: '數量包含方向，長度永遠非負。',
         explanation:
           '有向線段由起點到終點的方向決定正負；長度不考慮方向，因此 |P₁P₂| = |x₂ − x₁|。'
       },
@@ -26,6 +32,13 @@ export const s5Lessons: Lesson[] = [
       {
         title: '三角形邊長應用',
         statement: 'A(12, 0)、B(9, √30)、C(−1, 0)，可用距離公式檢查三角形的形狀。',
+        steps: [
+          'AB² = (9 − 12)² + (√30 − 0)² = 9 + 30 = 39。',
+          'BC² = (−1 − 9)² + (0 − √30)² = 100 + 30 = 130。',
+          'AC² = (−1 − 12)² + 0² = 169。',
+          '因為 AB² + BC² = AC²，所以 ∠ABC = 90°。'
+        ],
+        conclusion: '三角形 ABC 是以 B 為直角頂的直角三角形。',
         explanation:
           '先求三邊長，再檢查是否符合畢氏定理；距離公式的結果要取非負平方根。'
       }
@@ -36,7 +49,7 @@ export const s5Lessons: Lesson[] = [
       'P₁P₂ 表示從 P₁ 到 P₂ 的有向線段，順序很重要。',
       '兩點距離 d = √((x₂ − x₁)² + (y₂ − y₁)²)。',
       '兩點重合時距離為 0，但兩條方向相反的線段仍可互為相反數。',
-      '解含絕對值的距離問題時，通常要討論正負兩種情況。',
+      '解含絕對值的距離問題時，通常要拆成正、負兩種情況。',
       '有向線段的概念是後續定比分點與直線方向判斷的基礎。'
     ],
     keyPoints: [
@@ -71,10 +84,16 @@ export const s5Lessons: Lesson[] = [
       {
         title: '方向與長度',
         prompt: '數軸上 A = 2、B = 8，求 AB、BA 與 |AB|。',
+        steps: [
+          'AB = B − A = 8 − 2。',
+          'BA = A − B = 2 − 8。',
+          '長度 |AB| = |6|。'
+        ],
         solution: 'AB = 8 − 2 = 6；BA = −6；|AB| = 6。'
       }
     ],
-    practiceTopic: 's5-directed-segment'
+    practiceTopic: 's5-directed-segment',
+    interactive: 'directed-segment'
   },
   {
     id: 's5-section-point',
@@ -84,11 +103,17 @@ export const s5Lessons: Lesson[] = [
     shortTitle: '定比分點',
     summary: '用比例 λ 求內分點與外分點，並延伸出中點與重心公式。',
     definition:
-      '點 P 分有向線段 P₁P₂ 的比為 λ 時，P 的坐標是 ((x₁ + λx₂)/(1 + λ), (y₁ + λy₂)/(1 + λ))，其中 λ ≠ −1。',
+      '若 λ = P₁P / PP₂，則點 P 分有向線段 P₁P₂ 的比為 λ；P 的坐標是 ((x₁ + λx₂)/(1 + λ), (y₁ + λy₂)/(1 + λ))，其中 λ ≠ −1。',
     examples: [
       {
         title: '內分點',
         statement: 'P₁(−1, −6)、P₂(3, 0)，若 P 分 P₁P₂ 的比為 λ，可用公式求 P。',
+        steps: [
+          '確認 λ 的定義是 P₁P ÷ PP₂。',
+          '把起點 P₁、終點 P₂ 與 λ 分別代入兩個坐標。',
+          '內分時 λ > 0；得到 P 後用比例驗證方向。'
+        ],
+        conclusion: '公式同一套，內分、外分只差 λ 的符號。',
         explanation:
           'P 在線段內部時 λ > 0；把起點、終點與比例代入同一個線性組合公式即可。'
       },
@@ -111,8 +136,8 @@ export const s5Lessons: Lesson[] = [
       'λ > 0 表示 P 是 P₁P₂ 的內分點。',
       'λ < 0 且 λ ≠ −1 表示 P 是 P₁P₂ 的外分點。',
       '中點是 λ = 1 的特例，三個頂點坐標平均得到重心。',
-      '公式對 x、y 座標分別線性組合，先確認起點與終點再代入。',
-      '內心坐標可用邊長 a、b、c 對頂點坐標加權；這與普通中點公式不同。'
+      '公式對 x、y 坐標分別線性組合，先確認起點與終點再代入。',
+      '內心坐標可用各邊對應的對邊長 a、b、c 對頂點加權，與中點和重心公式不同。'
     ],
     keyPoints: [
       'λ > 0 為內分',
@@ -146,10 +171,16 @@ export const s5Lessons: Lesson[] = [
       {
         title: '找內分點',
         prompt: 'P₁(2, 3)、P₂(8, 7)，λ = 3，求 P。',
+        steps: [
+          'x = (2 + 3 × 8) ÷ (1 + 3)。',
+          'y = (3 + 3 × 7) ÷ (1 + 3)。',
+          '化簡得到 P 的坐標。'
+        ],
         solution: 'P = ((2 + 3×8)/4, (3 + 3×7)/4) = (6.5, 6)。'
       }
     ],
-    practiceTopic: 's5-section-point'
+    practiceTopic: 's5-section-point',
+    interactive: 'section-point'
   },
   {
     id: 's5-polygon-area',
@@ -164,6 +195,12 @@ export const s5Lessons: Lesson[] = [
       {
         title: '三角形面積',
         statement: 'A(−3, −2)、B(2, 3)、C(1, 4) 的面積可用三點行列式一次求出。',
+        steps: [
+          '把三個頂點按同一方向寫入 x₁(y₂ − y₃) + x₂(y₃ − y₁) + x₃(y₁ − y₂)。',
+          '代入數值：−3(3 − 4) + 2(4 + 2) + 1(−2 − 3)。',
+          '計算後取絕對值的一半。'
+        ],
+        conclusion: '結果為正值，代表實際三角形面積。',
         explanation:
           '把三個頂點坐標代入公式，先算括號內的差，再取絕對值的一半。'
       },
@@ -181,11 +218,11 @@ export const s5Lessons: Lesson[] = [
       }
     ],
     explanation:
-      '三角形面積公式來自二階行列式的幾何意義。絕對值確保面積非負；若只是判斷三點是否共線，重點是括號內數值是否為 0。',
+      '三角形面積公式可整理成三階行列式或 shoelace formula。絕對值確保面積非負；若只是判斷三點是否共線，重點是括號內數值是否為 0。',
     detailedNotes: [
       '三角形面積公式適合已知三個頂點坐標的題目。',
       '行列式結果為 0 表示三點共線或兩點重合。',
-      '多邊形可分割為三角形，但分割線不能互相重疊。',
+      '多邊形可分割為若干個內部互不重疊、合起來恰好覆蓋原多邊形的三角形。',
       '帶有絕對值的面積問題通常需要先求未取絕對值的值，再依題目條件選取。',
       '直線形面積是後續直線與坐標軸圍成圖形的基礎。'
     ],
@@ -201,7 +238,7 @@ export const s5Lessons: Lesson[] = [
       '分割多邊形時對角線重疊，造成同一塊區域重複計算。'
     ],
     strategies: [
-      '三個頂點依逆時針順序代入，再取絕對值的一半。',
+      '三個頂點保持一致的環繞順序代入，最後取絕對值的一半。',
       '先算行列式是否為 0，快速判斷共線。',
       '多邊形先畫對角線分割，再逐塊加總。'
     ],
@@ -220,11 +257,17 @@ export const s5Lessons: Lesson[] = [
     challenges: [
       {
         title: '坐標三角形面積',
-        prompt: '求 (0, 0)、(6, 0)、(0, 4) 的面積。',
-        solution: '底 = 6、高 = 4，面積 = 12。'
+        prompt: '求 (0, 0)、(6, 0)、(0, 4) 的面積，並用三點公式檢查。',
+        steps: [
+          '代公式：0×(0 − 4) + 6×(4 − 0) + 0×(0 − 0)。',
+          '括號內得 24。',
+          '面積 = |24| ÷ 2。'
+        ],
+        solution: '0 + 24 + 0 = 24，面積 = 12。'
       }
     ],
-    practiceTopic: 's5-polygon-area'
+    practiceTopic: 's5-polygon-area',
+    interactive: 'polygon-area'
   },
   {
     id: 's5-slope',
@@ -239,6 +282,12 @@ export const s5Lessons: Lesson[] = [
       {
         title: '兩點求斜率',
         statement: 'A(−1, 3)、B(√3, −√3) 的斜率為 (y₂ − y₁)/(x₂ − x₁)。',
+        steps: [
+          '先算縱坐標差：−√3 − 3。',
+          '再算橫坐標差：√3 − (−1)。',
+          '化簡分式並判斷傾斜角所在的象限。'
+        ],
+        conclusion: '斜率為負，傾斜角是鈍角。',
         explanation:
           '先算縱坐標差與橫坐標差，再相除；分母為零時斜率不存在。'
       },
@@ -296,11 +345,16 @@ export const s5Lessons: Lesson[] = [
       {
         title: '兩點求斜率',
         prompt: '求 (2, 3) 與 (5, 9) 的斜率。',
+        steps: [
+          '縱坐標差 = 9 − 3。',
+          '橫坐標差 = 5 − 2。',
+          '兩者相除得到 k。'
+        ],
         solution: 'k = (9 − 3)/(5 − 2) = 2。'
       }
     ],
     practiceTopic: 's5-slope',
-    interactive: 'line-lab'
+    interactive: 'slope'
   },
   {
     id: 's5-line-forms',
@@ -310,17 +364,29 @@ export const s5Lessons: Lesson[] = [
     shortTitle: '直線方程',
     summary: '從點斜式出發，認識斜截式、兩點式、截距式與一般式。',
     definition:
-      '點斜式為 y − y₁ = k(x − x₁)；一般式為 Ax + By + C = 0，其中 A、B 不同時為 0。',
+      '五種常見形式為：點斜式 y − y₁ = k(x − x₁)、斜截式 y = kx + b、兩點式 (y − y₁)/(y₂ − y₁) = (x − x₁)/(x₂ − x₁)、截距式 x/a + y/b = 1、一般式 Ax + By + C = 0，其中 A、B 不同時為 0。',
     examples: [
       {
         title: '點斜式與斜截式',
         statement: '已知斜率 k 與一點 P(x₁, y₁)，可寫 y − y₁ = k(x − x₁)。',
+        steps: [
+          '把已知點代入點斜式。',
+          '展開括號。',
+          '移項成 y = kx + b，讀出 y 截距。'
+        ],
+        conclusion: '點斜式方便建立直線，斜截式方便讀出斜率與截距。',
         explanation:
           '把已知點代入後展開，可得到斜截式 y = kx + b；b 是直線在 y 軸上的截距。'
       },
       {
         title: '兩點式與截距式',
         statement: '已知兩點可先求斜率；已知 x、y 截距可用 x/a + y/b = 1。',
+        steps: [
+          '兩點式先由兩點求出斜率。',
+          '確認兩點橫坐標不同，避免除以零。',
+          '截距式需確認 a、b 都不為零。'
+        ],
+        conclusion: '每一種形式都有使用條件。',
         explanation:
           '不同已知條件適合不同形式；截距式要求 a、b 均不為 0。'
       },
@@ -337,7 +403,7 @@ export const s5Lessons: Lesson[] = [
       '點斜式需要已知一點與斜率，垂直線斜率不存在時改用 x = x₁。',
       '斜截式的 b 是 y 截距，不是線段長度。',
       '兩點式只適用於兩點橫坐標不同的情況。',
-      '截距式要求 a、b 不為 0，且截距可正、可負、可零。',
+      '截距式要求 a、b 不為 0；截距值本身可正可負，但等於 0 時不能使用此形式。',
       '一般式的 A、B 不同時為 0，可涵蓋所有直線。'
     ],
     keyPoints: [
@@ -372,11 +438,16 @@ export const s5Lessons: Lesson[] = [
       {
         title: '由點與斜率建方程',
         prompt: '直線過 (4, 1)，斜率為 −1/2，求斜截式。',
+        steps: [
+          '寫點斜式：y − 1 = −½(x − 4)。',
+          '展開：y − 1 = −½x + 2。',
+          '移項得到 y = −½x + 3。'
+        ],
         solution: 'y − 1 = −½(x − 4)，化簡為 y = −½x + 3。'
       }
     ],
     practiceTopic: 's5-line-forms',
-    interactive: 'line-lab'
+    interactive: 'line-forms'
   },
   {
     id: 's5-line-relations',
@@ -386,11 +457,17 @@ export const s5Lessons: Lesson[] = [
     shortTitle: '兩線位置',
     summary: '用斜率與一般式係數判斷平行、相交、垂直與重合，再求夾角。',
     definition:
-      '兩直線 l₁: A₁x + B₁y + C₁ = 0、l₂: A₂x + B₂y + C₂ = 0；平行條件為 A₁B₂ − A₂B₁ = 0，垂直條件為 A₁A₂ + B₁B₂ = 0。',
+      '兩直線 l₁: A₁x + B₁y + C₁ = 0、l₂: A₂x + B₂y + C₂ = 0；A₁B₂ − A₂B₁ = 0 表示方向相同，再比較常數即可分出平行或重合；垂直條件為 A₁A₂ + B₁B₂ = 0。',
     examples: [
       {
         title: '平行與重合',
-        statement: '兩線斜率相等時平行；若 y 截距也相等，則兩線重合。',
+        steps: [
+          '先比較兩線斜率，判斷方向是否相同。',
+          '方向相同時再比較 y 截距。',
+          '截距不同為平行，截距相同為重合。'
+        ],
+        conclusion: '判斷平行或重合，必須看方向與位置兩個資訊。',
+        statement: '兩線斜率相等時方向相同；若 y 截距不同則平行，若 y 截距也相等則重合。',
         explanation:
           '斜率只能判斷方向；是否重合還要比較截距或一般式中的常數比例。'
       },
@@ -448,11 +525,16 @@ export const s5Lessons: Lesson[] = [
       {
         title: '判斷垂直',
         prompt: '兩線斜率分別為 3 與 −1/3，判斷位置關係。',
+        steps: [
+          '檢查兩線斜率都存在。',
+          '計算 3 × (−1/3)。',
+          '乘積為 −1，所以兩線垂直。'
+        ],
         solution: '3 × (−1/3) = −1，所以兩線垂直。'
       }
     ],
     practiceTopic: 's5-line-relations',
-    interactive: 'line-lab'
+    interactive: 'line-relations'
   },
   {
     id: 's5-distance-normal',
@@ -467,6 +549,12 @@ export const s5Lessons: Lesson[] = [
       {
         title: '點到直線距離',
         statement: 'P(−3, −1) 到直線 2x + 4y − 3 = 0 的距離可直接代入公式。',
+        steps: [
+          '把 P 代入一般式左邊：2(−3) + 4(−1) − 3。',
+          '分子取絕對值，分母為 √(2² + 4²)。',
+          '化簡根式得到距離。'
+        ],
+        conclusion: '分子絕對值確保距離不為負。',
         explanation:
           '先算代入一般式左邊的值，取絕對值後除以 √(A² + B²)。'
       },
@@ -484,7 +572,7 @@ export const s5Lessons: Lesson[] = [
       }
     ],
     explanation:
-      '距離公式的分子必須取絕對值；法線式則把正負號留給方向。化一般式為法線式時，要先除以 √(A² + B²)，並依 C 或 y 係數選擇正負號。',
+      '距離公式的分子必須取絕對值；法線式則把正負號留給方向。化一般式為法線式時，先除以 √(A² + B²)：C ≠ 0 時取與 C 相反的符號；C = 0 時選擇使 y 係數非負的符號。',
     detailedNotes: [
       '距離公式分母是 √(A² + B²)，不是 √(A + B)。',
       '分子代入後要取絕對值。',
@@ -524,11 +612,16 @@ export const s5Lessons: Lesson[] = [
       {
         title: '原點到直線距離',
         prompt: '求原點到 6x + 8y − 20 = 0 的距離。',
+        steps: [
+          '代入原點得 6×0 + 8×0 − 20。',
+          '分子取絕對值為 20。',
+          '分母為 √(36 + 64)。'
+        ],
         solution: '|−20| / √(36 + 64) = 20 / 10 = 2。'
       }
     ],
     practiceTopic: 's5-distance-normal',
-    interactive: 'line-lab'
+    interactive: 'distance-normal'
   },
   {
     id: 's5-line-family',
@@ -538,7 +631,7 @@ export const s5Lessons: Lesson[] = [
     shortTitle: '直線系',
     summary: '用一個參數描述具有共同方向的直線，或經過同一交點的一族直線。',
     definition:
-      '含有可變參數的一組直線，若具有共同方向或共同交點，就稱為直線系。',
+      '含有一個可變參數，且整組直線具有某一共同性質時，稱為直線系；最常見的是共同方向、共同交點或共同截距。',
     examples: [
       {
         title: '平行直線系',
@@ -555,6 +648,12 @@ export const s5Lessons: Lesson[] = [
       {
         title: '過交點的直線系',
         statement: 'l₁ + λl₂ = 0 表示經過 l₁ 與 l₂ 交點的直線系。',
+        steps: [
+          '設交點同時滿足 l₁ = 0 與 l₂ = 0。',
+          '線性組合在交點處也等於 0。',
+          '檢查 λ 任意變化時，l₂ 本身無法單獨取得。'
+        ],
+        conclusion: '此形式保留 l₁，不包含 l₂，但可表示過交點的其他直線。',
         explanation:
           '只要交點同時滿足 l₁ = 0 與 l₂ = 0，線性組合也等於 0；此形式不包含 l₂ 本身。'
       }
@@ -599,12 +698,17 @@ export const s5Lessons: Lesson[] = [
     challenges: [
       {
         title: '過交點且水平',
-        prompt: 'x + y − 1 = 0 與 x − y + 1 = 0 的交點為 (0, 1)。求過此點且平行 x 軸的直線。',
-        solution: '平行 x 軸表示 y 為常數，所以直線是 y = 1。'
+        prompt: '以 l₁ = x + y − 1、l₂ = x − y + 1，寫出過交點 (0, 1) 的直線系，再求水平線對應的 λ。',
+        steps: [
+          '寫直線系 l₁ + λl₂ = 0。',
+          '合併 x 與 y 項：(1 + λ)x + (1 − λ)y + (−1 + λ) = 0。',
+          '水平線要求 x 係數為 0，所以 1 + λ = 0，得 λ = −1。'
+        ],
+        solution: 'λ = −1，代入得 2y − 2 = 0，即 y = 1。'
       }
     ],
     practiceTopic: 's5-line-family',
-    interactive: 'line-lab'
+    interactive: 'line-family'
   }
 ];
 

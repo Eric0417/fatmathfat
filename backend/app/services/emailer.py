@@ -195,14 +195,14 @@ def send_verification_email(
     sender_email: str | None = None,
     sender_password: str | None = None,
 ) -> bool:
-    subject = "集合好好學 - 登入驗證碼"
-    text = f"""集合好好學
+    subject = "數學好好學 - 登入驗證碼"
+    text = f"""數學好好學
 
 你的登入驗證碼是：{code}
 
 驗證碼 5 分鐘後失效。如果這不是你發出的請求，請忽略此郵件。"""
     html = f"""<div style="max-width:480px;margin:0 auto;padding:24px;font-family:sans-serif">
-<h2 style="color:#183153">集合好好學</h2>
+<h2 style="color:#183153">數學好好學</h2>
 <p>你的登入驗證碼是：</p>
 <div style="background:#f4f7f4;border:2px solid #183153;border-radius:8px;padding:20px;text-align:center;margin:24px 0">
   <span style="font-size:36px;font-weight:bold;color:#183153;letter-spacing:12px">{code}</span>

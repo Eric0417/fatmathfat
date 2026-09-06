@@ -102,6 +102,16 @@ export type S5LessonTopic =
 
 export type LessonTopic = S4LessonTopic | S5LessonTopic;
 
+export type S5LessonVisual =
+  | 'directed-segment'
+  | 'section-point'
+  | 'polygon-area'
+  | 'slope'
+  | 'line-forms'
+  | 'line-relations'
+  | 'distance-normal'
+  | 'line-family';
+
 export interface Lesson {
   id: LessonTopic;
   gradeLevel: GradeLevel;
@@ -117,7 +127,7 @@ export interface Lesson {
   detailedNotes: string[];
   commonMistakes: string[];
   practiceTopic: QuizTopic;
-  interactive?: 'venn' | 'line-lab';
+  interactive?: 'venn' | S5LessonVisual;
   strategies?: string[];
   applications?: LessonApplication[];
   challenges?: LessonChallenge[];
@@ -129,6 +139,8 @@ export interface Lesson {
 export interface LessonExample {
   title: string;
   statement: string;
+  steps?: string[];
+  conclusion?: string;
   explanation: string;
 }
 
@@ -141,6 +153,7 @@ export interface LessonApplication {
 export interface LessonChallenge {
   title: string;
   prompt: string;
+  steps?: string[];
   solution: string;
 }
 

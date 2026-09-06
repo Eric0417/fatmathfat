@@ -69,6 +69,10 @@ try {
 
   await prepare(desktopPage);
   assert(
+    (await desktopPage.getByText('數學好好學', { exact: true }).count()) >= 1,
+    'brand was not updated'
+  );
+  assert(
     (await desktopPage.getByText('developed by Eric Wong', { exact: true }).count()) === 1,
     'footer credit is missing'
   );

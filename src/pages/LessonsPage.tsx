@@ -8,8 +8,14 @@ import {
   questionsForLesson
 } from '../data/contentRegistry';
 import { VennDiagram } from '../components/VennDiagram';
-import { CoordinateLineLab } from '../components/CoordinateLineLab';
-import type { Lesson, ProgressResponse, SetOperation, SetState } from '../types';
+import { S5LessonVisual } from '../components/S5LessonVisual';
+import type {
+  Lesson,
+  ProgressResponse,
+  S5LessonVisual as S5LessonVisualType,
+  SetOperation,
+  SetState
+} from '../types';
 
 function lessonDiagramState(lesson: Lesson): SetState {
   return {
@@ -58,6 +64,8 @@ function LessonDetail({
   const completed = completedLessons.includes(lesson.id);
   const practiceQuestions = questionsForLesson(lesson.gradeLevel, lesson.id);
   const state = lessonDiagramState(lesson);
+  const s5Visual: S5LessonVisualType | undefined =
+    lesson.interactive === 'venn' ? undefined : lesson.interactive;
   const nextLesson = gradeLessons.find((item) => item.order === lesson.order + 1);
   const previousLesson = gradeLessons.find((item) => item.order === lesson.order - 1);
 
@@ -133,8 +141,8 @@ function LessonDetail({
           </div>
           {lesson.id === 'empty-set' ? (
             <EmptySetVisual />
-          ) : lesson.gradeLevel === 'S5' ? (
-            <CoordinateLineLab compact />
+          ) : lesson.gradeLevel === 'S5' && s5Visual ? (
+            <S5LessonVisual lessonId={s5Visual} />
           ) : (
             <VennDiagram
               state={state}
@@ -157,6 +165,19 @@ function LessonDetail({
                   <strong>例子：</strong>
                   {example.statement}
                 </p>
+                {example.steps && (
+                  <ol className="lesson-example-steps">
+                    {example.steps.map((step) => (
+                      <li key={step}>{step}</li>
+                    ))}
+                  </ol>
+                )}
+                {example.conclusion && (
+                  <p className="lesson-example-item__conclusion">
+                    <strong>結論：</strong>
+                    {example.conclusion}
+                  </p>
+                )}
                 <p className="lesson-example-item__explanation">
                   {example.explanation}
                 </p>
@@ -234,6 +255,13 @@ function LessonDetail({
                     <strong>{challenge.title}</strong>
                   </summary>
                   <p>{challenge.prompt}</p>
+                  {challenge.steps && (
+                    <ol className="lesson-challenge-steps">
+                      {challenge.steps.map((step) => (
+                        <li key={step}>{step}</li>
+                      ))}
+                    </ol>
+                  )}
                   <div className="lesson-challenge-solution">
                     <strong>解答</strong>
                     <span>{challenge.solution}</span>

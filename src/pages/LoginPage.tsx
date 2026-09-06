@@ -89,10 +89,10 @@ export function LoginPage() {
       <div className="auth-card">
         <div className="auth-card__brand">
           <span className="brand__mark auth-card__mark" aria-hidden="true">
-            <ShieldCheck size={24} strokeWidth={2.2} />
+            <GraduationCap size={24} strokeWidth={2.2} />
           </span>
           <div>
-            <strong>集合好好學</strong>
+            <strong>數學好好學</strong>
             <small>學校專用學習區</small>
           </div>
         </div>

@@ -13,13 +13,25 @@ describe('S5 curriculum depth', () => {
       expect(lesson.strategies?.length).toBeGreaterThanOrEqual(3);
       expect(lesson.applications?.length).toBeGreaterThanOrEqual(2);
       expect(lesson.challenges?.length).toBeGreaterThanOrEqual(1);
+      expect(lesson.interactive).toBeTruthy();
+      expect(lesson.interactive).not.toBe('venn');
       expect(lesson.definition.trim().length).toBeGreaterThan(20);
       expect(lesson.explanation.trim().length).toBeGreaterThan(40);
+      expect(
+        lesson.examples.some((example) => example.steps?.length)
+      ).toBe(true);
       lesson.examples.forEach((example) => {
         expect(example.title.trim()).not.toBe('');
         expect(example.statement.trim()).not.toBe('');
         expect(example.explanation.trim()).not.toBe('');
       });
     });
+  });
+
+  it('does not retain the known S5 mathematical wording errors', () => {
+    const text = s5Lessons.map((lesson) => JSON.stringify(lesson)).join('\n');
+    expect(text).not.toContain('且截距可正、可負、可零');
+    expect(text).not.toContain('二階行列式的幾何意義');
+    expect(text).not.toContain('兩線斜率相等時平行');
   });
 });

@@ -1,6 +1,5 @@
 import { lessons as s4Lessons } from './curriculum';
 import {
-  mixedPracticeQuestions as s4MixedPracticeQuestions,
   questionKindLabels as s4QuestionKindLabels,
   questions as s4Questions,
   questionsForLesson as s4QuestionsForLesson,
@@ -121,8 +120,25 @@ export function questionsForLesson(
 export function mixedPracticeQuestions(
   grade: GradeLevel
 ): QuizQuestion[] {
-  if (grade === 'S5') return s5Questions.slice(0, 10);
-  return s4MixedPracticeQuestions();
+  const source = grade === 'S5' ? s5Questions : s4Questions;
+  const topics = Object.keys(
+    grade === 'S5' ? s5TopicLabels : s4TopicLabels
+  ) as QuizTopic[];
+  const selected: QuizQuestion[] = [];
+
+  for (let round = 0; round < 2 && selected.length < 10; round += 1) {
+    for (const topic of topics) {
+      const next = source.find(
+        (question) =>
+          question.topic === topic &&
+          !selected.some((item) => item.id === question.id)
+      );
+      if (next) selected.push(next);
+      if (selected.length >= 10) break;
+    }
+  }
+
+  return selected;
 }
 
 export function quizQuestionsForGrade(

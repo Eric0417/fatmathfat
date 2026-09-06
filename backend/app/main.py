@@ -38,7 +38,7 @@ async def lifespan(_: FastAPI):
 
 
 app = FastAPI(
-    title="集合好好學 API",
+    title="數學好好學 API",
     description="登入、學習數據與 AI 老師服務",
     version="1.0.0",
     lifespan=lifespan,

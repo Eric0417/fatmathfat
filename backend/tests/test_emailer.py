@@ -141,7 +141,7 @@ def test_plain_verification_email_is_single_text_part(monkeypatch):
     assert (
         send_email(
             "teacher@example.com",
-            "集合好好學 - 登入驗證碼",
+            "數學好好學 - 登入驗證碼",
             "",
             "你的登入驗證碼是：123456",
             plain_only=True,
@@ -206,7 +206,7 @@ def test_verification_email_uses_plain_text_for_non_student(monkeypatch):
         is True
     )
     assert captured["to"] == "teacher@example.com"
-    assert captured["subject"] == "集合好好學 - 登入驗證碼"
+    assert captured["subject"] == "數學好好學 - 登入驗證碼"
     assert "你的登入驗證碼是：123456" in captured["text_body"]
     assert captured["plain_only"] is True
     assert captured["sender_email"] == "wongeric1417@gmail.com"

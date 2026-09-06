@@ -1,5 +1,5 @@
 ---
-title: 集合好好學改善計畫
+title: 數學好好學改善計畫
 type: note
 status: active
 tags: [memory, improvement-plan, math-website]
@@ -7,7 +7,7 @@ created: 2026-09-03
 updated: 2026-09-05
 ---
 
-# 集合好好學改善計畫
+# 數學好好學改善計畫
 
 ## 摘要
 

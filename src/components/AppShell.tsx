@@ -88,12 +88,16 @@ export function AppShell({ route, children }: AppShellProps) {
     <div className="app-shell">
       <header className="app-header">
         <div className="app-header__inner">
-          <a className="brand" href="#/" aria-label="集合好好學首頁">
+          <a className="brand" href="#/" aria-label="數學好好學首頁">
             <span className="brand__mark" aria-hidden="true">
-              <Shapes size={22} strokeWidth={2.2} />
+              {grade === 'S5' ? (
+                <Ruler size={22} strokeWidth={2.2} />
+              ) : (
+                <Shapes size={22} strokeWidth={2.2} />
+              )}
             </span>
             <span className="brand__text">
-              <strong>集合好好學</strong>
+              <strong>數學好好學</strong>
               <small>
                 {grade === 'S5'
                   ? 'S5 直線坐標幾何與互動解題'

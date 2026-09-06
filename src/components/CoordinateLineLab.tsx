@@ -22,6 +22,7 @@ import type { CartesianPoint, LinearEquation } from '../types';
 
 interface CoordinateLineLabProps {
   compact?: boolean;
+  focus?: 'directed-segment' | 'section-point' | 'slope' | 'line-forms' | 'line-relations';
 }
 
 type LabMode = 'points' | 'slope';
@@ -66,8 +67,13 @@ function RelationText({ relation }: { relation: ReturnType<typeof relationBetwee
   return <strong>{labels[relation]}</strong>;
 }
 
-export function CoordinateLineLab({ compact = false }: CoordinateLineLabProps) {
-  const [mode, setMode] = useState<LabMode>('points');
+export function CoordinateLineLab({
+  compact = false,
+  focus
+}: CoordinateLineLabProps) {
+  const focusSlope =
+    focus === 'slope' || focus === 'line-forms' || focus === 'line-relations';
+  const [mode, setMode] = useState<LabMode>(focusSlope ? 'slope' : 'points');
   const [pointA, setPointA] = useState<CartesianPoint>({ x: -3, y: -2 });
   const [pointB, setPointB] = useState<CartesianPoint>({ x: 3, y: 4 });
   const [dragging, setDragging] = useState<'a' | 'b' | null>(null);
@@ -75,7 +81,7 @@ export function CoordinateLineLab({ compact = false }: CoordinateLineLabProps) {
   const [firstIntercept, setFirstIntercept] = useState(0);
   const [secondSlope, setSecondSlope] = useState(-1);
   const [secondIntercept, setSecondIntercept] = useState(2);
-  const [showSecond, setShowSecond] = useState(false);
+  const [showSecond, setShowSecond] = useState(focus === 'line-relations');
   const [ratio, setRatio] = useState(1);
   const [ratioMin, setRatioMin] = useState(-5);
   const [ratioMax, setRatioMax] = useState(5);
@@ -184,35 +190,39 @@ export function CoordinateLineLab({ compact = false }: CoordinateLineLabProps) {
   return (
     <section className={`coordinate-line-lab${compact ? ' coordinate-line-lab--compact' : ''}`}>
       <div className="line-lab__controls">
-        <div className="line-lab__modes" aria-label="實驗室模式">
+        {!focus && (
+          <div className="line-lab__modes" aria-label="實驗室模式">
+            <button
+              className={mode === 'points' ? 'line-lab__mode-button line-lab__mode-button--active' : 'line-lab__mode-button'}
+              type="button"
+              aria-pressed={mode === 'points'}
+              onClick={() => setMode('points')}
+            >
+              <MousePointer2 size={16} aria-hidden="true" />
+              兩點直線
+            </button>
+            <button
+              className={mode === 'slope' ? 'line-lab__mode-button line-lab__mode-button--active' : 'line-lab__mode-button'}
+              type="button"
+              aria-pressed={mode === 'slope'}
+              onClick={() => setMode('slope')}
+            >
+              <SlidersHorizontal size={16} aria-hidden="true" />
+              y = mx + b
+            </button>
+          </div>
+        )}
+        {(focus === 'line-relations' || !focus) && (
           <button
-            className={mode === 'points' ? 'line-lab__mode-button line-lab__mode-button--active' : 'line-lab__mode-button'}
+            className="line-lab__second-line-toggle"
             type="button"
-            aria-pressed={mode === 'points'}
-            onClick={() => setMode('points')}
+            aria-pressed={showSecond}
+            onClick={() => setShowSecond((current) => !current)}
           >
-            <MousePointer2 size={16} aria-hidden="true" />
-            兩點直線
+            {showSecond ? <X size={16} aria-hidden="true" /> : <Plus size={16} aria-hidden="true" />}
+            {showSecond ? '關閉第二條線' : '比較第二條線'}
           </button>
-          <button
-            className={mode === 'slope' ? 'line-lab__mode-button line-lab__mode-button--active' : 'line-lab__mode-button'}
-            type="button"
-            aria-pressed={mode === 'slope'}
-            onClick={() => setMode('slope')}
-          >
-            <SlidersHorizontal size={16} aria-hidden="true" />
-            y = mx + b
-          </button>
-        </div>
-        <button
-          className="line-lab__second-line-toggle"
-          type="button"
-          aria-pressed={showSecond}
-          onClick={() => setShowSecond((current) => !current)}
-        >
-          {showSecond ? <X size={16} aria-hidden="true" /> : <Plus size={16} aria-hidden="true" />}
-          {showSecond ? '關閉第二條線' : '比較第二條線'}
-        </button>
+        )}
       </div>
 
       <div className="line-lab__stage">
@@ -303,7 +313,7 @@ export function CoordinateLineLab({ compact = false }: CoordinateLineLabProps) {
               <text className="line-lab__point-label" x={toSvg(pointB).x + 13} y={toSvg(pointB).y + 4}>
                 B
               </text>
-              {section && (
+              {section && focus !== 'directed-segment' && (
                 <>
                   <circle className="line-lab__section-point" cx={toSvg(section).x} cy={toSvg(section).y} r="6" />
                   <text className="line-lab__point-label" x={toSvg(section).x + 10} y={toSvg(section).y + 4}>
@@ -320,20 +330,25 @@ export function CoordinateLineLab({ compact = false }: CoordinateLineLabProps) {
         {mode === 'points' ? (
           <>
             <div className="line-lab__metric">
-              <span>AB 有向長度</span>
+              <span>AB 有向線段分量</span>
               <strong>{formatNumber(pointB.x - pointA.x)}，{formatNumber(pointB.y - pointA.y)}</strong>
             </div>
-            <div className="line-lab__metric">
-              <span>兩點距離</span>
-              <strong>{formatNumber(distanceBetween(pointA, pointB))}</strong>
-            </div>
-            <div className="line-lab__metric">
-              <span>中點</span>
-              <strong>
-                ({formatNumber(midpoint(pointA, pointB).x)}, {formatNumber(midpoint(pointA, pointB).y)})
-              </strong>
-            </div>
-            <div className="line-lab__ratio-control">
+            {focus !== 'directed-segment' && (
+              <div className="line-lab__metric">
+                <span>兩點距離</span>
+                <strong>{formatNumber(distanceBetween(pointA, pointB))}</strong>
+              </div>
+            )}
+            {focus !== 'directed-segment' && (
+              <div className="line-lab__metric">
+                <span>中點</span>
+                <strong>
+                  ({formatNumber(midpoint(pointA, pointB).x)}, {formatNumber(midpoint(pointA, pointB).y)})
+                </strong>
+              </div>
+            )}
+            {focus !== 'directed-segment' && (
+              <div className="line-lab__ratio-control">
               <div className="line-lab__ratio-header">
                 <span>定比分點 λ</span>
                 <strong>{ratioInvalid ? '未定義' : formatNumber(ratio)}</strong>
@@ -398,7 +413,8 @@ export function CoordinateLineLab({ compact = false }: CoordinateLineLabProps) {
               {ratioInvalid && (
                 <small>λ = −1 時分母為零，定比分點沒有定義。</small>
               )}
-            </div>
+              </div>
+            )}
           </>
         ) : (
           <div className="line-lab__sliders">

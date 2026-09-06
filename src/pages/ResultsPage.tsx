@@ -155,7 +155,7 @@ export function ResultsPage() {
     const url = URL.createObjectURL(blob);
     const anchor = document.createElement('a');
     anchor.href = url;
-    anchor.download = `集合好好學-學習紀錄-${new Date().toISOString().slice(0, 10)}.json`;
+    anchor.download = `數學好好學-學習紀錄-${new Date().toISOString().slice(0, 10)}.json`;
     anchor.click();
     URL.revokeObjectURL(url);
   };

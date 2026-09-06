@@ -1,5 +1,5 @@
 ---
-title: 集合好好學
+title: 數學好好學
 type: note
 status: active
 tags: [memory, readme, math-website]
@@ -7,9 +7,9 @@ created: 2026-09-03
 updated: 2026-09-04
 ---
 
-# 集合好好學
+# 數學好好學
 
-「集合好好學」是一個給學校學生與集合初學者使用的繁體中文學習網站。網站以 Vite + React 呈現集合概念、Venn 圖、集合運算、單元練習、測驗與學習紀錄；後端使用 FastAPI + PostgreSQL 保存登入、學習數據與管理員資料，並以 DeepSeek 提供全站 AI 老師。
+「數學好好學」是一個給學校學生使用的繁體中文學習網站，S4 以集合概念、Venn 圖與集合運算為主，S5 以直線坐標幾何、公式解題與互動直線實驗室為主。前端使用 Vite + React；後端使用 FastAPI + PostgreSQL 保存登入、學習數據與管理員資料，並以 DeepSeek 提供全站 AI 老師。
 
 ## 技術架構
 

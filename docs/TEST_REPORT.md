@@ -1,5 +1,5 @@
 ---
-title: 集合好好學測試報告
+title: 數學好好學測試報告
 type: note
 status: active
 tags: [memory, test-report, math-website]
@@ -7,7 +7,7 @@ created: 2026-09-03
 updated: 2026-09-06
 ---
 
-# 集合好好學測試報告
+# 數學好好學測試報告
 
 ## 摘要
 
