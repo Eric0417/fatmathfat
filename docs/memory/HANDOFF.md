@@ -77,6 +77,7 @@ updated: 2026-09-06
 - 完成後端 25 項 pytest、前端 28 項 Vitest、typecheck 與 production build；D-016 已寫入長期記憶。
 - 完成 S4 既有 Playwright 回歸與 S5 桌面／手機直線實驗室驗證；`test:browser:s5` 已加入 package scripts。
 - 完成 production preview 的 PWA 離線重載驗證；S4／S5 年級改版未破壞既有離線快取。
+- 已推送 `0751459` 至 GitHub `main`；Render API 的 `PATCH /api/auth/grade` 與靜態站 S5 bundle 均已在線上確認。
 
 ## 進行中
 
