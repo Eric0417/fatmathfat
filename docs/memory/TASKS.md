@@ -69,3 +69,4 @@ updated: 2026-09-06
 | 教師 S4／S5 檢視切換 | done | `GradeViewContext`；教師偏好存 localStorage |
 | S5 AI 老師與生成練習 | done | AI prompt、validator、panel 與瀏覽器驗證 |
 | S5 內容豐富化 | done | 策略、應用情境、公式速查與 48 題題庫 |
+| λ 平滑與自訂範圍 | done | 動態 step、上下限、數值輸入與 λ = −1 提示 |

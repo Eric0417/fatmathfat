@@ -250,3 +250,15 @@ updated: 2026-09-06
 **替代方案：** 給教師新增資料庫年級欄位 —— 會混淆「學生年級」與「教師檢視偏好」；維持 S5 無 AI —— 無法滿足教師與學生的輔導需求。
 
 **影響：** 新增 `src/context/GradeViewContext.tsx`；AppShell 對所有登入者顯示年級切換；AI validator、router 與 schema 支援 S5 topics/kinds/tags；S5 curriculum、questions、lesson UI、line lab 與瀏覽器驗證同步擴充。無資料庫 migration。
+
+## D-020 定比分點 λ 使用平滑滑桿與自訂範圍
+
+**狀態：** active
+
+**決定：** S5 直線實驗室的 λ 改為動態步距滑桿，預設範圍 `−5 ≤ λ ≤ 5`，使用者可分別調整下限與上限，也可直接輸入精確數值。當 λ = −1 時顯示「未定義」而不是繪出錯誤的定比分點。
+
+**理由：** 原本固定 `step=0.5` 使滑桿跳動感明顯；教學上也需要探索更廣或更窄的 λ 範圍，以及準確測試 λ = −1 的無定義特例。
+
+**替代方案：** 只把 step 改成更小值 —— 能改善順滑度，但無法讓使用者自訂範圍；改用純數字輸入 —— 失去視覺拖動觀察。
+
+**影響：** 修改 `CoordinateLineLab`、其元件測試與 S5 browser verification；無後端或資料庫變更。
