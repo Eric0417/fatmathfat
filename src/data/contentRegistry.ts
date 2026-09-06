@@ -165,6 +165,9 @@ export function normalizedRouteForGrade(
 
   if (route.startsWith('/practice/')) {
     const topic = route.split('/')[2];
+    if (topic === 'operations') {
+      return grade === 'S4' ? route : '/practice';
+    }
     return isTopicForGrade(topic, grade) ? route : '/practice';
   }
 

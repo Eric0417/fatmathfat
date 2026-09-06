@@ -62,4 +62,4 @@ updated: 2026-09-06
 | S5 直線教材與題庫 | done | 8 單元、8 主題、40 題練習、12 題測驗 |
 | S5 直線實驗室 | done | 拖動 A/B、y=mx+b、兩線關係、鍵盤與響應式 |
 | S5 教材 MarkItDown 轉檔 | done | 20 張照片輸出至 `content/s5/ocr/` |
-| S4/S5 瀏覽器完整驗證 | pending | 待以 Playwright 驗證登入年級、直線實驗室與既有 Venn |
+| S4/S5 瀏覽器完整驗證 | done | `test:browser` 與 `test:browser:s5` 均通過桌面／手機驗證 |

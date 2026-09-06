@@ -75,6 +75,7 @@ updated: 2026-09-06
 - 新增 `#/s5-lab` 直線實驗室：拖動 A/B、切換 y=mx+b、比較兩線位置、夾角與交點；支援鍵盤微調與手機響應式版面。
 - 使用 MarkItDown 本機 Vision 轉換器將 20 張 S5 教材照片輸出為 `content/s5/ocr/*.md`；原始 JPEG 未提交。
 - 完成後端 25 項 pytest、前端 28 項 Vitest、typecheck 與 production build；D-016 已寫入長期記憶。
+- 完成 S4 既有 Playwright 回歸與 S5 桌面／手機直線實驗室驗證；`test:browser:s5` 已加入 package scripts。
 
 ## 進行中
 

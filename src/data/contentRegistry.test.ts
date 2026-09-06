@@ -36,6 +36,9 @@ describe('grade content registry', () => {
     expect(normalizedRouteForGrade('/explorer', 'S5')).toBe('/s5-lab');
     expect(normalizedRouteForGrade('/s5-lab', 'S4')).toBe('/explorer');
     expect(normalizedRouteForGrade('/lessons/set', 'S5')).toBe('/lessons');
+    expect(normalizedRouteForGrade('/practice/operations', 'S4')).toBe(
+      '/practice/operations'
+    );
     expect(normalizedRouteForGrade('/lessons/s5-slope', 'S5')).toBe(
       '/lessons/s5-slope'
     );
